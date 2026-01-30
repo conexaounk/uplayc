@@ -113,6 +113,7 @@ export function usePacks() {
             is_free: input.is_free ?? false,
             cover_url: input.cover_url || null,
             genre: input.genre || null,
+            download_link: input.download_link || null,
           })
           .select()
           .single();
