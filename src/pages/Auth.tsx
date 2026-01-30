@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,19 +23,21 @@ export default function Auth() {
 
   useEffect(() => {
     if (!loading && user) {
-      // Redirect to user's profile after successful auth
-      // We'll fetch the DJ name from the profile
-      const redirectToProfile = async () => {
-        const { data } = await import("@/integrations/supabase/client").then(m => m.supabase.from("profiles").select("dj_name").eq("id", user.id).maybeSingle());
-        if (data?.dj_name) {
-          navigate(`/dj/${encodeURIComponent(data.dj_name)}`);
-        } else {
-          navigate("/dashboard");
-        }
-      };
       redirectToProfile();
     }
-  }, [user, loading, navigate]);
+  }, [user, loading]);
+
+  const redirectToProfile = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("dj_name")
+      .eq("id", user?.id)
+      .maybeSingle();
+
+    if (data?.dj_name) {
+      navigate(`/dj/${encodeURIComponent(data.dj_name)}`);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
