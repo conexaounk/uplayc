@@ -87,35 +87,25 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header 
+      <Header
         cartItemsCount={cartItems.length}
         onCartClick={() => setIsCartOpen(true)}
-        onLogoClick={handleBackToHome}
+        onLogoClick={() => navigate("/")}
       />
 
-      {currentPage === "home" ? (
-        <>
-          <HeroSection />
-          <SearchFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedGenre={selectedGenre}
-            onGenreChange={setSelectedGenre}
-          />
-          <DJGrid 
-            djs={filteredDJs} 
-            onDJClick={handleDJClick} 
-          />
-        </>
-      ) : selectedDJ ? (
-        <DJProfilePage
-          dj={selectedDJ}
-          onBack={handleBackToHome}
-          onPackClick={handlePackClick}
-          onAddToCart={(pack) => handleAddToCart(pack, selectedDJ.name)}
-          cartItems={cartItemIds}
+      <>
+        <HeroSection />
+        <SearchFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedGenre={selectedGenre}
+          onGenreChange={setSelectedGenre}
         />
-      ) : null}
+        <DJGrid
+          djs={filteredDJs}
+          onDJClick={handleDJClick}
+        />
+      </>
 
       {/* Cart Sidebar */}
       <CartSidebar
