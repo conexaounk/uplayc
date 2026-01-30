@@ -79,6 +79,8 @@ export default function DJProfilePage() {
       setEditInstagramUrl(profile.instagram_url || "");
       setEditYoutubeUrl(profile.youtube_url || "");
       setEditMusicLinks(profile.music_links || "");
+      // Load packs
+      fetchPacks(profile.id);
     }
   }, [user, profile]);
 
