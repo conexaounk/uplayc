@@ -20,28 +20,23 @@ const Index = () => {
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("Todos");
-  
+
   // Cart state
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  
+
   // Modal state
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
   const [isPackModalOpen, setIsPackModalOpen] = useState(false);
 
-  // Filter DJs
+  // Filter DJs by search query
   const filteredDJs = useMemo(() => {
-    return mockDJs.filter((dj) => {
-      const matchesSearch = 
-        dj.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        dj.packs.some((pack) => pack.name.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesGenre = selectedGenre === "Todos" || dj.genre === selectedGenre;
-      
-      return matchesSearch && matchesGenre;
+    return djs.filter((dj) => {
+      const matchesSearch = dj.dj_name.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesSearch;
     });
-  }, [searchQuery, selectedGenre]);
+  }, [djs, searchQuery]);
 
   // Cart item IDs for quick lookup
   const cartItemIds = useMemo(() => cartItems.map((item) => item.pack.id), [cartItems]);
