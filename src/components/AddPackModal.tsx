@@ -294,7 +294,6 @@ export default function AddPackModal({
               onChange={(e) =>
                 setFormData({ ...formData, download_link: e.target.value })
               }
-              helperText="Link que será disponibilizado para quem comprar"
             />
             <p className="text-xs text-muted-foreground">
               Link para downloads (Google Drive, Dropbox, etc)
