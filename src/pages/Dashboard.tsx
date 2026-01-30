@@ -68,7 +68,15 @@ export default function Dashboard() {
         .eq("id", user.id)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase Error fetching profile:", error);
+        toast({
+          title: "Erro ao carregar perfil",
+          description: "Verifique sua conexão com a internet",
+          variant: "destructive",
+        });
+        throw error;
+      }
 
       if (data) {
         setProfile(data);
