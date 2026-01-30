@@ -1,18 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export const usePWA = () => {
+  const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
+
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker
-          .register('/sw.js', { scope: '/' })
-          .then((registration) => {
-            console.log('Service Worker registrado com sucesso:', registration);
-          })
-          .catch((error) => {
-            console.log('Falha ao registrar Service Worker:', error);
-          });
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        setIsUpdateAvailable(false);
+        window.location.reload();
       });
     }
   }, []);
+
+  return { isUpdateAvailable };
 };
