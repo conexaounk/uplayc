@@ -34,11 +34,68 @@ export default function AddPackModal({
     download_link: "",
   });
 
+  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Selecione uma imagem válida (JPG, PNG, etc)");
+      return;
+    }
+
+    setCoverFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setCoverPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const uploadCover = async (): Promise<string | null> => {
+    if (!coverFile) return null;
+
+    try {
+      setIsUploadingCover(true);
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2, 8);
+      const fileName = `${timestamp}-${random}.jpg`;
+      const filePath = `${djId}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("pack-covers")
+        .upload(filePath, coverFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from("pack-covers")
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro no upload da capa";
+      toast.error(message);
+      return null;
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name.trim()) {
+      toast.error("Digite o nome do pack");
       return;
+    }
+
+    let coverUrl: string | undefined = undefined;
+
+    // Upload da capa se houver arquivo
+    if (coverFile) {
+      coverUrl = await uploadCover() || undefined;
+      if (!coverUrl && coverFile) {
+        toast.error("Erro ao fazer upload da capa");
+        return;
+      }
     }
 
     const pack = await createPack(djId, {
@@ -47,7 +104,8 @@ export default function AddPackModal({
       price: isFree ? 0 : formData.price,
       is_free: isFree,
       genre: formData.genre || undefined,
-      cover_url: formData.cover_url || undefined,
+      cover_url: coverUrl,
+      download_link: formData.download_link || undefined,
     });
 
     if (pack) {
@@ -56,8 +114,10 @@ export default function AddPackModal({
         description: "",
         price: 0,
         genre: "",
-        cover_url: "",
+        download_link: "",
       });
+      setCoverFile(null);
+      setCoverPreview(null);
       setIsFree(true);
       onPackCreated();
       onClose();
