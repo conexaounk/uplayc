@@ -6,7 +6,6 @@ import { SearchFilters } from "@/components/SearchFilters";
 import { DJGrid } from "@/components/DJGrid";
 import { CartSidebar } from "@/components/CartSidebar";
 import { CheckoutModal } from "@/components/CheckoutModal";
-import { PackDetailsModal } from "@/components/PackDetailsModal";
 import { useDJs } from "@/hooks/useDJs";
 import { Pack, CartItem } from "@/types";
 import { toast } from "@/hooks/use-toast";
