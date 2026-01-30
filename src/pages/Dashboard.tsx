@@ -61,6 +61,7 @@ export default function Dashboard() {
   const fetchProfile = async () => {
     if (!user) return;
 
+    setLoadingProfile(true);
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -70,21 +71,25 @@ export default function Dashboard() {
 
       if (error) {
         console.error("Supabase Error fetching profile:", error);
-        toast({
-          title: "Erro ao carregar perfil",
-          description: "Verifique sua conexão com a internet",
-          variant: "destructive",
-        });
-        throw error;
+        throw new Error(error.message || "Erro ao carregar perfil");
       }
 
       if (data) {
+        console.log("Profile loaded:", data);
         setProfile(data);
         setDjName(data.dj_name || "");
         setBio(data.bio || "");
         setCity(data.city || "");
         setAvatarUrl(data.avatar_url || "");
         setBackgroundUrl(data.background_url || "");
+      } else {
+        console.log("No profile data found, creating a new one");
+        setProfile(null);
+        setDjName("");
+        setBio("");
+        setCity("");
+        setAvatarUrl("");
+        setBackgroundUrl("");
       }
     } catch (err) {
       console.error("Error fetching profile:", err);
