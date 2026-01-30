@@ -269,7 +269,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-6 flex justify-end gap-3">
               <Button
                 onClick={handleSaveProfile}
                 disabled={saving}
@@ -283,6 +283,27 @@ export default function Dashboard() {
                 Salvar Perfil
               </Button>
             </div>
+
+            {/* Success Preview */}
+            {savedSuccessfully && profile && (
+              <div className="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/30 animate-fade-in">
+                <div className="flex items-start gap-4">
+                  {avatarUrl && (
+                    <img
+                      src={avatarUrl}
+                      alt={djName}
+                      className="w-16 h-16 rounded-lg object-cover"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg">{djName}</h3>
+                    {city && <p className="text-sm text-muted-foreground">📍 {city}</p>}
+                    {bio && <p className="text-sm mt-2">{bio}</p>}
+                    <p className="text-xs text-green-400 mt-2">✓ Perfil atualizado com sucesso!</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Music Upload Section */}
