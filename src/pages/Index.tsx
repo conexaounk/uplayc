@@ -30,9 +30,8 @@ const Index = () => {
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
   const [isPackModalOpen, setIsPackModalOpen] = useState(false);
 
-
   // Cart item IDs for quick lookup
-  const cartItemIds = useMemo(() => cartItems.map((item) => item.pack.id), [cartItems]);
+  const cartItemIds = cartItems.map((item) => item.pack.id);
 
   // Handlers
   const handleDJClick = (djName: string) => {
