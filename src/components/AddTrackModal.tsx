@@ -112,16 +112,16 @@ export default function AddTrackModal({
     }
 
     // Upload arquivo para R2
-    const fileUrl = await uploadToR2(audioFile);
-    if (!fileUrl) {
+    const uploadResult = await uploadToR2(audioFile);
+    if (!uploadResult) {
       return;
     }
 
     // Registrar track no Supabase
     const track = await addTrack(packId, djId, {
       name: formData.name,
-      file_url: fileUrl,
-      r2_key: `${djId}/${audioFile.name}`,
+      file_url: uploadResult.url,
+      r2_key: uploadResult.r2Key,
       bpm: formData.bpm ? parseInt(formData.bpm) : undefined,
       genre: formData.genre || undefined,
       is_preview: formData.is_preview,
