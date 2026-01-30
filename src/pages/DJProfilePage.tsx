@@ -59,6 +59,9 @@ export default function DJProfilePage() {
       setEditCity(profile.city || "");
       setEditAvatarUrl(profile.avatar_url || "");
       setEditBackgroundUrl(profile.background_url || "");
+      setEditInstagramUrl(profile.instagram_url || "");
+      setEditYoutubeUrl(profile.youtube_url || "");
+      setEditMusicLinks(profile.music_links || "");
     }
   }, [user, profile]);
 
