@@ -95,6 +95,17 @@ export default function Dashboard() {
 
   const handleSaveProfile = async () => {
     if (!user) return;
+
+    // Validate required fields
+    if (!djName.trim()) {
+      toast({
+        title: "Campo obrigatório",
+        description: "Nome Artístico é obrigatório.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -102,23 +113,30 @@ export default function Dashboard() {
         .from("profiles")
         .upsert({
           id: user.id,
-          dj_name: djName,
-          bio,
-          city,
-          avatar_url: avatarUrl,
-          background_url: backgroundUrl,
+          dj_name: djName.trim(),
+          bio: bio.trim(),
+          city: city.trim(),
+          avatar_url: avatarUrl.trim(),
+          background_url: backgroundUrl.trim(),
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase save error:", error);
+        throw new Error(error.message || "Erro ao salvar perfil");
+      }
+
+      // Refetch the profile to ensure UI is in sync
+      await fetchProfile();
 
       toast({
         title: "Perfil salvo! ✅",
         description: "Suas alterações foram salvas com sucesso.",
       });
     } catch (err: any) {
+      console.error("Error in handleSaveProfile:", err);
       toast({
         title: "Erro ao salvar",
-        description: err.message || "Tente novamente.",
+        description: err.message || "Tente novamente mais tarde.",
         variant: "destructive",
       });
     } finally {
