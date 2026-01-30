@@ -1,5 +1,3 @@
-import { Music } from "lucide-react";
-
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden" style={{ paddingTop: "80px", display: "flex", flexDirection: "column" }}>
