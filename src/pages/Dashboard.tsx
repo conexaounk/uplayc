@@ -38,6 +38,7 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<DJProfile | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savedSuccessfully, setSavedSuccessfully] = useState(false);
 
   // Form state
   const [djName, setDjName] = useState("");
@@ -58,9 +59,20 @@ export default function Dashboard() {
     }
   }, [user]);
 
+  // Reset success message after 5 seconds and redirect to profile
+  useEffect(() => {
+    if (savedSuccessfully && djName) {
+      const timer = setTimeout(() => {
+        navigate(`/dj/${encodeURIComponent(djName)}`);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [savedSuccessfully, djName, navigate]);
+
   const fetchProfile = async () => {
     if (!user) return;
 
+    setLoadingProfile(true);
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -68,15 +80,27 @@ export default function Dashboard() {
         .eq("id", user.id)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase Error fetching profile:", error);
+        throw new Error(error.message || "Erro ao carregar perfil");
+      }
 
       if (data) {
+        console.log("Profile loaded:", data);
         setProfile(data);
         setDjName(data.dj_name || "");
         setBio(data.bio || "");
         setCity(data.city || "");
         setAvatarUrl(data.avatar_url || "");
         setBackgroundUrl(data.background_url || "");
+      } else {
+        console.log("No profile data found, creating a new one");
+        setProfile(null);
+        setDjName("");
+        setBio("");
+        setCity("");
+        setAvatarUrl("");
+        setBackgroundUrl("");
       }
     } catch (err) {
       console.error("Error fetching profile:", err);
@@ -87,6 +111,17 @@ export default function Dashboard() {
 
   const handleSaveProfile = async () => {
     if (!user) return;
+
+    // Validate required fields
+    if (!djName.trim()) {
+      toast({
+        title: "Campo obrigatório",
+        description: "Nome Artístico é obrigatório.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -94,23 +129,31 @@ export default function Dashboard() {
         .from("profiles")
         .upsert({
           id: user.id,
-          dj_name: djName,
-          bio,
-          city,
-          avatar_url: avatarUrl,
-          background_url: backgroundUrl,
+          dj_name: djName.trim(),
+          bio: bio.trim(),
+          city: city.trim(),
+          avatar_url: avatarUrl.trim(),
+          background_url: backgroundUrl.trim(),
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase save error:", error);
+        throw new Error(error.message || "Erro ao salvar perfil");
+      }
 
+      // Refetch the profile to ensure UI is in sync
+      await fetchProfile();
+
+      setSavedSuccessfully(true);
       toast({
         title: "Perfil salvo! ✅",
         description: "Suas alterações foram salvas com sucesso.",
       });
     } catch (err: any) {
+      console.error("Error in handleSaveProfile:", err);
       toast({
         title: "Erro ao salvar",
-        description: err.message || "Tente novamente.",
+        description: err.message || "Tente novamente mais tarde.",
         variant: "destructive",
       });
     } finally {
@@ -228,7 +271,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-6 flex justify-end gap-3">
               <Button
                 onClick={handleSaveProfile}
                 disabled={saving}
@@ -242,6 +285,27 @@ export default function Dashboard() {
                 Salvar Perfil
               </Button>
             </div>
+
+            {/* Success Preview */}
+            {savedSuccessfully && profile && (
+              <div className="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/30 animate-fade-in">
+                <div className="flex items-start gap-4">
+                  {avatarUrl && (
+                    <img
+                      src={avatarUrl}
+                      alt={djName}
+                      className="w-16 h-16 rounded-lg object-cover"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg">{djName}</h3>
+                    {city && <p className="text-sm text-muted-foreground">📍 {city}</p>}
+                    {bio && <p className="text-sm mt-2 line-clamp-2">{bio}</p>}
+                    <p className="text-xs text-green-400 mt-2">✓ Perfil atualizado com sucesso! Redirecionando em 3 segundos...</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Music Upload Section */}

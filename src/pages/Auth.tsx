@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,9 +23,21 @@ export default function Auth() {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate("/dashboard");
+      redirectToProfile();
     }
-  }, [user, loading, navigate]);
+  }, [user, loading]);
+
+  const redirectToProfile = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("dj_name")
+      .eq("id", user?.id)
+      .maybeSingle();
+
+    if (data?.dj_name) {
+      navigate(`/dj/${encodeURIComponent(data.dj_name)}`);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,15 +216,15 @@ export default function Auth() {
                 onClick={() => setMode(mode === "login" ? "signup" : "login")}
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
-                {mode === "login"
-                  ? "Não tem conta? Cadastre-se"
-                  : "Já tem conta? Faça login"}
+                <p>
+                  <br />
+                </p>
               </button>
             </div>
           </div>
 
           <p className="text-center text-xs text-muted-foreground mt-4">
-            Ao continuar, você concorda com nossos termos de uso.
+            <br />
           </p>
         </div>
       </div>

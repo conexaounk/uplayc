@@ -15,7 +15,7 @@ export function Header({ cartItemsCount, onCartClick, onLogoClick }: HeaderProps
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between" style={{ marginTop: "13px" }}>
         {/* Logo */}
         <button 
           onClick={onLogoClick}
@@ -27,15 +27,12 @@ export function Header({ cartItemsCount, onCartClick, onLogoClick }: HeaderProps
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6">
-          <button 
+          <button
             onClick={onLogoClick}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             Explorar
           </button>
-          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-            Gêneros
-          </a>
           <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
             DJs
           </a>
@@ -46,7 +43,7 @@ export function Header({ cartItemsCount, onCartClick, onLogoClick }: HeaderProps
           <Link to="/auth">
             <Button variant="ghost" size="sm" className="gap-2">
               <LogIn className="h-4 w-4" />
-              <span className="hidden sm:inline">Login DJ</span>
+              <span className="hidden sm:inline"><p>Login </p></span>
             </Button>
           </Link>
           
@@ -79,7 +76,7 @@ export function Header({ cartItemsCount, onCartClick, onLogoClick }: HeaderProps
       {mobileMenuOpen && (
         <div className="md:hidden glass-card border-t border-border/50 animate-fade-in">
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-3">
-            <button 
+            <button
               onClick={() => {
                 onLogoClick();
                 setMobileMenuOpen(false);
@@ -88,9 +85,6 @@ export function Header({ cartItemsCount, onCartClick, onLogoClick }: HeaderProps
             >
               Explorar
             </button>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors py-2">
-              Gêneros
-            </a>
             <a href="#" className="text-muted-foreground hover:text-foreground transition-colors py-2">
               DJs
             </a>
