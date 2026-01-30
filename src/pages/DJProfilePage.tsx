@@ -59,6 +59,13 @@ export default function DJProfilePage() {
     }
   }, [djName]);
 
+  const fetchPacks = async (djId: string) => {
+    setPacksLoading(true);
+    const packsData = await getPacks(djId);
+    setPacks(packsData);
+    setPacksLoading(false);
+  };
+
   useEffect(() => {
     // Check if this is the logged-in user's profile
     if (user && profile) {
