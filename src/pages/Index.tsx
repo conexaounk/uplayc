@@ -1,22 +1,21 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { SearchFilters } from "@/components/SearchFilters";
 import { DJGrid } from "@/components/DJGrid";
-import { DJProfilePage } from "@/components/DJProfilePage";
 import { CartSidebar } from "@/components/CartSidebar";
 import { CheckoutModal } from "@/components/CheckoutModal";
 import { PackDetailsModal } from "@/components/PackDetailsModal";
-import { mockDJs } from "@/data/mockData";
-import { DJ, Pack, CartItem } from "@/types";
+import { useDJs } from "@/hooks/useDJs";
+import { Pack, CartItem } from "@/types";
 import { toast } from "@/hooks/use-toast";
 
-type Page = "home" | "dj-profile";
+type Page = "home";
 
 const Index = () => {
-  // Navigation state
-  const [currentPage, setCurrentPage] = useState<Page>("home");
-  const [selectedDJ, setSelectedDJ] = useState<DJ | null>(null);
+  const navigate = useNavigate();
+  const { djs, loading } = useDJs();
   
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState("");
