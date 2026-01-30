@@ -1,0 +1,185 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Disc3, ArrowLeft, Instagram, Youtube, Share2 } from "lucide-react";
+import logoImage from "@/assets/logo.png";
+
+interface DJProfile {
+  id: string;
+  dj_name: string;
+  bio: string | null;
+  avatar_url: string | null;
+  city: string | null;
+  background_url: string | null;
+}
+
+export default function DJProfilePage() {
+  const navigate = useNavigate();
+  const { djName } = useParams<{ djName: string }>();
+  const [profile, setProfile] = useState<DJProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (djName) {
+      fetchProfile();
+    }
+  }, [djName]);
+
+  const fetchProfile = async () => {
+    if (!djName) return;
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .ilike("dj_name", djName)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error fetching DJ profile:", error);
+        setError("Perfil não encontrado");
+        return;
+      }
+
+      if (data) {
+        setProfile(data);
+      } else {
+        setError("DJ não encontrado");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setError("Erro ao carregar perfil");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Disc3 className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !profile) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <div className="text-center">
+          <p className="text-2xl font-bold mb-4">😕</p>
+          <h1 className="text-2xl font-bold mb-2">{error || "Perfil não encontrado"}</h1>
+          <p className="text-muted-foreground mb-6">Verifique o nome do DJ e tente novamente</p>
+          <Button onClick={() => navigate("/")} className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Voltar para Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/50">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <button 
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            <img src={logoImage} alt="Uplay Logo" className="w-10 h-10 rounded-xl object-cover" />
+            <span className="text-xl font-bold neon-text">Uplay</span>
+          </button>
+
+          <Button 
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/")}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Voltar</span>
+          </Button>
+        </div>
+      </header>
+
+      {/* Profile Background */}
+      {profile.background_url && (
+        <div 
+          className="h-48 sm:h-64 bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${profile.background_url})`,
+          }}
+        />
+      )}
+
+      {/* Profile Content */}
+      <main className="container mx-auto px-4 pb-12">
+        <div className="relative max-w-2xl mx-auto">
+          {/* Profile Card */}
+          <div className="glass-card rounded-2xl border border-border/50 p-6 sm:p-8 -mt-24 relative z-10 mb-8">
+            <div className="flex flex-col sm:flex-row gap-6 items-start">
+              {/* Avatar */}
+              {profile.avatar_url && (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.dj_name}
+                  className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl object-cover flex-shrink-0 border-4 border-primary/20"
+                />
+              )}
+
+              {/* Info */}
+              <div className="flex-1">
+                <h1 className="text-3xl sm:text-4xl font-bold mb-2">{profile.dj_name}</h1>
+                
+                {profile.city && (
+                  <p className="text-lg text-muted-foreground mb-4">
+                    📍 {profile.city}
+                  </p>
+                )}
+
+                {profile.bio && (
+                  <p className="text-base text-muted-foreground leading-relaxed mb-6">
+                    {profile.bio}
+                  </p>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap gap-3">
+                  <Button className="gap-2 bg-gradient-to-r from-primary to-secondary">
+                    <Share2 className="h-4 w-4" />
+                    Compartilhar
+                  </Button>
+                  <Button variant="outline" className="gap-2">
+                    <Instagram className="h-4 w-4" />
+                    <span className="hidden sm:inline">Instagram</span>
+                  </Button>
+                  <Button variant="outline" className="gap-2">
+                    <Youtube className="h-4 w-4" />
+                    <span className="hidden sm:inline">YouTube</span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Packs Section */}
+          <div className="glass-card rounded-2xl border border-border/50 p-6 sm:p-8">
+            <h2 className="text-2xl font-bold mb-6">
+              Packs de <span className="neon-text">{profile.dj_name}</span>
+            </h2>
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-4">Em breve novos packs estarão disponíveis!</p>
+              <Button variant="outline" disabled>
+                Packs em desenvolvimento
+              </Button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
