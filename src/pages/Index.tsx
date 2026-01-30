@@ -46,11 +46,6 @@ const Index = () => {
     navigate(`/dj/${encodeURIComponent(djName)}`);
   };
 
-  const handlePackClick = (pack: Pack) => {
-    setSelectedPack(pack);
-    setIsPackModalOpen(true);
-  };
-
   const handleAddToCart = (pack: Pack, djName: string) => {
     if (cartItemIds.includes(pack.id)) {
       toast({
