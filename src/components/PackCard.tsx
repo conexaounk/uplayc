@@ -1,7 +1,8 @@
 import { Pack } from "@/hooks/usePacks";
 import { Button } from "@/components/ui/button";
-import { Download, Heart, Share2, Music2, Trash2 } from "lucide-react";
+import { Download, Heart, Share2, Music2, Trash2, Lock } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface PackCardProps {
   pack: Pack;
