@@ -300,8 +300,8 @@ export default function Dashboard() {
                   <div className="flex-1">
                     <h3 className="font-bold text-lg">{djName}</h3>
                     {city && <p className="text-sm text-muted-foreground">📍 {city}</p>}
-                    {bio && <p className="text-sm mt-2">{bio}</p>}
-                    <p className="text-xs text-green-400 mt-2">✓ Perfil atualizado com sucesso!</p>
+                    {bio && <p className="text-sm mt-2 line-clamp-2">{bio}</p>}
+                    <p className="text-xs text-green-400 mt-2">✓ Perfil atualizado com sucesso! Redirecionando em 3 segundos...</p>
                   </div>
                 </div>
               </div>
