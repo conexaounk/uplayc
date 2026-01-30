@@ -12,6 +12,7 @@ import PackCard from "@/components/PackCard";
 import AddPackModal from "@/components/AddPackModal";
 import AddTrackModal from "@/components/AddTrackModal";
 import logoImage from "@/assets/logo.png";
+import { getStorageUrl } from "@/lib/storageUtils";
 
 interface DJProfile {
   id: string;
@@ -206,7 +207,7 @@ export default function DJProfilePage() {
         <div
           className="bg-cover bg-center"
           style={{
-            backgroundImage: `url(${profile.background_url})`,
+            backgroundImage: `url(${getStorageUrl(profile.background_url)})`,
             height: "448px",
             paddingTop: "81px",
             margin: "3px 0 -1px",
@@ -223,10 +224,14 @@ export default function DJProfilePage() {
               {/* Avatar */}
               {profile.avatar_url && (
                 <img
-                  src={profile.avatar_url}
+                  src={getStorageUrl(profile.avatar_url)}
                   alt={profile.dj_name}
                   className="rounded-2xl object-cover flex-shrink-0 border-4 border-primary/20"
                   style={{height: "211px", width: "202px"}}
+                  onError={(e) => {
+                    console.error("Avatar image failed to load:", profile.avatar_url);
+                    e.currentTarget.style.display = "none";
+                  }}
                 />
               )}
 

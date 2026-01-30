@@ -1,66 +1,41 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { SearchFilters } from "@/components/SearchFilters";
 import { DJGrid } from "@/components/DJGrid";
-import { DJProfilePage } from "@/components/DJProfilePage";
 import { CartSidebar } from "@/components/CartSidebar";
 import { CheckoutModal } from "@/components/CheckoutModal";
-import { PackDetailsModal } from "@/components/PackDetailsModal";
-import { mockDJs } from "@/data/mockData";
-import { DJ, Pack, CartItem } from "@/types";
+import { useDJs } from "@/hooks/useDJs";
+import { Pack, CartItem } from "@/types";
 import { toast } from "@/hooks/use-toast";
 
-type Page = "home" | "dj-profile";
+type Page = "home";
 
 const Index = () => {
-  // Navigation state
-  const [currentPage, setCurrentPage] = useState<Page>("home");
-  const [selectedDJ, setSelectedDJ] = useState<DJ | null>(null);
-  
+  const navigate = useNavigate();
+
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("Todos");
-  
+
+  const { djs, loading } = useDJs(searchQuery);
+
   // Cart state
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  
+
   // Modal state
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
   const [isPackModalOpen, setIsPackModalOpen] = useState(false);
 
-  // Filter DJs
-  const filteredDJs = useMemo(() => {
-    return mockDJs.filter((dj) => {
-      const matchesSearch = 
-        dj.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        dj.packs.some((pack) => pack.name.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesGenre = selectedGenre === "Todos" || dj.genre === selectedGenre;
-      
-      return matchesSearch && matchesGenre;
-    });
-  }, [searchQuery, selectedGenre]);
-
   // Cart item IDs for quick lookup
-  const cartItemIds = useMemo(() => cartItems.map((item) => item.pack.id), [cartItems]);
+  const cartItemIds = cartItems.map((item) => item.pack.id);
 
   // Handlers
-  const handleDJClick = (dj: DJ) => {
-    setSelectedDJ(dj);
-    setCurrentPage("dj-profile");
-  };
-
-  const handleBackToHome = () => {
-    setCurrentPage("home");
-    setSelectedDJ(null);
-  };
-
-  const handlePackClick = (pack: Pack) => {
-    setSelectedPack(pack);
-    setIsPackModalOpen(true);
+  const handleDJClick = (djName: string) => {
+    navigate(`/dj/${encodeURIComponent(djName)}`);
   };
 
   const handleAddToCart = (pack: Pack, djName: string) => {
@@ -104,35 +79,27 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header 
+      <Header
         cartItemsCount={cartItems.length}
         onCartClick={() => setIsCartOpen(true)}
-        onLogoClick={handleBackToHome}
+        onLogoClick={() => navigate("/")}
       />
 
-      {currentPage === "home" ? (
-        <>
-          <HeroSection />
-          <SearchFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedGenre={selectedGenre}
-            onGenreChange={setSelectedGenre}
-          />
-          <DJGrid 
-            djs={filteredDJs} 
-            onDJClick={handleDJClick} 
-          />
-        </>
-      ) : selectedDJ ? (
-        <DJProfilePage
-          dj={selectedDJ}
-          onBack={handleBackToHome}
-          onPackClick={handlePackClick}
-          onAddToCart={(pack) => handleAddToCart(pack, selectedDJ.name)}
-          cartItems={cartItemIds}
+      <>
+        <HeroSection />
+        <SearchFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedGenre={selectedGenre}
+          onGenreChange={setSelectedGenre}
         />
-      ) : null}
+        {searchQuery && (
+          <DJGrid
+            djs={djs}
+            onDJClick={handleDJClick}
+          />
+        )}
+      </>
 
       {/* Cart Sidebar */}
       <CartSidebar
@@ -151,19 +118,6 @@ const Index = () => {
         onConfirm={handleConfirmCheckout}
       />
 
-      {/* Pack Details Modal */}
-      <PackDetailsModal
-        pack={selectedPack}
-        djName={selectedDJ?.name || ""}
-        isOpen={isPackModalOpen}
-        onClose={() => setIsPackModalOpen(false)}
-        onAddToCart={() => {
-          if (selectedPack && selectedDJ) {
-            handleAddToCart(selectedPack, selectedDJ.name);
-          }
-        }}
-        isInCart={selectedPack ? cartItemIds.includes(selectedPack.id) : false}
-      />
     </div>
   );
 };

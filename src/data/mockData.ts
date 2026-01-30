@@ -1,7 +1,3 @@
-import { DJ } from "@/types";
-
-export const mockDJs: DJ[] = [];
-
 export const genres = [
   "Todos",
   "Tech House",
