@@ -145,11 +145,12 @@ export default function AddPackModal({
 
       const result = await response.json();
 
-      if (!result.url) {
+      const publicUrl = result.publicUrl || result.url;
+      if (!publicUrl) {
         throw new Error("URL não retornada pelo servidor");
       }
 
-      return { url: result.url, r2Key };
+      return { url: publicUrl, r2Key: result.r2_key || r2Key };
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro no upload";
       toast.error(message);
