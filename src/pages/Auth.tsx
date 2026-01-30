@@ -22,7 +22,17 @@ export default function Auth() {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate("/dashboard");
+      // Redirect to user's profile after successful auth
+      // We'll fetch the DJ name from the profile
+      const redirectToProfile = async () => {
+        const { data } = await import("@/integrations/supabase/client").then(m => m.supabase.from("profiles").select("dj_name").eq("id", user.id).maybeSingle());
+        if (data?.dj_name) {
+          navigate(`/dj/${encodeURIComponent(data.dj_name)}`);
+        } else {
+          navigate("/dashboard");
+        }
+      };
+      redirectToProfile();
     }
   }, [user, loading, navigate]);
 
