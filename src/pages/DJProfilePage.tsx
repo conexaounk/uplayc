@@ -317,15 +317,81 @@ export default function DJProfilePage() {
 
           {/* Packs Section */}
           <div className="glass-card rounded-2xl border border-border/50 p-6 sm:p-8">
-            <h2 className="text-2xl font-bold mb-6">
-              Packs de <span className="neon-text">{profile.dj_name}</span>
-            </h2>
-            <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">Em breve novos packs estarão disponíveis!</p>
-              <Button variant="outline" disabled>
-                Packs em desenvolvimento
-              </Button>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">
+                Packs de <span className="neon-text">{profile.dj_name}</span>
+              </h2>
+              {isOwnProfile && (
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setSelectedPackId(null);
+                    setShowAddTrackModal(false);
+                    setShowAddPackModal(true);
+                  }}
+                  className="gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Novo Pack
+                </Button>
+              )}
             </div>
+
+            {packsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Disc3 className="w-8 h-8 text-primary animate-spin" />
+              </div>
+            ) : packs.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground mb-4">
+                  {isOwnProfile ? "Crie seu primeiro pack!" : "Nenhum pack disponível ainda"}
+                </p>
+                {isOwnProfile && (
+                  <Button
+                    onClick={() => setShowAddPackModal(true)}
+                    className="gap-2 bg-gradient-to-r from-primary to-secondary"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Criar Pack
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {packs.map((pack) => (
+                  <div key={pack.id}>
+                    <PackCard
+                      pack={pack}
+                      isOwner={isOwnProfile}
+                      onDelete={async (packId) => {
+                        const success = await deletePack(packId);
+                        if (success) {
+                          setPacks(packs.filter((p) => p.id !== packId));
+                        }
+                      }}
+                      onDownload={(pack) => {
+                        // Implementar download later
+                        console.log("Download pack:", pack);
+                      }}
+                    />
+                    {isOwnProfile && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full mt-3 gap-2"
+                        onClick={() => {
+                          setSelectedPackId(pack.id);
+                          setShowAddTrackModal(true);
+                        }}
+                      >
+                        <Plus className="h-4 w-4" />
+                        Adicionar Track
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>
