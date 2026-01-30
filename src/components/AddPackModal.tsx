@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { X, Disc3 } from "lucide-react";
+import { X, Disc3, Upload, Image as ImageIcon } from "lucide-react";
 import { usePacks } from "@/hooks/usePacks";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface AddPackModalProps {
   djId: string;
@@ -21,12 +23,15 @@ export default function AddPackModal({
 }: AddPackModalProps) {
   const { createPack, loading } = usePacks();
   const [isFree, setIsFree] = useState(true);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: 0,
     genre: "",
-    cover_url: "",
+    download_link: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
