@@ -196,6 +196,46 @@ export default function AddPackModal({
             </select>
           </div>
 
+          {/* Cover Image Upload */}
+          <div className="space-y-2">
+            <Label>Capa do Pack</Label>
+            {!coverPreview ? (
+              <label htmlFor="coverInput" className="block">
+                <input
+                  id="coverInput"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverChange}
+                  className="hidden"
+                />
+                <div className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition">
+                  <ImageIcon className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm font-medium">Clique para selecionar imagem</p>
+                  <p className="text-xs text-muted-foreground mt-1">JPG ou PNG</p>
+                </div>
+              </label>
+            ) : (
+              <div className="space-y-2">
+                <img
+                  src={coverPreview}
+                  alt="Preview"
+                  className="w-full h-32 object-cover rounded-lg border border-border"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setCoverFile(null);
+                    setCoverPreview(null);
+                  }}
+                >
+                  Trocar imagem
+                </Button>
+              </div>
+            )}
+          </div>
+
           {/* Free or Paid Toggle */}
           <div className="space-y-2">
             <Label>Tipo de Pack</Label>
@@ -243,18 +283,22 @@ export default function AddPackModal({
             </div>
           )}
 
-          {/* Cover URL (optional) */}
+          {/* Download Link */}
           <div className="space-y-2">
-            <Label htmlFor="coverUrl">URL da Capa</Label>
+            <Label htmlFor="downloadLink">Link de Download</Label>
             <Input
-              id="coverUrl"
+              id="downloadLink"
               type="url"
-              placeholder="https://..."
-              value={formData.cover_url}
+              placeholder="https://drive.google.com/... ou outro link"
+              value={formData.download_link}
               onChange={(e) =>
-                setFormData({ ...formData, cover_url: e.target.value })
+                setFormData({ ...formData, download_link: e.target.value })
               }
+              helperText="Link que será disponibilizado para quem comprar"
             />
+            <p className="text-xs text-muted-foreground">
+              Link para downloads (Google Drive, Dropbox, etc)
+            </p>
           </div>
 
           {/* Submit Buttons */}
@@ -264,16 +308,16 @@ export default function AddPackModal({
               variant="outline"
               onClick={onClose}
               className="flex-1"
-              disabled={loading}
+              disabled={loading || isUploadingCover}
             >
               Cancelar
             </Button>
             <Button
               type="submit"
-              disabled={!formData.name.trim() || loading}
+              disabled={!formData.name.trim() || loading || isUploadingCover}
               className="flex-1 bg-gradient-to-r from-primary to-secondary"
             >
-              {loading ? (
+              {loading || isUploadingCover ? (
                 <Disc3 className="h-4 w-4 animate-spin" />
               ) : (
                 "Criar Pack"
