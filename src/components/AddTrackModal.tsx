@@ -119,8 +119,8 @@ export default function AddTrackModal({
         return;
       }
 
-      // Upload arquivo para R2
-      const uploadResult = await uploadToR2(audioFile);
+      // Upload arquivo para Cloudflare
+      const uploadResult = await uploadToCloudflare(audioFile);
       if (!uploadResult) {
         return;
       }
