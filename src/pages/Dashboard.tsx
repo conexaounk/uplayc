@@ -38,6 +38,7 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<DJProfile | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savedSuccessfully, setSavedSuccessfully] = useState(false);
 
   // Form state
   const [djName, setDjName] = useState("");
