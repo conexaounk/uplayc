@@ -103,27 +103,42 @@ export default function AddTrackModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!audioFile) {
-      toast.error("Selecione um arquivo de áudio");
-      return;
-    }
-
     if (!formData.name.trim()) {
       toast.error("Digite o nome da track");
       return;
     }
 
-    // Upload arquivo para R2
-    const uploadResult = await uploadToR2(audioFile);
-    if (!uploadResult) {
-      return;
+    let fileUrl: string;
+    let r2Key: string | null = null;
+
+    if (mode === "file") {
+      if (!audioFile) {
+        toast.error("Selecione um arquivo de áudio");
+        return;
+      }
+
+      // Upload arquivo para R2
+      const uploadResult = await uploadToR2(audioFile);
+      if (!uploadResult) {
+        return;
+      }
+
+      fileUrl = uploadResult.url;
+      r2Key = uploadResult.r2Key;
+    } else {
+      if (!formData.fileUrl.trim()) {
+        toast.error("Cole o URL da música");
+        return;
+      }
+
+      fileUrl = formData.fileUrl.trim();
     }
 
     // Registrar track no Supabase
     const track = await addTrack(packId, djId, {
       name: formData.name,
-      file_url: uploadResult.url,
-      r2_key: uploadResult.r2Key,
+      file_url: fileUrl,
+      r2_key: r2Key || undefined,
       bpm: formData.bpm ? parseInt(formData.bpm) : undefined,
       genre: formData.genre || undefined,
       is_preview: formData.is_preview,
@@ -133,6 +148,7 @@ export default function AddTrackModal({
       setAudioFile(null);
       setFormData({
         name: "",
+        fileUrl: "",
         bpm: "",
         genre: "",
         is_preview: false,
