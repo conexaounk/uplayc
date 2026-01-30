@@ -22,11 +22,13 @@ export default function AddTrackModal({
   onTrackAdded,
 }: AddTrackModalProps) {
   const { addTrack, loading } = usePacks();
+  const [mode, setMode] = useState<"file" | "link">("file");
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
+    fileUrl: "",
     bpm: "",
     genre: "",
     is_preview: false,
