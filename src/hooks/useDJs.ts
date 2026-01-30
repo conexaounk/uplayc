@@ -15,22 +15,22 @@ export interface DJProfile {
   updated_at?: string;
 }
 
-export function useDJs() {
+export function useDJs(searchQuery?: string) {
   const [djs, setDJs] = useState<DJProfile[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchDJs = async (searchQuery?: string) => {
+  const fetchDJs = async (query?: string) => {
     setLoading(true);
     setError(null);
     try {
-      let query = supabase.from("profiles").select("*");
+      let supabaseQuery = supabase.from("profiles").select("*");
 
-      if (searchQuery && searchQuery.trim()) {
-        query = query.ilike("dj_name", `%${searchQuery}%`);
+      if (query && query.trim()) {
+        supabaseQuery = supabaseQuery.ilike("dj_name", `%${query}%`);
       }
 
-      const { data, error: err } = await query;
+      const { data, error: err } = await supabaseQuery;
 
       if (err) {
         console.error("Error fetching DJs:", err);
@@ -50,8 +50,12 @@ export function useDJs() {
   };
 
   useEffect(() => {
-    fetchDJs();
-  }, []);
+    if (searchQuery && searchQuery.trim()) {
+      fetchDJs(searchQuery);
+    } else {
+      setDJs([]);
+    }
+  }, [searchQuery]);
 
   return {
     djs,
