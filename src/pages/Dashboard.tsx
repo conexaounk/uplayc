@@ -59,13 +59,15 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  // Reset success message after 5 seconds
+  // Reset success message after 5 seconds and redirect to profile
   useEffect(() => {
-    if (savedSuccessfully) {
-      const timer = setTimeout(() => setSavedSuccessfully(false), 5000);
+    if (savedSuccessfully && djName) {
+      const timer = setTimeout(() => {
+        navigate(`/dj/${encodeURIComponent(djName)}`);
+      }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [savedSuccessfully]);
+  }, [savedSuccessfully, djName, navigate]);
 
   const fetchProfile = async () => {
     if (!user) return;
