@@ -124,19 +124,6 @@ const Index = () => {
         onConfirm={handleConfirmCheckout}
       />
 
-      {/* Pack Details Modal */}
-      <PackDetailsModal
-        pack={selectedPack}
-        djName={selectedDJ?.name || ""}
-        isOpen={isPackModalOpen}
-        onClose={() => setIsPackModalOpen(false)}
-        onAddToCart={() => {
-          if (selectedPack && selectedDJ) {
-            handleAddToCart(selectedPack, selectedDJ.name);
-          }
-        }}
-        isInCart={selectedPack ? cartItemIds.includes(selectedPack.id) : false}
-      />
     </div>
   );
 };
