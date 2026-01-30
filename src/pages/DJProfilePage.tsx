@@ -286,6 +286,130 @@ export default function DJProfilePage() {
           </div>
         </div>
       </main>
+
+      {/* Edit Profile Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl border border-border/50 p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Editar Perfil</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="p-2 hover:bg-background rounded-lg transition"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="editDjName">Nome Artístico</Label>
+                <Input
+                  id="editDjName"
+                  value={editDjName}
+                  onChange={(e) => setEditDjName(e.target.value)}
+                  placeholder="DJ Seu Nome"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="editCity">Cidade</Label>
+                <Input
+                  id="editCity"
+                  value={editCity}
+                  onChange={(e) => setEditCity(e.target.value)}
+                  placeholder="São Paulo, SP"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="editBio">Bio</Label>
+                <Textarea
+                  id="editBio"
+                  value={editBio}
+                  onChange={(e) => setEditBio(e.target.value)}
+                  placeholder="Conte um pouco sobre você..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="editAvatarUrl">URL do Avatar</Label>
+                <Input
+                  id="editAvatarUrl"
+                  value={editAvatarUrl}
+                  onChange={(e) => setEditAvatarUrl(e.target.value)}
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="editBackgroundUrl">URL da Imagem de Fundo</Label>
+                <Input
+                  id="editBackgroundUrl"
+                  value={editBackgroundUrl}
+                  onChange={(e) => setEditBackgroundUrl(e.target.value)}
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={handleSaveProfile}
+                  disabled={isSaving}
+                  className="flex-1 bg-gradient-to-r from-primary to-secondary"
+                >
+                  {isSaving ? (
+                    <Disc3 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Salvar"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Pack/Track Modal */}
+      {showAddPackModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl border border-border/50 p-6 w-full max-w-md">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Adicionar Pack/Track</h2>
+              <button
+                onClick={() => setShowAddPackModal(false)}
+                className="p-2 hover:bg-background rounded-lg transition"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="text-center py-8">
+                <Plus className="h-12 w-12 text-primary mx-auto mb-4 opacity-50" />
+                <h3 className="text-lg font-bold mb-2">Funcionalidade em desenvolvimento</h3>
+                <p className="text-muted-foreground mb-4">
+                  Em breve você poderá adicionar packs e tracks diretamente do seu perfil.
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAddPackModal(false)}
+                >
+                  Fechar
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
