@@ -116,30 +116,49 @@ export default function PackCard({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onDownload?.(pack)}
-            className="flex-1 gap-2"
-          >
-            <Download className="w-4 h-4" />
-            Download
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-2"
-          >
-            <Heart className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-2"
-          >
-            <Share2 className="w-4 h-4" />
-          </Button>
+        <div className="flex flex-col gap-2 pt-2">
+          {pack.download_link ? (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => {
+                if (pack.download_link) {
+                  window.open(pack.download_link, "_blank");
+                  toast.success("Abrindo link de download...");
+                }
+              }}
+              className="flex-1 gap-2 bg-gradient-to-r from-primary to-secondary"
+            >
+              <Download className="w-4 h-4" />
+              Download
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled
+              className="flex-1 gap-2"
+            >
+              <Lock className="w-4 h-4" />
+              Sem Download
+            </Button>
+          )}
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex-1 gap-2"
+            >
+              <Heart className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex-1 gap-2"
+            >
+              <Share2 className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
