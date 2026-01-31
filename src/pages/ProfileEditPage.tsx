@@ -30,6 +30,7 @@ export default function ProfileEditPage() {
       dj_name: "",
       bio: "",
       city: "",
+      avatar_emoji: "",
     },
   });
 
@@ -40,6 +41,7 @@ export default function ProfileEditPage() {
         dj_name: myProfile.dj_name || "",
         bio: myProfile.bio || "",
         city: myProfile.city || "",
+        avatar_emoji: (myProfile as any).avatar_emoji || "",
       });
     }
   }, [myProfile, form]);
