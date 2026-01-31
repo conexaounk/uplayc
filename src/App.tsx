@@ -94,7 +94,10 @@ function Navbar() {
                 {user && <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
                     <span className="text-lg font-bold block py-2 border-b border-white/5">My Profile</span>
                   </Link>}
-                {!user && <Button onClick={login} className="mt-4">
+                {!user && <Button onClick={() => {
+                  setLocation("/login");
+                  setMobileMenuOpen(false);
+                }} className="mt-4">
                     Sign In
                   </Button>}
               </div>
