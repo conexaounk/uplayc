@@ -16,6 +16,7 @@ export default function ProfileViewPage() {
   const { data: myProfile, isLoading: profileLoading } = useDJ(user?.id || "");
   const { data: profileTrackIds = [], isLoading: profileTracksLoading } = useProfileTracks(user?.id);
   const { data: allUserTracks = [] } = useUserTracks(user?.id);
+  const { addItem, setIsOpen } = useCart();
   const [, setLocation] = useLocation();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [selectedTracks, setSelectedTracks] = useState<Set<string>>(new Set());
@@ -29,7 +30,7 @@ export default function ProfileViewPage() {
   );
 
   // Obter tracks selecionadas para o carrinho
-  const cartTracks = profileTracks.filter(track => selectedTracks.has(track.id));
+  const selectedTracksList = profileTracks.filter(track => selectedTracks.has(track.id));
 
   // Toggle track para carrinho
   const toggleTrackSelection = (trackId: string) => {
@@ -40,6 +41,23 @@ export default function ProfileViewPage() {
       newSelected.add(trackId);
     }
     setSelectedTracks(newSelected);
+  };
+
+  // Adicionar tracks selecionadas ao carrinho
+  const handleAddToCart = () => {
+    selectedTracksList.forEach(track => {
+      addItem({
+        id: track.id,
+        title: track.title,
+        price: "0", // Ajuste conforme necessário
+        coverImage: track.cover_url || "/placeholder.svg",
+        author: {
+          username: track.artist || "Unknown",
+        },
+      });
+    });
+    setSelectedTracks(new Set());
+    setIsOpen(true);
   };
 
   // Play/Pause preview
