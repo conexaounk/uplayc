@@ -161,7 +161,8 @@ export function useCreatePackOrder() {
           dj_id: data.djId,
           is_free: false,
           price: 99.9, // 10 tracks × R$ 9.99
-          color: data.packColor,
+          // Note: packColor is stored in the front-end and can be persisted
+          // via an orders/purchases table in a real implementation
         })
         .select()
         .single();
@@ -170,10 +171,14 @@ export function useCreatePackOrder() {
 
       // In a real implementation, you would also:
       // - Add the selected tracks to the pack
-      // - Create an order record for the purchase
-      // - Handle payment processing
+      // - Create an order record for the purchase with color and track selection
+      // - Handle payment processing with real payment gateway
+      // For now, we store the selection locally and can sync later
 
-      return newPack;
+      return {
+        ...newPack,
+        packColor: data.packColor, // Add color info to returned object
+      };
     },
     onSuccess: (pack) => {
       queryClient.invalidateQueries({ queryKey: ["packs"] });
