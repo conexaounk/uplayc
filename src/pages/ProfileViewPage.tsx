@@ -98,6 +98,21 @@ export default function ProfileViewPage() {
           )}
         </CardContent>
       </Card>
+
+      <Button
+        onClick={() => {
+          // Handle add track action
+        }}
+        size="lg"
+        className="w-full mt-6"
+        style={{
+          backgroundColor: "rgba(164, 36, 255, 0.01)",
+          boxShadow: "1px 1px 0 0 rgba(0, 0, 0, 1)",
+        }}
+      >
+        <Plus size={18} className="mr-2" />
+        Add Track
+      </Button>
     </div>
   );
 }
