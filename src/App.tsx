@@ -40,9 +40,6 @@ function Navbar() {
         {/* Logo */}
         <Link href="/">
           <div className="flex items-center gap-2 cursor-pointer">
-            <div className="w-8 h-8 rounded bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-bold text-black">
-              ​
-            </div>
             <span className="font-display font-bold text-xl tracking-tight hidden sm:block">
               U<span className="text-primary">​PLAYCE</span>
             </span>
