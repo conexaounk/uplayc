@@ -65,11 +65,13 @@ const GENRES = [
 
 export function UploadTrackModal({ open, onOpenChange }: UploadTrackModalProps) {
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState("upload");
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isDragActive, setIsDragActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [uploadStats, setUploadStats] = useState<UploadStats>({
     loaded: 0,
     total: 0,
@@ -78,6 +80,9 @@ export function UploadTrackModal({ open, onOpenChange }: UploadTrackModalProps) 
     percentage: 0,
   });
   const [uploadStartTime, setUploadStartTime] = useState<number | null>(null);
+
+  // Fetch available tracks
+  const { data: tracks = [], isLoading: tracksLoading } = useTracks(searchQuery || undefined);
 
   const form = useForm<MetadataForm>({
     resolver: zodResolver(metadataSchema),
