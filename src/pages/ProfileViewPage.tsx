@@ -3,7 +3,7 @@ import { useDJ } from "@/hooks/use-djs";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Edit } from "lucide-react";
+import { Loader2, Edit, Plus } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
 
 export default function ProfileViewPage() {
