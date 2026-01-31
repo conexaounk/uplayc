@@ -16,59 +16,56 @@ import HomePage from "@/pages/HomePage";
 import DJsPage from "@/pages/DJsPage";
 import ProfilePage from "@/pages/ProfilePage";
 import NotFound from "@/pages/not-found";
-
 function Navbar() {
-  const { setIsOpen, items } = useCart();
-  const { user, logout, login } = useAuth();
+  const {
+    setIsOpen,
+    items
+  } = useCart();
+  const {
+    user,
+    logout,
+    login
+  } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [location] = useLocation();
-
-  const navLinks = [
-    { href: "/", label: "Marketplace" },
-    { href: "/djs", label: "Artists" },
-  ];
-
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/5 h-16">
+  const navLinks = [{
+    href: "/",
+    label: "Marketplace"
+  }, {
+    href: "/djs",
+    label: "Artists"
+  }];
+  return <nav className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/5 h-16">
       <div className="container max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
         {/* Logo */}
         <Link href="/">
           <div className="flex items-center gap-2 cursor-pointer">
             <div className="w-8 h-8 rounded bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-bold text-black">
-              B
+              ​
             </div>
             <span className="font-display font-bold text-xl tracking-tight hidden sm:block">
-              BEAT<span className="text-primary">MARKET</span>
+              U<span className="text-primary">​PLAYCE</span>
             </span>
           </div>
         </Link>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link key={link.href} href={link.href}>
-              <span
-                className={`text-sm font-medium cursor-pointer transition-colors ${
-                  location === link.href ? "text-white" : "text-muted-foreground hover:text-white"
-                }`}
-              >
+          {navLinks.map(link => <Link key={link.href} href={link.href}>
+              <span className={`text-sm font-medium cursor-pointer transition-colors ${location === link.href ? "text-white" : "text-muted-foreground hover:text-white"}`}>
                 {link.label}
               </span>
-            </Link>
-          ))}
+            </Link>)}
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="relative hover:bg-white/10" onClick={() => setIsOpen(true)}>
             <ShoppingBag size={20} />
-            {items.length > 0 && (
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-secondary rounded-full border border-black" />
-            )}
+            {items.length > 0 && <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-secondary rounded-full border border-black" />}
           </Button>
 
-          {user ? (
-            <div className="flex items-center gap-2">
+          {user ? <div className="flex items-center gap-2">
               <Link href="/profile">
                 <Button variant="ghost" size="sm" className="hidden sm:flex items-center gap-2 hover:bg-white/10">
                   <User size={16} />
@@ -78,12 +75,9 @@ function Navbar() {
               <Button variant="ghost" size="icon" onClick={logout} title="Logout" className="hover:text-destructive">
                 <LogOut size={18} />
               </Button>
-            </div>
-          ) : (
-            <Button size="sm" onClick={login} className="bg-primary hover:bg-primary/90 text-white hidden sm:flex">
+            </div> : <Button size="sm" onClick={login} className="bg-primary hover:bg-primary/90 text-white hidden sm:flex">
               Sign In
-            </Button>
-          )}
+            </Button>}
 
           {/* Mobile Menu Trigger */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -94,44 +88,32 @@ function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="bg-card border-l border-white/10 pt-10">
               <div className="flex flex-col gap-4">
-                {navLinks.map((link) => (
-                  <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)}>
+                {navLinks.map(link => <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)}>
                     <span className="text-lg font-bold block py-2 border-b border-white/5">{link.label}</span>
-                  </Link>
-                ))}
-                {user && (
-                  <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
+                  </Link>)}
+                {user && <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
                     <span className="text-lg font-bold block py-2 border-b border-white/5">My Profile</span>
-                  </Link>
-                )}
-                {!user && (
-                  <Button onClick={login} className="mt-4">
+                  </Link>}
+                {!user && <Button onClick={login} className="mt-4">
                     Sign In
-                  </Button>
-                )}
+                  </Button>}
               </div>
             </SheetContent>
           </Sheet>
         </div>
       </div>
-    </nav>
-  );
+    </nav>;
 }
-
 function Router() {
-  return (
-    <Switch>
+  return <Switch>
       <Route path="/" component={HomePage} />
       <Route path="/djs" component={DJsPage} />
       <Route path="/profile" component={ProfilePage} />
       <Route component={NotFound} />
-    </Switch>
-  );
+    </Switch>;
 }
-
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
+  return <QueryClientProvider client={queryClient}>
       <CartProvider>
         <TooltipProvider>
           <div className="bg-background min-h-screen text-foreground font-body">
@@ -142,8 +124,6 @@ function App() {
           </div>
         </TooltipProvider>
       </CartProvider>
-    </QueryClientProvider>
-  );
+    </QueryClientProvider>;
 }
-
 export default App;
