@@ -23,22 +23,24 @@ export interface TrackFromDB1 {
 }
 
 const API_URL = import.meta.env.VITE_API_URL || "https://api.conexaounk.com";
-const DB_ID = "1072a4a8-9411-48fa-b855-68d53f57edf6";
 
 /**
- * Busca todas as tracks da tabela d1
+ * Busca todas as tracks da tabela d1 (D1 database)
  */
 export async function fetchTracksFromDB1(
   search?: string,
   isPublic: boolean = true
 ): Promise<TrackFromDB1[]> {
   try {
-    let url = `${API_URL}/d1/tracks?db=${DB_ID}&is_public=${isPublic}`;
-
+    const params = new URLSearchParams();
+    if (isPublic) {
+      params.append("public", "true");
+    }
     if (search) {
-      url += `&search=${encodeURIComponent(search)}`;
+      params.append("search", search);
     }
 
+    const url = `${API_URL}/tracks?${params.toString()}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -46,7 +48,7 @@ export async function fetchTracksFromDB1(
     }
 
     const data = await response.json();
-    return data as TrackFromDB1[];
+    return (data.tracks || data) as TrackFromDB1[];
   } catch (error) {
     console.error("Erro ao buscar tracks da API:", error);
     throw error;
@@ -58,8 +60,7 @@ export async function fetchTracksFromDB1(
  */
 export async function fetchTrackByIdFromDB1(trackId: string): Promise<TrackFromDB1> {
   try {
-    const url = `${API_URL}/d1/tracks/${trackId}?db=${DB_ID}`;
-
+    const url = `${API_URL}/tracks/${trackId}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -67,7 +68,7 @@ export async function fetchTrackByIdFromDB1(trackId: string): Promise<TrackFromD
     }
 
     const data = await response.json();
-    return data as TrackFromDB1;
+    return (data.track || data) as TrackFromDB1;
   } catch (error) {
     console.error("Erro ao buscar track da API:", error);
     throw error;
@@ -79,8 +80,7 @@ export async function fetchTrackByIdFromDB1(trackId: string): Promise<TrackFromD
  */
 export async function fetchUserTracksFromDB1(userId: string): Promise<TrackFromDB1[]> {
   try {
-    const url = `${API_URL}/d1/users/${userId}/tracks?db=${DB_ID}`;
-
+    const url = `${API_URL}/tracks?user_id=${encodeURIComponent(userId)}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -88,7 +88,7 @@ export async function fetchUserTracksFromDB1(userId: string): Promise<TrackFromD
     }
 
     const data = await response.json();
-    return data as TrackFromDB1[];
+    return (data.tracks || data) as TrackFromDB1[];
   } catch (error) {
     console.error("Erro ao buscar tracks do usuário:", error);
     throw error;
