@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/form";
 import { Upload, Music, X, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { uploadTrackComplete } from "@/lib/uploadService";
+import { useAuth } from "@/hooks/use-auth";
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 
