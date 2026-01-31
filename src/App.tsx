@@ -110,6 +110,7 @@ function Router() {
   return <Switch>
       <Route path="/" component={HomePage} />
       <Route path="/djs" component={DJsPage} />
+      <Route path="/djs/:id" component={DJProfilePage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/profile/edit" component={ProfileEditPage} />
       <Route path="/profile" component={ProfileViewPage} />
