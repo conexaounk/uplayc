@@ -6,10 +6,12 @@ export interface UploadOptions {
 
 export interface TrackMetadata {
   title: string;
-  artist: string;
+  artist: string; // Artist principal (always the user posting)
   genre: string;
   duration?: number;
   isPublic?: boolean;
+  userId: string; // Required: the user uploading the track
+  collaborations?: string; // Optional: collaborating artists
 }
 
 /**
