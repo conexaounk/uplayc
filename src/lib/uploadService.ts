@@ -40,8 +40,9 @@ export async function uploadTrackComplete(
     const { data: track, error } = await supabase.from("tracks").insert([
       {
         title: metadata.title,
-        artist: metadata.artist || null,
+        artist: metadata.artist, // Main artist is the user posting
         genre: metadata.genre,
+        user_id: metadata.userId, // Required: the user who posted the track
         duration: metadata.duration || 0,
         is_public: metadata.isPublic ?? true,
         audio_url: `${import.meta.env.VITE_R2_PUBLIC_URL}/${filename}`,
@@ -49,6 +50,7 @@ export async function uploadTrackComplete(
         // Additional fields from the tracks table schema
         price_cents: 0,
         is_exclusive: false,
+        bpm_confidence: 0.85,
       },
     ]).select();
 
