@@ -17,11 +17,62 @@ export default function ProfileViewPage() {
   const { data: allUserTracks = [] } = useUserTracks(user?.id);
   const [, setLocation] = useLocation();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [selectedTracks, setSelectedTracks] = useState<Set<string>>(new Set());
+  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentTime, setCurrentTime] = useState(0);
 
   // Filtrar apenas as tracks que foram adicionadas ao perfil
   const profileTracks = allUserTracks.filter(track =>
     profileTrackIds.some(pt => pt.track_id === track.id)
   );
+
+  // Obter tracks selecionadas para o carrinho
+  const cartTracks = profileTracks.filter(track => selectedTracks.has(track.id));
+
+  // Toggle track para carrinho
+  const toggleTrackSelection = (trackId: string) => {
+    const newSelected = new Set(selectedTracks);
+    if (newSelected.has(trackId)) {
+      newSelected.delete(trackId);
+    } else {
+      newSelected.add(trackId);
+    }
+    setSelectedTracks(newSelected);
+  };
+
+  // Play/Pause preview
+  const handlePlayPreview = (trackId: string, audioUrl: string) => {
+    if (playingTrackId === trackId && audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      setPlayingTrackId(null);
+    } else {
+      if (audioRef.current) {
+        audioRef.current.src = audioUrl;
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+        setPlayingTrackId(trackId);
+      }
+    }
+  };
+
+  // Parar quando terminar 30 segundos
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+      if (audio.currentTime >= 30) {
+        audio.pause();
+        audio.currentTime = 0;
+        setPlayingTrackId(null);
+      }
+    };
+
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    return () => audio.removeEventListener("timeupdate", handleTimeUpdate);
+  }, []);
 
   if (authLoading || profileLoading) {
     return (
