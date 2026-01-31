@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface UploadOptions {
   onProgress?: (progress: { loaded: number; total: number }) => void;
