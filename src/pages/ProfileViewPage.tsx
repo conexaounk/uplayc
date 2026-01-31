@@ -19,7 +19,6 @@ export default function ProfileViewPage() {
   const { addItem, setIsOpen } = useCart();
   const [, setLocation] = useLocation();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  const [selectedTracks, setSelectedTracks] = useState<Set<string>>(new Set());
   const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
@@ -29,35 +28,17 @@ export default function ProfileViewPage() {
     profileTrackIds.some(pt => pt.track_id === track.id)
   );
 
-  // Obter tracks selecionadas para o carrinho
-  const selectedTracksList = profileTracks.filter(track => selectedTracks.has(track.id));
-
-  // Toggle track para carrinho
-  const toggleTrackSelection = (trackId: string) => {
-    const newSelected = new Set(selectedTracks);
-    if (newSelected.has(trackId)) {
-      newSelected.delete(trackId);
-    } else {
-      newSelected.add(trackId);
-    }
-    setSelectedTracks(newSelected);
-  };
-
-  // Adicionar tracks selecionadas ao carrinho
-  const handleAddToCart = () => {
-    selectedTracksList.forEach(track => {
-      addItem({
-        id: track.id,
-        title: track.title,
-        price: "0", // Ajuste conforme necessário
-        coverImage: track.cover_url || "/placeholder.svg",
-        author: {
-          username: track.artist || "Unknown",
-        },
-      });
+  // Adicionar uma track ao carrinho
+  const handleAddTrackToCart = (track: typeof profileTracks[0]) => {
+    addItem({
+      id: track.id,
+      title: track.title,
+      price: "0", // Ajuste conforme necessário
+      coverImage: track.cover_url || "/placeholder.svg",
+      author: {
+        username: track.artist || "Unknown",
+      },
     });
-    setSelectedTracks(new Set());
-    setIsOpen(true);
   };
 
   // Play/Pause preview
