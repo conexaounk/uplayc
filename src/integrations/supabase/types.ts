@@ -249,6 +249,53 @@ export type Database = {
         }
         Relationships: []
       }
+      packs: {
+        Row: {
+          cover_url: string | null
+          created_at: string | null
+          description: string | null
+          dj_id: string
+          id: string
+          is_free: boolean | null
+          name: string
+          price: number | null
+          size_gb: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          cover_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          dj_id: string
+          id?: string
+          is_free?: boolean | null
+          name: string
+          price?: number | null
+          size_gb?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          cover_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          dj_id?: string
+          id?: string
+          is_free?: boolean | null
+          name?: string
+          price?: number | null
+          size_gb?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packs_dj_id_fkey"
+            columns: ["dj_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -284,6 +331,63 @@ export type Database = {
           user?: string | null
         }
         Relationships: []
+      }
+      tracks: {
+        Row: {
+          bpm: number | null
+          created_at: string | null
+          dj_id: string
+          duration: number | null
+          file_url: string | null
+          id: string
+          name: string
+          order_index: number | null
+          pack_id: string
+          preview_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bpm?: number | null
+          created_at?: string | null
+          dj_id: string
+          duration?: number | null
+          file_url?: string | null
+          id?: string
+          name: string
+          order_index?: number | null
+          pack_id: string
+          preview_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bpm?: number | null
+          created_at?: string | null
+          dj_id?: string
+          duration?: number | null
+          file_url?: string | null
+          id?: string
+          name?: string
+          order_index?: number | null
+          pack_id?: string
+          preview_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracks_dj_id_fkey"
+            columns: ["dj_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tracks_pack_id_fkey"
+            columns: ["pack_id"]
+            isOneToOne: false
+            referencedRelation: "packs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
