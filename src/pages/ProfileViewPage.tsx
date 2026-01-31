@@ -2,26 +2,77 @@ import { useAuth } from "@/hooks/use-auth";
 import { useDJ } from "@/hooks/use-djs";
 import { useProfileTracks } from "@/hooks/use-profile-tracks";
 import { useUserTracks } from "@/hooks/use-tracks";
+import { useCart } from "@/hooks/use-cart";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Edit, Plus, Music } from "lucide-react";
+import { Loader2, Edit, Plus, Music, Play, Pause, ShoppingCart } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
 import { UploadTrackModal } from "@/components/UploadTrackModal";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function ProfileViewPage() {
   const { user, isLoading: authLoading } = useAuth();
   const { data: myProfile, isLoading: profileLoading } = useDJ(user?.id || "");
   const { data: profileTrackIds = [], isLoading: profileTracksLoading } = useProfileTracks(user?.id);
   const { data: allUserTracks = [] } = useUserTracks(user?.id);
+  const { addItem, setIsOpen } = useCart();
   const [, setLocation] = useLocation();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentTime, setCurrentTime] = useState(0);
 
   // Filtrar apenas as tracks que foram adicionadas ao perfil
   const profileTracks = allUserTracks.filter(track =>
     profileTrackIds.some(pt => pt.track_id === track.id)
   );
+
+  // Adicionar uma track ao carrinho
+  const handleAddTrackToCart = (track: typeof profileTracks[0]) => {
+    addItem({
+      id: track.id,
+      title: track.title,
+      price: "0", // Ajuste conforme necessário
+      coverImage: track.cover_url || "/placeholder.svg",
+      author: {
+        username: track.artist || "Unknown",
+      },
+    });
+  };
+
+  // Play/Pause preview
+  const handlePlayPreview = (trackId: string, audioUrl: string) => {
+    if (playingTrackId === trackId && audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      setPlayingTrackId(null);
+    } else {
+      if (audioRef.current) {
+        audioRef.current.src = audioUrl;
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+        setPlayingTrackId(trackId);
+      }
+    }
+  };
+
+  // Parar quando terminar 30 segundos
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+      if (audio.currentTime >= 30) {
+        audio.pause();
+        audio.currentTime = 0;
+        setPlayingTrackId(null);
+      }
+    };
+
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    return () => audio.removeEventListener("timeupdate", handleTimeUpdate);
+  }, []);
 
   if (authLoading || profileLoading) {
     return (
@@ -136,29 +187,67 @@ export default function ProfileViewPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {profileTracks.map((track) => (
-                  <div
-                    key={track.id}
-                    className="bg-muted/30 border border-white/10 rounded-lg p-4 flex items-center gap-4 hover:border-primary/50 transition-all"
-                  >
-                    <div className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center text-primary flex-shrink-0">
-                      <Music className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold truncate">{track.title}</h4>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        {track.artist && <span>{track.artist}</span>}
-                        {track.artist && track.genre && <span>•</span>}
-                        <span className="capitalize">{track.genre}</span>
+                {profileTracks.map((track) => {
+                  const isPlaying = playingTrackId === track.id;
+
+                  return (
+                    <div
+                      key={track.id}
+                      className="bg-muted/30 border border-white/10 rounded-lg p-4 flex items-center gap-3 hover:border-primary/50 transition-all"
+                    >
+                      {/* Play Button */}
+                      <button
+                        onClick={() => handlePlayPreview(track.id, track.audio_url)}
+                        className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center text-primary hover:bg-primary/30 transition-colors flex-shrink-0"
+                      >
+                        {isPlaying ? (
+                          <Pause className="w-5 h-5" />
+                        ) : (
+                          <Play className="w-5 h-5" />
+                        )}
+                      </button>
+
+                      {/* Track Info */}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold truncate">{track.title}</h4>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          {track.artist && <span>{track.artist}</span>}
+                          {track.artist && track.genre && <span>•</span>}
+                          <span className="capitalize">{track.genre}</span>
+                        </div>
+                        {isPlaying && (
+                          <div className="mt-2 flex items-center gap-2">
+                            <div className="h-1 flex-1 bg-primary/30 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-primary transition-all"
+                                style={{ width: `${(currentTime / 30) * 100}%` }}
+                              />
+                            </div>
+                            <span className="text-xs text-primary">
+                              {Math.floor(currentTime)}s / 30s
+                            </span>
+                          </div>
+                        )}
                       </div>
+
+                      {/* Duration */}
+                      {track.duration && (
+                        <span className="text-sm text-muted-foreground flex-shrink-0">
+                          {Math.floor(track.duration / 1000 / 60)}:{String(Math.floor((track.duration / 1000) % 60)).padStart(2, "0")}
+                        </span>
+                      )}
+
+                      {/* Add to Cart Button */}
+                      <button
+                        onClick={() => handleAddTrackToCart(track)}
+                        className="w-10 h-10 rounded bg-secondary/20 flex items-center justify-center text-secondary hover:bg-secondary/30 transition-colors flex-shrink-0"
+                        title="Adicionar ao carrinho"
+                      >
+                        <ShoppingCart className="w-5 h-5" />
+                      </button>
                     </div>
-                    {track.duration && (
-                      <span className="text-sm text-muted-foreground flex-shrink-0">
-                        {Math.floor(track.duration / 60)}:{String(track.duration % 60).padStart(2, "0")}
-                      </span>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
@@ -182,6 +271,9 @@ export default function ProfileViewPage() {
         open={uploadModalOpen}
         onOpenChange={setUploadModalOpen}
       />
+
+      {/* Hidden audio element para preview */}
+      <audio ref={audioRef} crossOrigin="anonymous" />
     </div>
   );
 }
