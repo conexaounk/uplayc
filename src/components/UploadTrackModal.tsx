@@ -208,6 +208,11 @@ export function UploadTrackModal({ open, onOpenChange }: UploadTrackModalProps) 
       return;
     }
 
+    if (!djProfile?.dj_name) {
+      toast.error("Perfil de DJ não configurado");
+      return;
+    }
+
     setIsSubmitting(true);
     setUploadProgress(0);
     setUploadError(null);
@@ -216,12 +221,15 @@ export function UploadTrackModal({ open, onOpenChange }: UploadTrackModalProps) 
 
     try {
       // Upload using the service
+      // Artist is always the DJ that's posting
       await uploadTrackComplete(
         file,
         {
           title: data.title,
-          artist: data.artist,
+          artist: djProfile.dj_name, // Use DJ name as the main artist
           genre: data.genre,
+          userId: user.id, // Include user_id for the tracks table
+          collaborations: data.collaborations || undefined,
           isPublic: true,
         },
         {
