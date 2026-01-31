@@ -13,6 +13,7 @@ interface ReviewPackStepProps {
   packName: string;
   packColor: string;
   djName: string;
+  djId: string;
   onComplete: () => void;
   onBack: () => void;
 }
