@@ -104,6 +104,60 @@ export default function ProfileViewPage() {
         </CardContent>
       </Card>
 
+      {/* Tracks Section */}
+      {userTracks.length > 0 && (
+        <Card
+          className="bg-card overflow-hidden mt-6"
+          style={{
+            borderRadius: "28px",
+            boxShadow: "0 0 5px 0 rgba(95, 49, 143, 0.77)",
+            border: "1px solid rgba(107, 30, 161, 0.85)",
+          }}
+        >
+          <CardHeader
+            style={{
+              borderRadius: "1px",
+              border: "1px solid rgba(144, 19, 254, 0.15)",
+            }}
+          >
+            <CardTitle className="text-2xl font-bold">Suas Tracks</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-8">
+            {tracksLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {userTracks.map((track) => (
+                  <div
+                    key={track.id}
+                    className="bg-muted/30 border border-white/10 rounded-lg p-4 flex items-center gap-4 hover:border-primary/50 transition-all"
+                  >
+                    <div className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center text-primary flex-shrink-0">
+                      <Music className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold truncate">{track.title}</h4>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {track.artist && <span>{track.artist}</span>}
+                        {track.artist && track.genre && <span>•</span>}
+                        <span className="capitalize">{track.genre}</span>
+                      </div>
+                    </div>
+                    {track.duration && (
+                      <span className="text-sm text-muted-foreground flex-shrink-0">
+                        {Math.floor(track.duration / 60)}:{String(track.duration % 60).padStart(2, "0")}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <Button
         onClick={() => setUploadModalOpen(true)}
         size="lg"
