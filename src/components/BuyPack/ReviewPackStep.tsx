@@ -36,6 +36,7 @@ export function ReviewPackStep({
   const totalMinutes = Math.floor(totalDuration / 1000 / 60);
   const pricePerTrack = 9.99;
   const totalPrice = selectedTracks.length * pricePerTrack;
+  const isProcessing = createPackOrder.isPending;
 
   const handleConfirmPurchase = async () => {
     if (!user) return;
