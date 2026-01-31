@@ -9,6 +9,7 @@ interface BuyPackModalProps {
   isOpen: boolean;
   onClose: () => void;
   djName: string;
+  djId: string;
   allTracks: Track[];
 }
 
