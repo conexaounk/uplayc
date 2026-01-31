@@ -32,7 +32,7 @@ export default function HomePage() {
       <section className="relative h-[600px] flex items-center overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 bg-black">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10" />
-          <div className="absolute inset-0 bg-[url('https://pixabay.com/get/g2444942c81653b30670596223c8773febd2882639dc97a2be3832e754ac9738f4810cc140379e5ad24c3710b581ef344ebcdecaded7f9e1e198f21db25596a26_1280.png')] bg-cover bg-center opacity-20 mix-blend-overlay" />
+          <div className="absolute inset-0 bg-cover bg-center opacity-20 mix-blend-overlay bg-[url('/lovable-uploads/ae781f05-9686-49ca-8aef-db5575a7283a.png')] my-0 mx-[3px] py-0" />
         </div>
 
         <div className="container max-w-7xl mx-auto px-4 relative z-10">
@@ -66,7 +66,7 @@ export default function HomePage() {
       </section>
 
       {/* Content */}
-      <div className="container max-w-7xl mx-auto px-4 py-16 space-y-20">
+      <div className="container max-w-7xl mx-auto px-4 space-y-20 py-[21px]">
         {/* Latest Packs */}
         <section>
           <div className="flex justify-between items-end mb-8">
@@ -90,20 +90,7 @@ export default function HomePage() {
         </section>
 
         {/* Top DJs */}
-        <section>
-          <div className="flex justify-between items-end mb-8">
-            <h2 className="text-3xl font-bold font-display flex items-center gap-2">
-              <span className="w-2 h-8 bg-primary rounded-full block" />
-              Artistas em Destaque
-            </h2>
-          </div>
-
-          {djsLoading ? <div className="h-24 flex items-center justify-center">
-              <Loader2 className="animate-spin text-primary w-8 h-8" />
-            </div> : <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {djs?.slice(0, 6).map(dj => <DJCard key={dj.id} dj={dj} />)}
-            </div>}
-        </section>
+        
       </div>
 
       <PackDetailsModal pack={selectedPack} isOpen={!!selectedPack} onClose={() => setSelectedPack(null)} />
