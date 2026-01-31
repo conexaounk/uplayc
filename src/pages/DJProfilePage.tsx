@@ -1,13 +1,61 @@
 import { useDJ } from "@/hooks/use-djs";
+import { useProfileTracks } from "@/hooks/use-profile-tracks";
+import { useUserTracks } from "@/hooks/use-tracks";
 import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, MapPin } from "lucide-react";
+import { Loader2, MapPin, ShoppingCart, Play, Pause } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
+import { useState, useRef, useEffect } from "react";
+import { BuyPackModal } from "@/components/BuyPackModal";
 
 export default function DJProfilePage() {
   const { id } = useParams<{ id: string }>();
   const { data: djProfile, isLoading } = useDJ(id || "");
+  const { data: profileTrackIds = [], isLoading: profileTracksLoading } = useProfileTracks(id);
+  const { data: allUserTracks = [] } = useUserTracks(id);
+  const [buyPackModalOpen, setBuyPackModalOpen] = useState(false);
+  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+
+  // Filtrar apenas as tracks que foram adicionadas ao perfil
+  const profileTracks = allUserTracks.filter((track) =>
+    profileTrackIds.some((pt) => pt.track_id === track.id)
+  );
+
+  // Play/Pause preview
+  const handlePlayPreview = (trackId: string, audioUrl: string) => {
+    if (playingTrackId === trackId && audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      setPlayingTrackId(null);
+    } else {
+      if (audioRef.current) {
+        audioRef.current.src = audioUrl;
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+        setPlayingTrackId(trackId);
+      }
+    }
+  };
+
+  // Parar quando terminar 30 segundos
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+      if (audio.currentTime >= 30) {
+        audio.pause();
+        audio.currentTime = 0;
+        setPlayingTrackId(null);
+      }
+    };
+
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    return () => audio.removeEventListener("timeupdate", handleTimeUpdate);
+  }, []);
 
   if (isLoading) {
     return (
