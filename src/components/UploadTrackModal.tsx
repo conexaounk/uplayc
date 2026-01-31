@@ -191,19 +191,35 @@ export function UploadTrackModal({ open, onOpenChange }: UploadTrackModalProps) 
       return;
     }
 
+    if (!user?.id) {
+      toast.error("Você precisa estar logado para fazer upload");
+      return;
+    }
+
     setIsSubmitting(true);
     setUploadProgress(0);
     setUploadError(null);
     setUploadStartTime(null);
+    setUploadStats({ loaded: 0, total: 0, speed: 0, timeRemaining: 0, percentage: 0 });
 
     try {
-      // TODO: Implement actual upload to R2
-      // Simulando upload
-      for (let i = 0; i <= 100; i += 10) {
-        setUploadProgress(i);
-        updateUploadStats((i / 100) * file.size, file.size);
-        await new Promise((resolve) => setTimeout(resolve, 300));
-      }
+      // Upload using the service
+      const result = await uploadTrackComplete(
+        file,
+        {
+          title: data.title,
+          artist: data.artist,
+          genre: data.genre,
+          isPublic: true,
+        },
+        {
+          onProgress: (progress) => {
+            const percentage = Math.round((progress.loaded / progress.total) * 100);
+            setUploadProgress(percentage);
+            updateUploadStats(progress.loaded, progress.total);
+          },
+        }
+      );
 
       toast.success("Track publicada com sucesso!");
       onOpenChange(false);
