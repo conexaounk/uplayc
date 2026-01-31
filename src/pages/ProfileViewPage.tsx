@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Edit, Plus } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
+import { UploadTrackModal } from "@/components/UploadTrackModal";
+import { useState } from "react";
 
 export default function ProfileViewPage() {
   const { user, isLoading: authLoading } = useAuth();
