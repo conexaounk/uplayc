@@ -41,7 +41,6 @@ export function ReviewPackStep({
     if (!user) return;
 
     try {
-      setIsConfirming(true);
       await createPackOrder.mutateAsync({
         trackIds: selectedTracks.map((t) => t.id),
         packName,
@@ -52,7 +51,6 @@ export function ReviewPackStep({
       setShowConfirmation(true);
     } catch (error) {
       console.error("Erro ao confirmar compra:", error);
-      setIsConfirming(false);
     }
   };
 
