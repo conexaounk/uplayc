@@ -76,6 +76,13 @@ export default function ProfileViewPage() {
     return () => audio.removeEventListener("timeupdate", handleTimeUpdate);
   }, []);
 
+  // Redirecionar se usuário não está autenticado
+  useEffect(() => {
+    if (!authLoading && !user) {
+      setLocation("/");
+    }
+  }, [authLoading, user, setLocation]);
+
   if (authLoading || profileLoading) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -85,7 +92,6 @@ export default function ProfileViewPage() {
   }
 
   if (!user) {
-    setLocation("/");
     return null;
   }
 
