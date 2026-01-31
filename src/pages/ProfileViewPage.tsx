@@ -189,25 +189,12 @@ export default function ProfileViewPage() {
               <div className="space-y-3">
                 {profileTracks.map((track) => {
                   const isPlaying = playingTrackId === track.id;
-                  const isSelected = selectedTracks.has(track.id);
 
                   return (
                     <div
                       key={track.id}
-                      className={`border rounded-lg p-4 flex items-center gap-3 transition-all ${
-                        isSelected
-                          ? "bg-primary/20 border-primary/50"
-                          : "bg-muted/30 border-white/10 hover:border-primary/50"
-                      }`}
+                      className="bg-muted/30 border border-white/10 rounded-lg p-4 flex items-center gap-3 hover:border-primary/50 transition-all"
                     >
-                      {/* Checkbox */}
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleTrackSelection(track.id)}
-                        className="w-5 h-5 cursor-pointer accent-primary"
-                      />
-
                       {/* Play Button */}
                       <button
                         onClick={() => handlePlayPreview(track.id, track.audio_url)}
@@ -249,6 +236,15 @@ export default function ProfileViewPage() {
                           {Math.floor(track.duration / 1000 / 60)}:{String(Math.floor((track.duration / 1000) % 60)).padStart(2, "0")}
                         </span>
                       )}
+
+                      {/* Add to Cart Button */}
+                      <button
+                        onClick={() => handleAddTrackToCart(track)}
+                        className="w-10 h-10 rounded bg-secondary/20 flex items-center justify-center text-secondary hover:bg-secondary/30 transition-colors flex-shrink-0"
+                        title="Adicionar ao carrinho"
+                      >
+                        <ShoppingCart className="w-5 h-5" />
+                      </button>
                     </div>
                   );
                 })}
