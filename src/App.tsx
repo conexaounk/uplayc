@@ -14,7 +14,8 @@ import { useState, useEffect, useRef } from "react";
 // Pages
 import HomePage from "@/pages/HomePage";
 import DJsPage from "@/pages/DJsPage";
-import ProfilePage from "@/pages/ProfilePage";
+import ProfileViewPage from "@/pages/ProfileViewPage";
+import ProfileEditPage from "@/pages/ProfileEditPage";
 import LoginPage from "@/pages/LoginPage";
 import NotFound from "@/pages/not-found";
 function Navbar() {
