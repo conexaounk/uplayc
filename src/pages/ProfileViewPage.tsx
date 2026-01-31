@@ -36,7 +36,13 @@ export default function ProfileViewPage() {
           border: "1px solid rgba(107, 30, 161, 0.85)",
         }}
       >
-        <CardHeader className="border-b border-white/5 pb-8">
+        <CardHeader
+          className="pb-8 overflow-hidden"
+          style={{
+            borderRadius: "1px",
+            border: "1px solid rgba(144, 19, 254, 0.15)",
+          }}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <div className="w-24 h-24 rounded-full overflow-hidden bg-white/5 border border-white/10">
