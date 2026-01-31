@@ -20,6 +20,7 @@ export default function ProfileViewPage() {
   const { addItem, setIsOpen } = useCart();
   const [, setLocation] = useLocation();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [buyPackModalOpen, setBuyPackModalOpen] = useState(false);
   const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
