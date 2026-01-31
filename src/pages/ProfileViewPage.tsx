@@ -336,6 +336,9 @@ export default function ProfileViewPage() {
         open={uploadModalOpen}
         onOpenChange={setUploadModalOpen}
       />
+
+      {/* Hidden audio element para preview */}
+      <audio ref={audioRef} crossOrigin="anonymous" />
     </div>
   );
 }
