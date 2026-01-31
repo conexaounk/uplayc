@@ -112,6 +112,22 @@ function Router() {
       <Route component={NotFound} />
     </Switch>;
 }
+
+function AuthRedirect() {
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
+  const previousUserRef = useRef<typeof user>(null);
+
+  useEffect(() => {
+    // Se o usuário estava deslogado e agora está logado, redireciona para /profile
+    if (!previousUserRef.current && user) {
+      setLocation("/profile");
+    }
+    previousUserRef.current = user;
+  }, [user, setLocation]);
+
+  return null;
+}
 function App() {
   return <QueryClientProvider client={queryClient}>
       <CartProvider>
