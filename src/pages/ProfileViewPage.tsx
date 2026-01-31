@@ -187,29 +187,71 @@ export default function ProfileViewPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {profileTracks.map((track) => (
-                  <div
-                    key={track.id}
-                    className="bg-muted/30 border border-white/10 rounded-lg p-4 flex items-center gap-4 hover:border-primary/50 transition-all"
-                  >
-                    <div className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center text-primary flex-shrink-0">
-                      <Music className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold truncate">{track.title}</h4>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        {track.artist && <span>{track.artist}</span>}
-                        {track.artist && track.genre && <span>•</span>}
-                        <span className="capitalize">{track.genre}</span>
+                {profileTracks.map((track) => {
+                  const isPlaying = playingTrackId === track.id;
+                  const isSelected = selectedTracks.has(track.id);
+
+                  return (
+                    <div
+                      key={track.id}
+                      className={`border rounded-lg p-4 flex items-center gap-3 transition-all ${
+                        isSelected
+                          ? "bg-primary/20 border-primary/50"
+                          : "bg-muted/30 border-white/10 hover:border-primary/50"
+                      }`}
+                    >
+                      {/* Checkbox */}
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleTrackSelection(track.id)}
+                        className="w-5 h-5 cursor-pointer accent-primary"
+                      />
+
+                      {/* Play Button */}
+                      <button
+                        onClick={() => handlePlayPreview(track.id, track.audio_url)}
+                        className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center text-primary hover:bg-primary/30 transition-colors flex-shrink-0"
+                      >
+                        {isPlaying ? (
+                          <Pause className="w-5 h-5" />
+                        ) : (
+                          <Play className="w-5 h-5" />
+                        )}
+                      </button>
+
+                      {/* Track Info */}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold truncate">{track.title}</h4>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          {track.artist && <span>{track.artist}</span>}
+                          {track.artist && track.genre && <span>•</span>}
+                          <span className="capitalize">{track.genre}</span>
+                        </div>
+                        {isPlaying && (
+                          <div className="mt-2 flex items-center gap-2">
+                            <div className="h-1 flex-1 bg-primary/30 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-primary transition-all"
+                                style={{ width: `${(currentTime / 30) * 100}%` }}
+                              />
+                            </div>
+                            <span className="text-xs text-primary">
+                              {Math.floor(currentTime)}s / 30s
+                            </span>
+                          </div>
+                        )}
                       </div>
+
+                      {/* Duration */}
+                      {track.duration && (
+                        <span className="text-sm text-muted-foreground flex-shrink-0">
+                          {Math.floor(track.duration / 1000 / 60)}:{String(Math.floor((track.duration / 1000) % 60)).padStart(2, "0")}
+                        </span>
+                      )}
                     </div>
-                    {track.duration && (
-                      <span className="text-sm text-muted-foreground flex-shrink-0">
-                        {Math.floor(track.duration / 1000 / 60)}:{String(Math.floor((track.duration / 1000) % 60)).padStart(2, "0")}
-                      </span>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
