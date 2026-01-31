@@ -13,9 +13,15 @@ import { useState } from "react";
 export default function ProfileViewPage() {
   const { user, isLoading: authLoading } = useAuth();
   const { data: myProfile, isLoading: profileLoading } = useDJ(user?.id || "");
-  const { data: userTracks = [], isLoading: tracksLoading } = useUserTracks(user?.id);
+  const { data: profileTrackIds = [], isLoading: profileTracksLoading } = useProfileTracks(user?.id);
+  const { data: allUserTracks = [] } = useUserTracks(user?.id);
   const [, setLocation] = useLocation();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+
+  // Filtrar apenas as tracks que foram adicionadas ao perfil
+  const profileTracks = allUserTracks.filter(track =>
+    profileTrackIds.some(pt => pt.track_id === track.id)
+  );
 
   if (authLoading || profileLoading) {
     return (
