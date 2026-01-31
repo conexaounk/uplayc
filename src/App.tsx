@@ -14,6 +14,7 @@ import { useState, useEffect, useRef } from "react";
 // Pages
 import HomePage from "@/pages/HomePage";
 import DJsPage from "@/pages/DJsPage";
+import DJProfilePage from "@/pages/DJProfilePage";
 import ProfileViewPage from "@/pages/ProfileViewPage";
 import ProfileEditPage from "@/pages/ProfileEditPage";
 import LoginPage from "@/pages/LoginPage";
