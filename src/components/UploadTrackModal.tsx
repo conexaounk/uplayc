@@ -66,6 +66,7 @@ const GENRES = [
 
 export function UploadTrackModal({ open, onOpenChange }: UploadTrackModalProps) {
   const { user } = useAuth();
+  const { data: djProfile } = useDJ(user?.id || "");
   const [activeTab, setActiveTab] = useState("upload");
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,8 +93,8 @@ export function UploadTrackModal({ open, onOpenChange }: UploadTrackModalProps) 
     resolver: zodResolver(metadataSchema),
     defaultValues: {
       title: "",
-      artist: "",
       genre: "",
+      collaborations: "",
     },
   });
 
