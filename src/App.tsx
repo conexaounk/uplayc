@@ -9,12 +9,14 @@ import { CartSidebar } from "@/components/CartSidebar";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, User, LogOut, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // Pages
 import HomePage from "@/pages/HomePage";
 import DJsPage from "@/pages/DJsPage";
-import ProfilePage from "@/pages/ProfilePage";
+import ProfileViewPage from "@/pages/ProfileViewPage";
+import ProfileEditPage from "@/pages/ProfileEditPage";
+import LoginPage from "@/pages/LoginPage";
 import NotFound from "@/pages/not-found";
 function Navbar() {
   const {
@@ -23,11 +25,10 @@ function Navbar() {
   } = useCart();
   const {
     user,
-    logout,
-    login
+    logout
   } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const navLinks = [{
     href: "/",
     label: "Marketplace"
@@ -40,9 +41,6 @@ function Navbar() {
         {/* Logo */}
         <Link href="/">
           <div className="flex items-center gap-2 cursor-pointer">
-            <div className="w-8 h-8 rounded bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-bold text-black">
-              ​
-            </div>
             <span className="font-display font-bold text-xl tracking-tight hidden sm:block">
               U<span className="text-primary">​PLAYCE</span>
             </span>
@@ -75,7 +73,7 @@ function Navbar() {
               <Button variant="ghost" size="icon" onClick={logout} title="Logout" className="hover:text-destructive">
                 <LogOut size={18} />
               </Button>
-            </div> : <Button size="sm" onClick={login} className="bg-primary hover:bg-primary/90 text-white hidden sm:flex">
+            </div> : <Button size="sm" onClick={() => setLocation("/login")} className="bg-primary hover:bg-primary/90 text-white hidden sm:flex">
               Sign In
             </Button>}
 
@@ -94,7 +92,10 @@ function Navbar() {
                 {user && <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
                     <span className="text-lg font-bold block py-2 border-b border-white/5">My Profile</span>
                   </Link>}
-                {!user && <Button onClick={login} className="mt-4">
+                {!user && <Button onClick={() => {
+                  setLocation("/login");
+                  setMobileMenuOpen(false);
+                }} className="mt-4">
                     Sign In
                   </Button>}
               </div>
@@ -108,14 +109,33 @@ function Router() {
   return <Switch>
       <Route path="/" component={HomePage} />
       <Route path="/djs" component={DJsPage} />
-      <Route path="/profile" component={ProfilePage} />
+      <Route path="/login" component={LoginPage} />
+      <Route path="/profile/edit" component={ProfileEditPage} />
+      <Route path="/profile" component={ProfileViewPage} />
       <Route component={NotFound} />
     </Switch>;
+}
+
+function AuthRedirect() {
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
+  const previousUserRef = useRef<typeof user>(null);
+
+  useEffect(() => {
+    // Se o usuário estava deslogado e agora está logado, redireciona para /profile
+    if (!previousUserRef.current && user) {
+      setLocation("/profile");
+    }
+    previousUserRef.current = user;
+  }, [user, setLocation]);
+
+  return null;
 }
 function App() {
   return <QueryClientProvider client={queryClient}>
       <CartProvider>
         <TooltipProvider>
+          <AuthRedirect />
           <div className="bg-background min-h-screen text-foreground font-body">
             <Navbar />
             <Router />
