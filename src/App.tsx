@@ -32,7 +32,7 @@ function Navbar() {
   const [location, setLocation] = useLocation();
   const navLinks = [{
     href: "/",
-    label: "Marketplace"
+    label: "Home"
   }, {
     href: "/djs",
     label: "Artists"
