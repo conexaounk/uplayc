@@ -5,6 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronLeft, Music, AlertCircle, Check } from "lucide-react";
 import type { Track } from "@/types/supabase";
 import { getStorageUrl } from "@/lib/storageUtils";
+import { useCreatePackOrder } from "@/hooks/use-packs";
+import { useAuth } from "@/hooks/use-auth";
 
 interface ReviewPackStepProps {
   selectedTracks: Track[];
