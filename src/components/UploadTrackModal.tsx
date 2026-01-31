@@ -23,6 +23,7 @@ import { Upload, Music, X, AlertCircle, Loader2, Search, Plus } from "lucide-rea
 import { toast } from "sonner";
 import { uploadTrackComplete } from "@/lib/uploadService";
 import { useAuth } from "@/hooks/use-auth";
+import { useDJ } from "@/hooks/use-djs";
 import { useTracks, useUserTracks } from "@/hooks/use-tracks";
 import { useAddProfileTrack } from "@/hooks/use-profile-tracks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -31,8 +32,8 @@ const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 
 const metadataSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
-  artist: z.string().min(1, "Artista é obrigatório"),
   genre: z.string().min(1, "Gênero é obrigatório"),
+  collaborations: z.string().optional().nullable(),
 });
 
 type MetadataForm = z.infer<typeof metadataSchema>;
