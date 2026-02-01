@@ -203,26 +203,26 @@ export function UploadTrackModal({
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-4"
+                  className="space-y-3"
                 >
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Título da Faixa</Label>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Título da Faixa</Label>
                     <Input
                       placeholder="Ex: Toca Toca"
                       {...form.register("title")}
-                      className="bg-muted/30 text-sm"
+                      className="bg-muted/30 text-xs h-8"
                     />
                     {form.formState.errors.title && (
                         <p className="text-red-500 text-xs">{form.formState.errors.title.message}</p>
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label className="text-xs sm:text-sm">Gênero</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                        <Label className="text-xs">Gênero</Label>
                         <select
                             {...form.register("genre")}
-                            className="w-full h-10 bg-muted/30 border border-input rounded-md px-3 text-sm focus:ring-1 focus:ring-primary"
+                            className="w-full h-8 bg-muted/30 border border-input rounded-md px-2 text-xs focus:ring-1 focus:ring-primary"
                         >
                             <option value="">Selecione...</option>
                             {GENRES.map((g) => (
@@ -236,12 +236,12 @@ export function UploadTrackModal({
                         )}
                     </div>
 
-                    <div className="space-y-2">
-                        <Label className="text-xs sm:text-sm">Colaborações (Feat)</Label>
+                    <div className="space-y-1">
+                        <Label className="text-xs">Colaborações (Feat)</Label>
                         <Input
                             placeholder="Ex: MC Fulano"
                             {...form.register("collaborations")}
-                            className="bg-muted/30"
+                            className="bg-muted/30 text-xs h-8"
                         />
                     </div>
                   </div>
@@ -249,13 +249,12 @@ export function UploadTrackModal({
                   <Button
                     type="submit"
                     disabled={uploadMutation.isPending}
-                    className="w-full h-10 sm:h-12 text-sm sm:text-lg font-bold bg-primary hover:bg-primary/90"
+                    className="w-full h-9 text-xs font-bold bg-primary hover:bg-primary/90"
                   >
                     {uploadMutation.isPending ? (
                       <>
-                        <Loader2 className="mr-2 animate-spin" size={18} />
-                        <span className="hidden sm:inline">Enviando... {uploadProgress}%</span>
-                        <span className="sm:hidden">Enviando...</span>
+                        <Loader2 className="mr-1 animate-spin" size={14} />
+                        <span className="hidden sm:inline">Enviando...</span>
                       </>
                     ) : (
                       "Publicar Música"
