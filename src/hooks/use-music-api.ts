@@ -66,14 +66,14 @@ export function useMusicApi() {
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
         try {
-          const response = await fetch(fullApiUrl, {
+          const response = await fetchWithRetry(fullApiUrl, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${session.access_token}`,
               'Content-Type': 'application/json',
             },
             signal: controller.signal,
-          });
+          }, 2);
 
           clearTimeout(timeoutId);
           console.log('📡 useTracks: Response status:', response.status);
