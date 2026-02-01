@@ -14,13 +14,15 @@ export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const {
     data: packs,
-    isLoading: packsLoading
+    isLoading: packsLoading,
+    error: packsError
   } = usePacks({
     search: searchTerm
   });
   const {
     data: djs,
-    isLoading: djsLoading
+    isLoading: djsLoading,
+    error: djsError
   } = useDJs();
   const [selectedPack, setSelectedPack] = useState<PackWithTracks | null>(null);
   const {
