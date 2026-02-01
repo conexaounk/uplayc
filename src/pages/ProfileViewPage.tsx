@@ -171,14 +171,26 @@ export default function ProfileViewPage() {
                     )}
                   </div>
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleAddTrackToCart(track)}
-                    className="text-muted-foreground hover:text-primary"
-                  >
-                    <ShoppingCart size={20} />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => updateTrackPublicityMutation.mutate({ trackId: track.id, isPublic: !track.is_public })}
+                      disabled={updateTrackPublicityMutation.isPending}
+                      title={track.is_public ? "Tornar privada" : "Publicar"}
+                      className={track.is_public ? "text-primary hover:text-destructive" : "text-muted-foreground hover:text-primary"}
+                    >
+                      {track.is_public ? <Globe size={20} /> : <Lock size={20} />}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleAddTrackToCart(track)}
+                      className="text-muted-foreground hover:text-primary"
+                    >
+                      <ShoppingCart size={20} />
+                    </Button>
+                  </div>
                 </div>
               );
             })}
