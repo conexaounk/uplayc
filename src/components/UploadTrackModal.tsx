@@ -270,8 +270,8 @@ export function UploadTrackModal({
             <div className="relative">
               <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
               <Input
-                className="pl-9 bg-muted/30 h-10"
-                placeholder="Buscar por nome, artista ou gênero..."
+                className="pl-9 bg-muted/30 h-10 text-sm"
+                placeholder="Buscar musica..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
