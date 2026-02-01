@@ -11,12 +11,14 @@ import { Loader2, Edit, Plus, ShoppingCart, Music, Lock, Globe, Trash2 } from "l
 import { getStorageUrl } from "@/lib/storageUtils";
 import { UploadTrackModal } from "@/components/UploadTrackModal";
 import { BuyPackModal } from "@/components/BuyPackModal";
+import { useToast } from "@/hooks/use-notification";
 import { useState, useEffect } from "react";
 
 export default function ProfileViewPage() {
   const { user, isLoading: authLoading } = useAuth();
   const { data: myProfile, isLoading: profileLoading } = useDJ(user?.id || "");
-  const { useTracks, updateTrackPublicityMutation, removeFromProfileMutation } = useMusicApi();
+  const { useTracks, updateTrackPublicityMutation, removeFromProfileMutation, updateTrackMutation } = useMusicApi();
+  const toast = useToast();
 
   // Buscamos as músicas diretamente do banco pelo ID do usuário logado
   const { data: allUserTracks = [], isLoading: tracksLoading } = useTracks(user?.id || "");
@@ -196,6 +198,21 @@ export default function ProfileViewPage() {
                       title={track.title}
                       size="md"
                       showTime={true}
+                      startTime={track.preview_start_time || 0}
+                      editable={true}
+                      onStartTimeChange={(newStartTime) => {
+                        updateTrackMutation.mutate(
+                          {
+                            trackId: cleanTrackId,
+                            payload: { preview_start_time: newStartTime }
+                          },
+                          {
+                            onSuccess: () => {
+                              toast.success('Prévia ajustada', `Início em ${Math.floor(newStartTime)}s`);
+                            }
+                          }
+                        );
+                      }}
                     />
                   )}
                 </div>

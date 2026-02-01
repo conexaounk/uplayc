@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { generateCover } from '@/components/PackFolder';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-notification';
 
 export type Track = {
   id: string;
@@ -29,8 +29,9 @@ type PackContextValue = {
 
 const PackContext = createContext<PackContextValue | undefined>(undefined);
 
-export function PackProvider({ children }: { children: React.ReactNode }) {
+function PackProviderContent({ children }: { children: React.ReactNode }) {
   const [currentPack, setCurrentPack] = useState<Pack | null>(null);
+  const toast = useToast();
 
   function createPack(name: string, color: string, userName?: string) {
     const pack: Pack = {
@@ -41,7 +42,7 @@ export function PackProvider({ children }: { children: React.ReactNode }) {
       tracks: [],
     };
     setCurrentPack(pack);
-    toast.success('Pack criado');
+    toast.success('Pack criado', 'Novo pack pronto para adicionar músicas');
   }
 
   function clearPack() {
@@ -50,25 +51,25 @@ export function PackProvider({ children }: { children: React.ReactNode }) {
 
   function addTrack(track: Track) {
     if (!currentPack) {
-      toast.error('Nenhum pack ativo. Crie um pack primeiro.');
+      toast.error('Nenhum pack ativo', 'Crie um pack antes de adicionar músicas');
       return false;
     }
     // Apenas mashups nos packs - regra opcional
     if (track.track_type && track.track_type !== 'mashup') {
-      toast.error('Somente Mashups podem ser adicionados ao pack.');
+      toast.error('Tipo inválido', 'Apenas Mashups podem ser adicionados ao pack');
       return false;
     }
     if (currentPack.tracks.find((t) => t.id === track.id)) {
-      toast('Track já adicionada ao pack');
+      toast.info('Já adicionada', 'Esta música já está no pack');
       return false;
     }
     if (currentPack.tracks.length >= 10) {
-      toast.error('Pack já está cheio');
+      toast.warning('Pack cheio', 'Limite de 10 músicas atingido');
       return false;
     }
 
     setCurrentPack((prev) => prev ? { ...prev, tracks: [...prev.tracks, track] } : prev);
-    toast.success('Adicionar ao pack');
+    toast.success('Adicionada', 'Música adicionada ao pack');
     return true;
   }
 
@@ -80,12 +81,12 @@ export function PackProvider({ children }: { children: React.ReactNode }) {
   async function finalize() {
     if (!currentPack) return null;
     if (currentPack.tracks.length < 1) {
-      toast.error('Adicione pelo menos uma música antes de finalizar');
+      toast.error('Pack vazio', 'Adicione pelo menos uma música');
       return null;
     }
     const cover = generateCover(currentPack.name, currentPack.userName || 'ARTIST', currentPack.color);
     // aqui você pode subir a capa para o backend / R2 e criar o pack no D1
-    toast.success('Pack finalizado');
+    toast.success('Pack finalizado', 'Pronto para download');
     return { cover, pack: currentPack };
   }
 
@@ -94,6 +95,10 @@ export function PackProvider({ children }: { children: React.ReactNode }) {
       {children}
     </PackContext.Provider>
   );
+}
+
+export function PackProvider({ children }: { children: React.ReactNode }) {
+  return <PackProviderContent>{children}</PackProviderContent>;
 }
 
 export function usePack() {

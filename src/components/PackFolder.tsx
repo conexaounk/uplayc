@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Folder, Music, CheckCircle2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-notification";
 
 export type Track = {
   id: string;
@@ -28,6 +30,7 @@ export function PackBuilderDrawer({
   onFinalize,
 }: PackBuilderDrawerProps) {
   const [selectedTracks, setSelectedTracks] = useState<Track[]>(initialTracks);
+  const toast = useToast();
   const isFull = selectedTracks.length === 10;
 
   function handleSlotClick(index: number) {
@@ -60,7 +63,7 @@ export function PackBuilderDrawer({
     // gerar capa e retornar via callback
     const cover = generateCover(packName, userName, packColor);
     if (onFinalize) onFinalize(selectedTracks, cover);
-    alert("Pack finalizado — capa gerada (data URI retornada via callback)");
+    toast.success("Pack finalizado", "Capa gerada e pronta para download");
   }
 
   return (

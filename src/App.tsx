@@ -4,8 +4,9 @@ import { FloatingFolder } from "@/components/FloatingFolder";
 import { CreatePackModal } from "@/components/CreatePackModal";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { NotificationProvider } from "@/context/NotificationContext";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import { CartProvider, useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/hooks/use-auth";
 import { CartSidebar } from "@/components/CartSidebar";
@@ -148,20 +149,22 @@ function AuthRedirect() {
 }
 function App() {
   return <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <PackProvider>
-          <TooltipProvider>
-            <AuthRedirect />
-            <div className="bg-background min-h-screen text-foreground font-body flex flex-col">
-              <Navbar />
-              <Router />
-              <CartSidebar />
-              <Toaster />
-              <FloatingFolder />
-            </div>
-          </TooltipProvider>
-        </PackProvider>
-      </CartProvider>
+      <NotificationProvider>
+        <CartProvider>
+          <PackProvider>
+            <TooltipProvider>
+              <AuthRedirect />
+              <div className="bg-background min-h-screen text-foreground font-body flex flex-col">
+                <Navbar />
+                <Router />
+                <CartSidebar />
+                <NotificationCenter />
+                <FloatingFolder />
+              </div>
+            </TooltipProvider>
+          </PackProvider>
+        </CartProvider>
+      </NotificationProvider>
     </QueryClientProvider>;
 }
 export default App;

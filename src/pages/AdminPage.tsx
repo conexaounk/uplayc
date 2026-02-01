@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Save, Loader2, ShieldCheck, Lock, Edit, Trash2, EyeOff, Eye } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-notification";
 import { api } from "@/lib/apiService";
 import { getSettings, setSetting } from "@/lib/settingsService";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -15,12 +15,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 export default function AdminPage() {
   const { user, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const toast = useToast();
 
   // Proteção: checar role no metadata do Supabase
   useEffect(() => {
     const isAdmin = user?.app_metadata?.role === 'admin' || user?.user_metadata?.is_admin === true;
     if (!authLoading && !isAdmin) {
-      toast.error("Acesso negado. Apenas administradores.");
+      toast.error("Acesso negado", "Apenas administradores podem acessar");
       setLocation("/");
     }
   }, [user, authLoading, setLocation]);
@@ -68,9 +69,9 @@ export default function AdminPage() {
         throw new Error(failed.error || 'Erro ao salvar alguma configuração');
       }
 
-      toast.success('Configurações atualizadas no D1!');
+      toast.success('Configurações salvas', 'Alterações aplicadas com sucesso');
     } catch (error: any) {
-      toast.error('Erro ao salvar: ' + (error?.message || error));
+      toast.error('Erro ao salvar', error?.message || 'Tente novamente');
     } finally {
       setSaving(false);
     }
@@ -86,7 +87,7 @@ export default function AdminPage() {
       setTracks(list as any[]);
     } catch (e) {
       console.error('Erro ao buscar tracks:', e);
-      toast.error('Erro ao buscar tracks');
+      toast.error('Erro ao carregar', 'Não foi possível carregar as músicas');
     } finally {
       setLoadingTracks(false);
     }
@@ -116,10 +117,10 @@ export default function AdminPage() {
     try {
       await setSetting('hidden_tracks', JSON.stringify(arr));
       setHiddenTrackIds(arr);
-      toast.success('Lista de ocultos atualizada');
+      toast.success('Atualizado', 'Lista de ocultos alterada com sucesso');
     } catch (e) {
       console.error('Erro ao salvar hidden list', e);
-      toast.error('Erro ao atualizar ocultos');
+      toast.error('Erro ao atualizar', 'Não foi possível salvar as alterações');
     }
   };
 
@@ -147,12 +148,12 @@ export default function AdminPage() {
         method: 'PATCH',
         body: JSON.stringify(updated),
       });
-      toast.success('Track atualizada');
+      toast.success('Atualizado', 'Música atualizada com sucesso');
       setEditTrack(null);
       fetchTracks();
     } catch (e) {
       console.error('Erro ao atualizar track', e);
-      toast.error('Erro ao atualizar track');
+      toast.error('Erro ao atualizar', 'Não foi possível salvar as alterações');
     }
   };
 

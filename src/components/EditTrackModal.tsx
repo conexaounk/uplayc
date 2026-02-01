@@ -18,6 +18,7 @@ const schema = z.object({
   key: z.string().optional(),
   price_cents: z.number().optional().nullable(),
   is_public: z.boolean().optional(),
+  preview_start_time: z.number().optional().nullable(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -35,6 +36,7 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
       key: '',
       price_cents: undefined,
       is_public: undefined,
+      preview_start_time: undefined,
     }
   });
 
@@ -48,6 +50,7 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
         key: track.key || '',
         price_cents: track.price_cents ?? undefined,
         is_public: track.is_public ?? false,
+        preview_start_time: track.preview_start_time ?? undefined,
       });
     }
   }, [track]);
@@ -63,6 +66,7 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
       key: data.key || null,
       price_cents: data.price_cents ?? null,
       is_public: !!data.is_public,
+      preview_start_time: data.preview_start_time ?? null,
     };
 
     // Sanitizar ID removendo sufixos (ex: ":1")
@@ -118,6 +122,19 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
           <div>
             <Label>Preço (centavos)</Label>
             <Input type="number" {...form.register('price_cents', { valueAsNumber: true })} />
+          </div>
+
+          <div>
+            <Label>Tempo inicial da prévia (segundos)</Label>
+            <Input
+              type="number"
+              {...form.register('preview_start_time', { valueAsNumber: true })}
+              placeholder="Ex: 0, 30, 60..."
+              min="0"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Define a partir de qual segundo a prévia de 30 segundos começará
+            </p>
           </div>
 
           <div className="flex justify-between items-center">

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Upload, X } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-notification";
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
@@ -14,6 +14,7 @@ interface AvatarUploadProps {
 export function AvatarUpload({ currentAvatarUrl, onUploadComplete, userId }: AvatarUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const toast = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -21,13 +22,13 @@ export function AvatarUpload({ currentAvatarUrl, onUploadComplete, userId }: Ava
 
     // Validar tipo de arquivo
     if (!file.type.startsWith("image/")) {
-      toast.error("Por favor, selecione uma imagem");
+      toast.error("Arquivo inválido", "Por favor, selecione uma imagem");
       return;
     }
 
     // Validar tamanho (máx 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("A imagem deve ter no máximo 5MB");
+      toast.error("Arquivo muito grande", "A imagem deve ter no máximo 5MB");
       return;
     }
 
@@ -70,11 +71,11 @@ export function AvatarUpload({ currentAvatarUrl, onUploadComplete, userId }: Ava
 
       if (urlData?.publicUrl) {
         onUploadComplete(urlData.publicUrl);
-        toast.success("Avatar atualizado com sucesso!");
+        toast.success("Avatar atualizado", "Sua foto de perfil foi alterada");
       }
     } catch (error) {
       console.error("Erro ao fazer upload:", error);
-      toast.error("Erro ao fazer upload da imagem");
+      toast.error("Erro no upload", "Não foi possível enviar a imagem");
       setPreview(null);
     } finally {
       setIsUploading(false);

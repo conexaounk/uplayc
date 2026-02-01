@@ -4,21 +4,18 @@ import { Folder, Music, CheckCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PixCheckoutModal, OrderData } from '@/components/PixCheckoutModal';
 import { usePack } from '@/context/packContext';
+import { useToast } from '@/hooks/use-notification';
 
 export function FloatingFolder() {
   const { currentPack, removeTrack, finalize } = usePack();
+  const toast = useToast();
+  const [orderData, setOrderData] = useState<{ id: string; qrcode: string; amount_cents: number } | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+
   if (!currentPack) return null;
 
   const slots = Array.from({ length: 10 });
   const isFull = currentPack.tracks.length === 10;
-
-    function setOrderData(arg0: { id: any; qrcode: any; amount_cents: any; }) {
-        throw new Error('Function not implemented.');
-    }
-
-    function setCheckoutOpen(arg0: boolean) {
-        throw new Error('Function not implemented.');
-    }
 
   return (
     <div className="fixed bottom-6 right-6 z-50 w-72 shadow-2xl overflow-hidden rounded-2xl border border-white/10 bg-black/90 backdrop-blur-xl">
@@ -60,16 +57,16 @@ export function FloatingFolder() {
                     // Se o pack for gratuito (somatório 0), baixa diretamente
                     const total = currentPack.tracks.reduce((s, t) => s + (t.price_cents ?? 0), 0);
                     if (total === 0) {
-                      (await import('sonner')).toast.info('Pack gratuito — iniciando download...');
+                      toast.info('Preparando download', 'Pack gratuito — iniciando download');
                       const { downloadPack } = await import('@/lib/packDownload');
                       const userName = currentPack.userName || 'artist';
                       await downloadPack(currentPack.name, userName, currentPack.color, currentPack.tracks);
-                      (await import('sonner')).toast.success('Download iniciado!');
+                      toast.success('Download iniciado', 'Seu pack está sendo baixado');
                       return;
                     }
 
                     // Cria ordem no backend e abre modal de pagamento com QR
-                    (await import('sonner')).toast.info('Criando pedido para pagamento...', { description: 'Aguarde enquanto prepararmos seu QR Code.' });
+                    toast.info('Processando pedido', 'Aguarde enquanto prepararmos seu QR Code');
                     const { api } = await import('@/lib/apiService');
                     const payload = {
                       amount_cents: total,
@@ -83,7 +80,7 @@ export function FloatingFolder() {
                     setCheckoutOpen(true);
                   } catch (e) {
                     console.error('Erro ao criar pedido do pack', e);
-                    (await import('sonner')).toast.error('Não foi possível iniciar o pagamento. Tente novamente.');
+                    toast.error('Erro ao processar pedido', 'Tente novamente');
                   }
                 }}
                 variant="secondary"

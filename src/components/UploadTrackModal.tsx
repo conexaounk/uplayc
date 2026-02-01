@@ -30,8 +30,7 @@ import {
   Check,
 } from "lucide-react";
 
-import { toast } from "sonner";
-
+import { useToast } from "@/hooks/use-notification";
 import { useAuth } from "@/hooks/use-auth";
 import { useDJ } from "@/hooks/use-djs";
 import { useMusicApi } from "@/hooks/use-music-api";
@@ -81,7 +80,8 @@ export function UploadTrackModal({
 }: UploadTrackModalProps) {
   const { user } = useAuth();
   const { data: djProfile } = useDJ(user?.id || "");
-  
+  const toast = useToast();
+
   const { uploadMutation, useTracks, addTrackToProfileMutation } = useMusicApi();
   
   const [file, setFile] = useState<File | null>(null);
@@ -134,7 +134,7 @@ export function UploadTrackModal({
 
   function processFile(file: File) {
     if (file.size > MAX_FILE_SIZE) {
-      toast.error("Arquivo muito grande (máx. 500MB)");
+      toast.error("Arquivo muito grande", "Máximo 500MB permitido");
       return;
     }
     setFile(file);
@@ -146,7 +146,7 @@ export function UploadTrackModal({
 
   async function onSubmit(data: MetadataForm) {
     if (!file || !user || !djProfile) {
-      toast.error("Informações incompletas para upload");
+      toast.error("Informações incompletas", "Verifique seus dados");
       return;
     }
 
@@ -184,15 +184,15 @@ export function UploadTrackModal({
       });
 
       console.log("✅ Upload e salvamento no D1 concluído:", result);
-      
-      toast.success("Música publicada e salva no banco!");
+
+      toast.success("Publicado com sucesso", "Sua música foi salva no banco");
       setFile(null);
       setUploadProgress(0);
       form.reset();
       onOpenChange(false);
     } catch (error) {
       console.error("❌ Erro ao processar upload ou salvar no banco:", error);
-      toast.error("Erro ao processar upload ou salvar no banco");
+      toast.error("Erro ao publicar", "Não foi possível enviar a música");
       setUploadProgress(0);
     }
   }
@@ -200,11 +200,11 @@ export function UploadTrackModal({
   function handleSelectTrack(trackId: string) {
     addTrackToProfileMutation.mutate(trackId, {
       onSuccess: () => {
-        toast.success("Música adicionada ao seu perfil!");
+        toast.success("Adicionado", "Música adicionada ao seu perfil");
         onOpenChange(false);
       },
       onError: () => {
-        toast.error("Erro ao adicionar música");
+        toast.error("Erro ao adicionar", "Tente novamente");
       }
     });
   }
