@@ -108,9 +108,6 @@ export default function HomePage() {
           <Loader2 className="animate-spin text-accent-purple w-10 h-10" />
         </div> : <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {djsWithTracks.slice(0, 8).map(dj => <DJCard key={dj.id} dj={dj} />)}
-          {djsWithTracks.length === 0 && <div className="col-span-full text-center py-12 text-gray-400">
-            Nenhum artista com tracks disponível no momento.
-          </div>}
         </div>}
       </section>
     </div>
