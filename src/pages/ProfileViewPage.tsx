@@ -134,6 +134,11 @@ export default function ProfileViewPage() {
                             {track.bpm} BPM
                           </span>
                         )}
+                        {track.key && (
+                          <span className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded">
+                            {track.key}
+                          </span>
+                        )}
                       </div>
                     </div>
                     
