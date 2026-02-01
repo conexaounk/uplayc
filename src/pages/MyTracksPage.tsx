@@ -27,27 +27,50 @@ export default function MyTracksPage() {
   const toast = useToast();
   
   const [tracks, setTracks] = useState<Track[]>([]);
-  const [loadingData, setLoadingData] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchUserTracks = async () => {
-    // Só busca se o usuário do Supabase estiver carregado
     if (!user?.id) return;
-    
-    setLoadingData(true);
+
+    setIsLoading(true);
     try {
-      
-      const res = await api.fetch('/tracks'); 
-      const allTracks = Array.isArray(res) ? res : (res?.data || []);
-      
-      // ✅ Filtra as tracks do D1 usando o ID do Supabase
-      const myTracks = allTracks.filter((t: Track) => t.user_id === user.id);
-      
+      // 1. Faz a chamada para a API
+      const res = await api.fetch('/tracks');
+
+      // 2. Tenta encontrar a lista de tracks em diferentes formatos possíveis
+      let allTracks: Track[] = [];
+
+      if (Array.isArray(res)) {
+        allTracks = res;
+      } else if (res && typeof res === 'object') {
+        // Tenta chaves comuns: data, tracks, results
+        allTracks = res.data || res.tracks || res.results || [];
+      }
+
+      // 3. LOG DE DEBUG (Abra o F12 para ver isso no navegador)
+      console.log("ID do Usuário Logado:", user.id);
+      console.log("Total de tracks recebidas (bruto):", allTracks.length);
+
+      if (allTracks.length > 0) {
+         console.log("Exemplo de user_id na primeira track vinda do banco:", allTracks[0].user_id);
+      }
+
+      // 4. Filtragem com tratamento de strings (case insensitive e trim)
+      const myTracks = allTracks.filter((t: any) => {
+        // Garantimos que ambos são strings para comparação
+        const trackUserId = String(t.user_id || '').trim().toLowerCase();
+        const currentUserId = String(user.id).trim().toLowerCase();
+        return trackUserId === currentUserId;
+      });
+
+      console.log("Total após filtrar:", myTracks.length);
       setTracks(myTracks);
+
     } catch (error) {
-      console.error("Erro ao buscar dados no D1:", error);
-      toast.error("Erro de Conexão", "Não foi possível acessar o banco de dados D1.");
+      console.error("Erro na requisição:", error);
+      toast.error("Erro", "Não foi possível carregar as tracks.");
     } finally {
-      setLoadingData(false);
+      setIsLoading(false);
     }
   };
 
@@ -91,7 +114,7 @@ export default function MyTracksPage() {
         </div>
       </header>
 
-      {loadingData ? (
+      {isLoading ? (
         <div className="h-64 flex flex-col items-center justify-center gap-4">
           <Loader2 className="w-10 h-10 text-primary animate-spin" />
           <p className="text-sm text-gray-500">Consultando Cloudflare D1...</p>
