@@ -50,6 +50,7 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
         key: track.key || '',
         price_cents: track.price_cents ?? undefined,
         is_public: track.is_public ?? false,
+        preview_start_time: track.preview_start_time ?? undefined,
       });
     }
   }, [track]);
