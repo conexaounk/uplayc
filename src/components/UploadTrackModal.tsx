@@ -184,15 +184,15 @@ export function UploadTrackModal({
       });
 
       console.log("✅ Upload e salvamento no D1 concluído:", result);
-      
-      toast.success("Música publicada e salva no banco!");
+
+      toast.success("Publicado com sucesso", "Sua música foi salva no banco");
       setFile(null);
       setUploadProgress(0);
       form.reset();
       onOpenChange(false);
     } catch (error) {
       console.error("❌ Erro ao processar upload ou salvar no banco:", error);
-      toast.error("Erro ao processar upload ou salvar no banco");
+      toast.error("Erro ao publicar", "Não foi possível enviar a música");
       setUploadProgress(0);
     }
   }
@@ -200,11 +200,11 @@ export function UploadTrackModal({
   function handleSelectTrack(trackId: string) {
     addTrackToProfileMutation.mutate(trackId, {
       onSuccess: () => {
-        toast.success("Música adicionada ao seu perfil!");
+        toast.success("Adicionado", "Música adicionada ao seu perfil");
         onOpenChange(false);
       },
       onError: () => {
-        toast.error("Erro ao adicionar música");
+        toast.error("Erro ao adicionar", "Tente novamente");
       }
     });
   }
