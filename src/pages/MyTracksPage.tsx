@@ -58,23 +58,23 @@ export default function MyTracksPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 p-6">
-      <header className="flex justify-between items-end">
+    <div className="max-w-6xl mx-auto space-y-8 p-3 sm:p-6">
+      <header className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
         <div>
-          <h1 className="text-4xl font-black text-white">Minhas Tracks</h1>
+          <h1 className="text-2xl sm:text-4xl font-black text-white">Minhas Tracks</h1>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-right" />
           <Button
             onClick={() => setUploadModalOpen(true)}
-            className="rounded-full"
+            className="rounded-full w-full sm:w-auto"
           >
             <Plus size={18} className="mr-2" /> Nova Track
           </Button>
         </div>
       </header>
 
-      {isLoading ? (
+      {tracksLoading ? (
         <div className="h-64 flex flex-col items-center justify-center gap-4">
           <Loader2 className="w-10 h-10 text-primary animate-spin" />
           <p className="text-sm text-gray-500">Consultando Cloudflare D1...</p>
