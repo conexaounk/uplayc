@@ -1,8 +1,11 @@
 import { useDJ } from "@/hooks/use-djs";
 import { useMusicApi } from "@/hooks/use-music-api"; // 1. ALTERADO: Importando o hook centralizado
+import { useDJ } from "@/hooks/use-djs";
+import { useFollow } from "@/hooks/use-follow";
 import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FollowButton } from "@/components/FollowButton";
 import { Loader2, MapPin, ShoppingCart, Music2 } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
 import { useState } from "react";
@@ -11,14 +14,17 @@ import { AudioPreview } from "@/components/AudioPreview";
 
 export default function DJProfilePage() {
   const { id } = useParams<{ id: string }>();
-  
+
   // 2. Hooks de Dados
   const { data: djProfile, isLoading: djLoading } = useDJ(id || "");
-  
+
   // 3. ALTERADO: Usando o hook novo para buscar as músicas deste DJ específico
   const { useTracks } = useMusicApi();
   // Passamos o 'id' do DJ vindo da URL para filtrar apenas as músicas dele
   const { data: tracks = [], isLoading: tracksLoading } = useTracks(id);
+
+  // 4. Hook para gerenciar follow/unfollow
+  const { isFollowing, isLoading: isLoadingFollow, handleToggleFollow, followerCount } = useFollow(id || "");
 
   const [buyPackModalOpen, setBuyPackModalOpen] = useState(false);
 
@@ -50,7 +56,7 @@ export default function DJProfilePage() {
             <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-primary/20 bg-muted flex-shrink-0">
               <img src={avatarUrl} alt={djProfile.dj_name} className="w-full h-full object-cover" />
             </div>
-            <div className="text-center md:text-left">
+            <div className="text-center md:text-left flex-1">
               <CardTitle className="text-4xl font-black tracking-tighter mb-2">
                 {djProfile.dj_name}
               </CardTitle>
@@ -60,6 +66,24 @@ export default function DJProfilePage() {
                   {djProfile.city}
                 </p>
               )}
+              <div className="mt-4 flex items-center gap-4 justify-center md:justify-start">
+                <span className="text-sm text-muted-foreground">
+                  {followerCount} {followerCount === 1 ? "seguidor" : "seguidores"}
+                </span>
+                <Button
+                  onClick={handleToggleFollow}
+                  disabled={isLoadingFollow}
+                  className={isFollowing ? "rounded-full" : "rounded-full bg-primary hover:bg-primary/90"}
+                  variant={isFollowing ? "outline" : "default"}
+                >
+                  {isLoadingFollow ? (
+                    <Loader2 size={16} className="animate-spin mr-2" />
+                  ) : (
+                    <Heart size={16} className={`mr-2 ${isFollowing ? "fill-current" : ""}`} />
+                  )}
+                  {isFollowing ? "Deixar de Seguir" : "Seguir"}
+                </Button>
+              </div>
             </div>
           </div>
         </CardHeader>

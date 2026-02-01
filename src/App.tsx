@@ -1,7 +1,9 @@
 import { Switch, Route, Link, useLocation } from "wouter";
 import { PackProvider } from "@/context/packContext";
+import { PlayerProvider } from "@/context/PlayerContext";
 import { FloatingFolder } from "@/components/FloatingFolder";
 import { CreatePackModal } from "@/components/CreatePackModal";
+import { MiniPlayer } from "@/components/MiniPlayer";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -46,7 +48,7 @@ function Sidebar() {
   return (
     <aside className="fixed left-5 top-[76px] bottom-5 w-[95px] hidden md:flex flex-col items-center py-6 glass-panel rounded-[40px] z-50 border border-white/10">
       <nav className="flex-1 flex flex-col gap-8 w-full items-center">
-        <Bell className="w-5 h-5 text-gray-500 ml-[42px]" />
+        <Bell className="w-5 h-5 text-gray-500 mx-auto" />
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location === item.href;
@@ -230,21 +232,24 @@ function App() {
   return <QueryClientProvider client={queryClient}>
       <NotificationProvider>
         <CartProvider>
-          <PackProvider>
-            <TooltipProvider>
-              <AuthRedirect />
-              <div className="min-h-screen text-foreground font-body flex flex-col overflow-x-hidden">
-                <Sidebar />
-                <Navbar />
-                <div className={`flex-1 pt-16 overflow-hidden px-4 transition-all ${user ? 'md:ml-[110px] md:mt-[4px]' : 'pb-6'}`}>
-                  <Router />
+          <PlayerProvider>
+            <PackProvider>
+              <TooltipProvider>
+                <AuthRedirect />
+                <div className="min-h-screen text-foreground font-body flex flex-col overflow-x-hidden">
+                  <Sidebar />
+                  <Navbar />
+                  <div className={`flex-1 pt-16 overflow-hidden px-4 transition-all ${user ? 'md:ml-[110px] md:mt-[4px]' : 'pb-6'}`}>
+                    <Router />
+                  </div>
+                  <CartSidebar />
+                  <NotificationCenter />
+                  <FloatingFolder />
+                  <MiniPlayer />
                 </div>
-                <CartSidebar />
-                <NotificationCenter />
-                <FloatingFolder />
-              </div>
-            </TooltipProvider>
-          </PackProvider>
+              </TooltipProvider>
+            </PackProvider>
+          </PlayerProvider>
         </CartProvider>
       </NotificationProvider>
     </QueryClientProvider>;

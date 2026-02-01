@@ -216,44 +216,6 @@ export default function AdminPage() {
               </Button>
             </div>
           </Card>
-
-          <Card className="p-6 bg-card/50 border-white/10">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold">Gerenciar Tracks</h3>
-              <div className="flex items-center gap-2">
-                <Button size="sm" variant="outline" onClick={() => { setShowHidden(!showHidden); }}>
-                  {showHidden ? <><Eye className="mr-2" /> Mostrar ativos</> : <><EyeOff className="mr-2" /> Mostrar ocultos</>}
-                </Button>
-                <Button size="sm" variant="ghost" onClick={fetchTracks}>Atualizar</Button>
-              </div>
-            </div>
-
-            {loadingTracks ? (
-              <div className="py-8 flex justify-center"><Loader2 className="animate-spin" /></div>
-            ) : (
-              <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                {tracks.filter(t => showHidden ? hiddenTrackIds.includes(t.id) : !hiddenTrackIds.includes(t.id)).map(track => (
-                  <div key={track.id} className="p-3 border border-white/5 rounded-lg flex items-center justify-between">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-3">
-                        <div className="font-bold truncate">{track.title}</div>
-                        <div className="text-xs text-muted-foreground truncate">{track.artist}</div>
-                      </div>
-                      <div className="text-[11px] text-muted-foreground mt-1">{track.genre} • {track.track_type || '—'} • R$ {(track.price_cents ? (track.price_cents/100).toFixed(2) : '—')}</div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button size="sm" variant="ghost" onClick={() => handleOpenEdit(track)}><Edit /></Button>
-                      {hiddenTrackIds.includes(track.id) ? (
-                        <Button size="sm" variant="outline" onClick={() => handleUnhide(track.id)}>Desocultar</Button>
-                      ) : (
-                        <Button size="sm" variant="destructive" onClick={() => handleDeleteFromView(track.id)}><Trash2 /></Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
         </div>
       </div>
 

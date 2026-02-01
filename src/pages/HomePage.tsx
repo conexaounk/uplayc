@@ -3,12 +3,14 @@ import { usePacks } from "@/hooks/use-packs";
 import { useDJs } from "@/hooks/use-djs";
 import { PackCard } from "@/components/PackCard";
 import { PackDetailsModal } from "@/components/PackDetailsModal";
+import { FollowButton } from "@/components/FollowButton";
 import { Input } from "@/components/ui/input";
 import { Search, Play, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import type { PackWithTracks } from "@/types/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -117,13 +119,11 @@ export default function HomePage() {
                   <p className="text-xs text-gray-400">{dj.city || 'Artista'}</p>
                 </div>
               </div>
-              <button className="border border-white/20 rounded-full px-4 py-1 text-xs text-white hover:bg-white hover:text-black transition">
-                Seguir
-              </button>
+              <FollowButton userId={dj.id} size="sm" />
             </div>
           ))}
         </div>
       </div>
-
-  </div>;
+    </div>
+  </div>
 }
