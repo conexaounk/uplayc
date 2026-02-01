@@ -13,18 +13,17 @@ import { getSettings, setSetting } from "@/lib/settingsService";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export default function AdminPage() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, isAdmin } = useAuth();
   const [, setLocation] = useLocation();
   const toast = useToast();
 
-  // Proteção: checar role no metadata do Supabase
+  // Proteção: checar role no banco de dados
   useEffect(() => {
-    const isAdmin = user?.app_metadata?.role === 'admin' || user?.user_metadata?.is_admin === true;
     if (!authLoading && !isAdmin) {
       toast.error("Acesso negado", "Apenas administradores podem acessar");
       setLocation("/");
     }
-  }, [user, authLoading, setLocation]);
+  }, [isAdmin, authLoading, setLocation]);
 
   const [saving, setSaving] = useState(false);
   const [prices, setPrices] = useState({
