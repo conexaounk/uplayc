@@ -17,8 +17,6 @@ export default function AdminPage() {
   const [, setLocation] = useLocation();
   const toast = useToast();
 
-  console.log("AdminPage render:", { authLoading, isAdmin, userId: user?.id });
-
   const [saving, setSaving] = useState(false);
   const [prices, setPrices] = useState({
     unit: "15.00",
@@ -33,14 +31,23 @@ export default function AdminPage() {
   const [hiddenTrackIds, setHiddenTrackIds] = useState<string[]>([]);
   const [showHidden, setShowHidden] = useState(false);
 
-  // Proteção: checar role no banco de dados
-  useEffect(() => {
-    if (!authLoading && !isAdmin) {
-      setLocation("/");
-    }
-  }, [isAdmin, authLoading, setLocation]);
-
+  // Mostrar loading enquanto carrega
   if (authLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
+
+  // Proteção: checar role no banco de dados DEPOIS de carregar
+  if (!isAdmin) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
+          <p className="text-muted-foreground mb-6">Apenas administradores podem acessar esta página</p>
+          <Button onClick={() => setLocation("/")} className="bg-primary hover:bg-primary/80">
+            Voltar para Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // Função para salvar no backend (POST /settings para cada chave)
   const handleSave = async () => {
