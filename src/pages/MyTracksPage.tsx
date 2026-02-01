@@ -1,5 +1,6 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useMusicApi } from "@/hooks/use-music-api";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Music, Loader2, Edit, Play, ExternalLink, Plus } from "lucide-react";
@@ -7,9 +8,6 @@ import { useToast } from "@/hooks/use-notification";
 import { UploadTrackModal } from "@/components/UploadTrackModal";
 import { EditTrackModal } from "@/components/EditTrackModal";
 import { PlayerContext } from "@/context/PlayerContext";
-import { supabase } from "@/integrations/supabase/client";
-
-const API_BASE = import.meta.env.VITE_API_URL || "https://api.conexaounk.com";
 
 // Interface exata do seu D1
 interface Track {
@@ -29,73 +27,16 @@ interface Track {
 export default function MyTracksPage() {
   // ✅ Pega o usuário logado via Supabase
   const { user, isLoading: authLoading } = useAuth();
+  const { useTracks } = useMusicApi();
   const toast = useToast();
-  
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // Buscar tracks usando o hook robusto
+  const { data: tracks = [], isLoading: tracksLoading } = useTracks(user?.id || "");
+
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
   const playerContext = useContext(PlayerContext);
-
-  const fetchUserTracks = async () => {
-    if (!user?.id) return;
-
-    setIsLoading(true);
-    try {
-      // 1. Faz a chamada para a API
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) throw new Error('Login necessário');
-
-      const response = await fetch(`${API_BASE}/tracks`, {
-        headers: { 'Authorization': `Bearer ${session.access_token}` },
-      });
-
-      if (!response.ok) throw new Error('Erro ao buscar tracks');
-      const res = await response.json();
-
-      // 2. Tenta encontrar a lista de tracks em diferentes formatos possíveis
-      let allTracks: Track[] = [];
-
-      if (Array.isArray(res)) {
-        allTracks = res;
-      } else if (res && typeof res === 'object') {
-        // Tenta chaves comuns: data, tracks, results
-        allTracks = res.data || res.tracks || res.results || [];
-      }
-
-      // 3. LOG DE DEBUG (Abra o F12 para ver isso no navegador)
-      console.log("ID do Usuário Logado:", user.id);
-      console.log("Total de tracks recebidas (bruto):", allTracks.length);
-
-      if (allTracks.length > 0) {
-         console.log("Exemplo de user_id na primeira track vinda do banco:", allTracks[0].user_id);
-      }
-
-      // 4. Filtragem com tratamento de strings (case insensitive e trim)
-      const myTracks = allTracks.filter((t: any) => {
-        // Garantimos que ambos são strings para comparação
-        const trackUserId = String(t.user_id || '').trim().toLowerCase();
-        const currentUserId = String(user.id).trim().toLowerCase();
-        return trackUserId === currentUserId;
-      });
-
-      console.log("Total após filtrar:", myTracks.length);
-      setTracks(myTracks);
-
-    } catch (error) {
-      console.error("Erro na requisição:", error);
-      toast.error("Erro", "Não foi possível carregar as tracks.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (user?.id) {
-      fetchUserTracks();
-    }
-  }, [user?.id]);
 
   // 1. Estado de carregamento do Auth (Supabase)
   if (authLoading) {
