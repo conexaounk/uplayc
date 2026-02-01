@@ -31,13 +31,13 @@ export function useAuth() {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
 
       // Busca o role se houver usuário autenticado
       if (currentUser?.id) {
-        fetchUserRole(currentUser.id);
+        await fetchUserRole(currentUser.id);
       } else {
         setUserRole(null);
       }
@@ -47,13 +47,13 @@ export function useAuth() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (_event, session) => {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
 
         // Busca o role se houver usuário autenticado
         if (currentUser?.id) {
-          fetchUserRole(currentUser.id);
+          await fetchUserRole(currentUser.id);
         } else {
           setUserRole(null);
         }
@@ -63,7 +63,7 @@ export function useAuth() {
     );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchUserRole]);
 
   const logout = async () => {
     setUserRole(null);
