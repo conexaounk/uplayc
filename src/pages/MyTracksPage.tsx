@@ -110,9 +110,7 @@ export default function MyTracksPage() {
           <h1 className="text-4xl font-black text-white">Minhas Tracks</h1>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-right">
-            <span className="text-2xl font-bold text-primary">{tracks.length}</span>
-          </div>
+          <div className="text-right" />
           <Button
             onClick={() => setUploadModalOpen(true)}
             className="rounded-full"
