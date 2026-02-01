@@ -102,7 +102,7 @@ export default function HomePage() {
       {/* Top DJs Section */}
       <section>
         <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-          <Users size={24} /> Artistas em Destaque
+          <Users size={24} />
         </h2>
         {djsLoading || packsLoading ? <div className="h-40 flex items-center justify-center">
           <Loader2 className="animate-spin text-accent-purple w-10 h-10" />
