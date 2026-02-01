@@ -3,7 +3,8 @@ import * as apiService from "@/lib/apiService";
 import { useToast } from "@/hooks/use-notification";
 import { supabase } from "@/integrations/supabase/client";
 
-const API_BASE = "https://api.conexaounk.com";
+const API_BASE = import.meta.env.VITE_API_URL || "https://api.conexaounk.com";
+console.log('🔌 API_BASE inicializado:', API_BASE);
 
 export function useMusicApi() {
   const queryClient = useQueryClient();
