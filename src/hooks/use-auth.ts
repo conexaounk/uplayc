@@ -9,6 +9,7 @@ export function useAuth() {
 
   // Busca o role do usuário na tabela user_roles
   const fetchUserRole = useCallback(async (userId: string) => {
+    console.log("Fetching role for user:", userId);
     try {
       const { data, error } = await supabase
         .from("user_roles")
@@ -16,12 +17,15 @@ export function useAuth() {
         .eq("user_id", userId)
         .single();
 
+      console.log("Role query result:", { data, error });
+
       if (error) {
-        console.log("Usuário sem role atribuído ou erro ao buscar");
+        console.log("Usuário sem role atribuído ou erro ao buscar:", error.message);
         setUserRole(null);
         return;
       }
 
+      console.log("Setting user role:", data?.role);
       setUserRole(data?.role || null);
     } catch (err) {
       console.error("Erro ao buscar user role:", err);
