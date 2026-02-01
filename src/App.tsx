@@ -136,7 +136,7 @@ function Navbar() {
                 <LogOut size={18} />
               </Button>
             </div> : <Button size="sm" onClick={() => setLocation("/login")} className="bg-accent-purple hover:bg-purple-600 text-white hidden sm:flex">
-              Sign In
+              <p>login</p>
             </Button>}
 
           {/* Mobile Menu Trigger */}
