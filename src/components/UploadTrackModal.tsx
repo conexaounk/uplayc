@@ -567,8 +567,7 @@ export function UploadTrackModal({
                       <Button
                         type="submit"
                         disabled={uploadMutation.isPending}
-                        className="w-full text-sm font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-xl hover:shadow-primary/40 transition-all rounded-xl"
-                        style={{ gap: "2px", height: "59px", minHeight: "0px" }}
+                        className="w-full h-12 sm:h-14 text-sm font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-xl hover:shadow-primary/40 transition-all rounded-xl"
                       >
                         {uploadMutation.isPending ? (
                           <>
