@@ -601,7 +601,7 @@ export function UploadTrackModal({
           </TabsContent>
 
           {/* ================= BROWSE ================= */}
-          <TabsContent value="browse" className="space-y-4 p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-200px)]" style={{ margin: "24px 1px 0 0", padding: "24px 0 24px 24px" }}>
+          <TabsContent value="browse" className="flex-1 overflow-y-auto p-6 space-y-4">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
