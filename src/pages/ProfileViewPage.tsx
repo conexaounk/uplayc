@@ -1,12 +1,11 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useDJ } from "@/hooks/use-djs";
-import { useProfileTracks } from "@/hooks/use-profile-tracks";
 import { useUserTracks } from "@/hooks/use-tracks";
 import { useCart } from "@/hooks/use-cart";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Edit, Plus, Play, Pause, ShoppingCart } from "lucide-react";
+import { Loader2, Edit, Plus, Play, Pause, ShoppingCart, Music } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
 import { UploadTrackModal } from "@/components/UploadTrackModal";
 import { BuyPackModal } from "@/components/BuyPackModal";
@@ -15,50 +14,26 @@ import { useState, useRef, useEffect } from "react";
 export default function ProfileViewPage() {
   const { user, isLoading: authLoading } = useAuth();
   const { data: myProfile, isLoading: profileLoading } = useDJ(user?.id || "");
-  const { data: profileTrackIds = [], isLoading: profileTracksLoading } = useProfileTracks(user?.id);
-  const { data: allUserTracks = [] } = useUserTracks(user?.id);
-  const { addItem, setIsOpen } = useCart();
+  
+  // Buscamos as músicas diretamente do banco pelo ID do usuário logado
+  const { data: allUserTracks = [], isLoading: tracksLoading } = useUserTracks(user?.id || "");
+  
+  const { addItem } = useCart();
   const [, setLocation] = useLocation();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [buyPackModalOpen, setBuyPackModalOpen] = useState(false);
   const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Filtrar apenas as tracks que foram adicionadas ao perfil
-  const profileTracks = allUserTracks.filter(track =>
-    profileTrackIds.some(pt => pt.track_id === track.id)
-  );
-
-  // Adicionar uma track ao carrinho
-  const handleAddTrackToCart = (track: typeof profileTracks[0]) => {
-    addItem({
-      id: track.id,
-      title: track.title,
-      price: "0", // Ajuste conforme necessário
-      coverImage: track.cover_url || "/placeholder.svg",
-      author: {
-        username: track.artist || "Unknown",
-      },
-    });
-  };
-
-  // Play/Pause preview
-  const handlePlayPreview = (trackId: string, audioUrl: string) => {
-    if (playingTrackId === trackId && audioRef.current && !audioRef.current.paused) {
-      audioRef.current.pause();
-      setPlayingTrackId(null);
-    } else {
-      if (audioRef.current) {
-        audioRef.current.src = audioUrl;
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-        setPlayingTrackId(trackId);
-      }
+  // Redirecionar se usuário não está autenticado
+  useEffect(() => {
+    if (!authLoading && !user) {
+      setLocation("/");
     }
-  };
+  }, [authLoading, user, setLocation]);
 
-  // Parar quando terminar 30 segundos
+  // Lógica de Áudio (Preview 30s)
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -76,237 +51,159 @@ export default function ProfileViewPage() {
     return () => audio.removeEventListener("timeupdate", handleTimeUpdate);
   }, []);
 
-  // Redirecionar se usuário não está autenticado
-  useEffect(() => {
-    if (!authLoading && !user) {
-      setLocation("/");
+  const handlePlayPreview = (trackId: string, audioUrl: string) => {
+    if (playingTrackId === trackId && audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      setPlayingTrackId(null);
+    } else if (audioRef.current) {
+      audioRef.current.src = audioUrl;
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setPlayingTrackId(trackId);
     }
-  }, [authLoading, user, setLocation]);
+  };
+
+  const handleAddTrackToCart = (track: any) => {
+    addItem({
+      id: track.id,
+      title: track.title,
+      price: track.price_cents ? (track.price_cents / 100).toString() : "0",
+      coverImage: track.cover_url || "/placeholder.svg",
+      author: { username: track.artist || "DJ" },
+    });
+  };
 
   if (authLoading || profileLoading) {
     return (
       <div className="h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin" />
+        <Loader2 className="animate-spin text-primary" />
       </div>
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   const avatarUrl = getStorageUrl(myProfile?.avatar_url, "avatars") || "/placeholder.svg";
-  const avatarEmoji = (myProfile as any)?.avatar_emoji;
 
   return (
     <div className="min-h-screen pt-24 pb-20 container max-w-4xl mx-auto px-4">
-      <Card
-        className="bg-card overflow-hidden"
-        style={{
-          borderRadius: "28px",
-          boxShadow: "0 0 5px 0 rgba(95, 49, 143, 0.77)",
-          border: "1px solid rgba(107, 30, 161, 0.85)",
-        }}
-      >
-        <CardHeader
-          className="pb-8 overflow-hidden"
-          style={{
-            borderRadius: "1px",
-            border: "1px solid rgba(144, 19, 254, 0.15)",
-          }}
-        >
+      {/* Header do Perfil */}
+      <Card className="bg-card border-primary/20 rounded-[28px] overflow-hidden shadow-xl shadow-black/50">
+        <CardHeader className="pb-8 border-b border-white/5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
-              <div className="w-24 h-24 rounded-full overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center">
-                {avatarEmoji ? (
-                  <span className="text-6xl">{avatarEmoji}</span>
-                ) : (
-                  <img
-                    src={avatarUrl}
-                    alt="Avatar"
-                    className="object-cover block"
-                    style={{
-                      width: "105%",
-                      height: "104%",
-                      margin: "0 20px 14px 1px",
-                    }}
-                  />
-                )}
+              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30">
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               </div>
               <div>
-                <CardTitle className="text-3xl font-bold mb-2">
+                <CardTitle className="text-3xl font-bold mb-1">
                   {myProfile?.dj_name || "Meu Perfil"}
                 </CardTitle>
-                {myProfile?.city && (
-                  <p className="text-muted-foreground mb-2">{myProfile.city}</p>
-                )}
+                <p className="text-primary text-sm font-medium">{user.username}</p>
               </div>
             </div>
-            <Button
+            <Button 
+              variant="outline" 
               onClick={() => setLocation("/profile/edit")}
-              size="lg"
-              className="pl-2.5"
-              style={{
-                backgroundColor: "rgba(164, 36, 255, 0.01)",
-                boxShadow: "1px 1px 0 0 rgba(0, 0, 0, 1)",
-              }}
+              className="rounded-xl border-primary/50 hover:bg-primary/10"
             >
-              <Edit size={18} />
+              <Edit size={18} className="mr-2" /> Editar Perfil
             </Button>
           </div>
         </CardHeader>
-        <CardContent
-          className="pt-8 overflow-hidden"
-          style={{
-            border: "1px solid rgba(144, 19, 254, 0.06)",
-          }}
-        >
-          {myProfile?.bio && (
-            <div>
-              <h3 className="text-lg font-semibold mb-3">Bio</h3>
-              <p className="text-muted-foreground whitespace-pre-wrap">{myProfile.bio}</p>
-            </div>
-          )}
-          {!myProfile?.bio && (
-            <p className="text-muted-foreground italic">
-              Nenhuma bio adicionada. Clique em "Editar Perfil" para adicionar uma.
-            </p>
-          )}
+        <CardContent className="pt-6">
+          <p className="text-muted-foreground italic">
+            {myProfile?.bio || "Nenhuma bio adicionada ainda."}
+          </p>
         </CardContent>
       </Card>
 
-      {/* Tracks Section */}
-      {profileTracks.length > 0 && (
-        <Card
-          className="bg-card overflow-hidden mt-6"
-          style={{
-            borderRadius: "28px",
-            boxShadow: "0 0 5px 0 rgba(95, 49, 143, 0.77)",
-            border: "1px solid rgba(107, 30, 161, 0.85)",
-          }}
-        >
-          <CardHeader
-            style={{
-              borderRadius: "1px",
-              border: "1px solid rgba(144, 19, 254, 0.15)",
-            }}
-          >
-            <CardTitle className="text-2xl font-bold">Suas Tracks</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-8">
-            {profileTracksLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="animate-spin text-primary" />
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {profileTracks.map((track) => {
-                  const isPlaying = playingTrackId === track.id;
-
-                  return (
-                    <div
-                      key={track.id}
-                      className="bg-muted/30 border border-white/10 rounded-lg p-4 flex items-center gap-3 hover:border-primary/50 transition-all"
-                    >
-                      {/* Play Button */}
-                      <button
-                        onClick={() => handlePlayPreview(track.id, track.audio_url)}
-                        className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center text-primary hover:bg-primary/30 transition-colors flex-shrink-0"
-                      >
-                        {isPlaying ? (
-                          <Pause className="w-5 h-5" />
-                        ) : (
-                          <Play className="w-5 h-5" />
-                        )}
-                      </button>
-
-                      {/* Track Info */}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold truncate">{track.title}</h4>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          {track.artist && <span>{track.artist}</span>}
-                          {track.artist && track.genre && <span>•</span>}
-                          <span className="capitalize">{track.genre}</span>
-                        </div>
-                        {isPlaying && (
-                          <div className="mt-2 flex items-center gap-2">
-                            <div className="h-1 flex-1 bg-primary/30 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-primary transition-all"
-                                style={{ width: `${(currentTime / 30) * 100}%` }}
-                              />
-                            </div>
-                            <span className="text-xs text-primary">
-                              {Math.floor(currentTime)}s / 30s
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Duration */}
-                      {track.duration && (
-                        <span className="text-sm text-muted-foreground flex-shrink-0">
-                          {Math.floor(track.duration / 1000 / 60)}:{String(Math.floor((track.duration / 1000) % 60)).padStart(2, "0")}
-                        </span>
-                      )}
-
-                      {/* Add to Cart Button */}
-                      <button
-                        onClick={() => handleAddTrackToCart(track)}
-                        className="w-10 h-10 rounded bg-secondary/20 flex items-center justify-center text-secondary hover:bg-secondary/30 transition-colors flex-shrink-0"
-                        title="Adicionar ao carrinho"
-                      >
-                        <ShoppingCart className="w-5 h-5" />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="space-y-3 mt-6">
-        <Button
-          onClick={() => setUploadModalOpen(true)}
-          size="lg"
-          className="w-full"
-          style={{
-            backgroundColor: "rgba(164, 36, 255, 0.01)",
-            boxShadow: "1px 1px 0 0 rgba(0, 0, 0, 1)",
-          }}
-        >
-          <Plus size={18} className="mr-2" />
-          Add Track
-        </Button>
-
-        {profileTracks.length >= 10 && (
-          <Button
-            onClick={() => setBuyPackModalOpen(true)}
-            size="lg"
-            className="w-full bg-primary hover:bg-primary/90"
-          >
-            <ShoppingCart className="mr-2 w-5 h-5" />
-            Teste: Comprar Pack
+      {/* Lista de Tracks */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-bold flex items-center gap-2">
+            <Music className="text-primary" /> Minhas Tracks
+          </h3>
+          <Button onClick={() => setUploadModalOpen(true)} className="rounded-full">
+            <Plus size={18} className="mr-2" /> Nova Track
           </Button>
+        </div>
+
+        {tracksLoading ? (
+          <div className="flex justify-center py-10"><Loader2 className="animate-spin" /></div>
+        ) : (
+          <div className="space-y-3">
+            {allUserTracks.map((track) => {
+              const isPlaying = playingTrackId === track.id;
+              return (
+                <div key={track.id} className="bg-muted/20 border border-white/5 rounded-2xl p-4 flex items-center gap-4 group transition-all hover:border-primary/30">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handlePlayPreview(track.id, track.audio_url)}
+                    className="w-12 h-12 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white"
+                  >
+                    {isPlaying ? <Pause /> : <Play className="ml-0.5" />}
+                  </Button>
+
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold truncate">{track.title}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {track.artist}
+                      {/* MOSTRANDO O NOVO CAMPO COLLABORATIONS */}
+                      {track.collaborations && (
+                        <span className="text-primary/70 ml-1">feat. {track.collaborations}</span>
+                      )}
+                      <span className="mx-2">•</span>
+                      <span className="capitalize">{track.genre}</span>
+                    </p>
+                    
+                    {isPlaying && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-primary transition-all duration-300" 
+                            style={{ width: `${(currentTime / 30) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleAddTrackToCart(track)}
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    <ShoppingCart size={20} />
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 
-      <UploadTrackModal
-        open={uploadModalOpen}
-        onOpenChange={setUploadModalOpen}
-      />
+      {/* Pack Button */}
+      {allUserTracks.length >= 10 && (
+        <Button
+          onClick={() => setBuyPackModalOpen(true)}
+          className="w-full mt-8 bg-gradient-to-r from-primary to-purple-600 h-14 text-lg font-bold shadow-lg"
+        >
+          <ShoppingCart className="mr-2" /> Visualizar Meu Pack
+        </Button>
+      )}
 
+      {/* Modais */}
+      <UploadTrackModal open={uploadModalOpen} onOpenChange={setUploadModalOpen} />
       <BuyPackModal
         isOpen={buyPackModalOpen}
         onClose={() => setBuyPackModalOpen(false)}
         djName={myProfile?.dj_name || "Meu DJ"}
         djId={user?.id || ""}
-        allTracks={profileTracks}
+        allTracks={allUserTracks}
       />
-
-      {/* Hidden audio element para preview */}
       <audio ref={audioRef} crossOrigin="anonymous" />
     </div>
   );
