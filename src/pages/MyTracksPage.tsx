@@ -39,8 +39,8 @@ export default function MyTracksPage() {
         transition={{ duration: 0.4 }}
         className="space-y-4"
       >
-        <h1 className="text-4xl font-black text-white">Minhas Tracks</h1>
-        <p className="text-gray-400">
+        <h1 className="text-4xl font-black text-white mt-7 ml-1">Minhas Tracks</h1>
+        <p className="text-gray-400 mt-4 ml-[5px]">
           Você tem {allTracks.length} track{allTracks.length !== 1 ? "s" : ""} no total
         </p>
       </motion.div>
