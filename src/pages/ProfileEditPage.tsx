@@ -66,13 +66,18 @@ export default function ProfileEditPage() {
 
   const onSubmit = (data: ProfileFormData) => {
     updateProfile.mutate(
-      { id: user.id, ...data },
+      { id: user.id, ...data, avatar_url: avatarUrl },
       {
         onSuccess: () => {
           setLocation("/profile");
         },
       }
     );
+  };
+
+  const handleAvatarUploadComplete = (url: string) => {
+    setAvatarUrl(url);
+    form.setValue("avatar_url", url);
   };
 
   const avatarEmoji = form.watch("avatar_emoji");
