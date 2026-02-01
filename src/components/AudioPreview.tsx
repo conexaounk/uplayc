@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
@@ -8,21 +8,30 @@ interface AudioPreviewProps {
   title: string;
   size?: "sm" | "md" | "lg";
   showTime?: boolean;
+  startTime?: number;
+  onStartTimeChange?: (time: number) => void;
+  editable?: boolean;
 }
 
 const PREVIEW_DURATION = 30; // 30 segundos
 
-export function AudioPreview({ 
-  url, 
-  title, 
+export function AudioPreview({
+  url,
+  title,
   size = "md",
-  showTime = true 
+  showTime = true,
+  startTime = 0,
+  onStartTimeChange,
+  editable = false
 }: AudioPreviewProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [muted, setMuted] = useState(false);
+  const [musicDuration, setMusicDuration] = useState(0);
+  const [showTimeSelector, setShowTimeSelector] = useState(false);
+  const [previewStart, setPreviewStart] = useState(startTime);
 
   useEffect(() => {
     const audio = audioRef.current;
