@@ -71,7 +71,6 @@ export default function ProfileViewPage() {
                 <CardTitle className="text-3xl font-bold mb-1">
                   {myProfile?.dj_name || "Meu Perfil"}
                 </CardTitle>
-                <p className="text-primary text-sm font-medium">{user.email}</p>
               </div>
             </div>
             <Button 
@@ -94,7 +93,7 @@ export default function ProfileViewPage() {
       <div className="mt-8">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-2xl font-bold flex items-center gap-2">
-            <Music className="text-primary" /> Minhas Tracks
+            Minhas Tracks
           </h3>
           <Button onClick={() => setUploadModalOpen(true)} className="rounded-full">
             <Plus size={18} className="mr-2" /> Nova Track
@@ -132,6 +131,11 @@ export default function ProfileViewPage() {
                         {track.bpm && (
                           <span className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded">
                             {track.bpm} BPM
+                          </span>
+                        )}
+                        {track.key && (
+                          <span className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded">
+                            {track.key}
                           </span>
                         )}
                       </div>
