@@ -391,7 +391,7 @@ export function UploadTrackModal({
                     {/* Tipo de Produção */}
                     <div className="space-y-2">
                       <Label className="text-sm font-semibold text-foreground">Tipo de Produção</Label>
-                      <div className="grid grid-cols-2 gap-48">
+                      <div className="grid grid-cols-2 gap-3">
                         <motion.button
                           type="button"
                           whileHover={{ scale: 1.02 }}
