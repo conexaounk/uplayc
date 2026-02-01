@@ -89,7 +89,7 @@ export default function HomePage() {
 
         {packsLoading ? <div className="h-64 flex items-center justify-center">
           <Loader2 className="animate-spin text-accent-purple w-10 h-10" />
-        </div> : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div> : <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {packs?.map(pack => <PackCard key={pack.id} pack={pack} onClick={() => setSelectedPack(pack)} />)}
           {packs?.length === 0 && <div className="col-span-full text-center py-20 text-gray-400 border border-dashed border-white/10 rounded-xl">
             Nenhum pack encontrado para sua busca.
