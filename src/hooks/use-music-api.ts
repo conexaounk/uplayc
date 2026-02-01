@@ -51,7 +51,7 @@ export function useMusicApi() {
 
   // Adicionar à biblioteca
   const addToLibraryMutation = useMutation({
-    mutationFn: (trackId: string) => 
+    mutationFn: (trackId: string) =>
       api.fetch("/user-library", {
         method: "POST",
         body: JSON.stringify({ track_id: trackId })
@@ -59,5 +59,19 @@ export function useMusicApi() {
     onSuccess: () => toast.success("Adicionado à sua biblioteca!")
   });
 
-  return { useTracks, uploadMutation, addToLibraryMutation };
+  // Controlar publicidade de uma track (privada/pública)
+  const updateTrackPublicityMutation = useMutation({
+    mutationFn: ({ trackId, isPublic }: { trackId: string; isPublic: boolean }) =>
+      api.updateTrackPublicity(trackId, isPublic),
+    onSuccess: (_, { isPublic }) => {
+      const status = isPublic ? "pública" : "privada";
+      toast.success(`Música marcada como ${status}`);
+      queryClient.invalidateQueries({ queryKey: ['tracks'] });
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao atualizar música: " + error.message);
+    }
+  });
+
+  return { useTracks, uploadMutation, addToLibraryMutation, updateTrackPublicityMutation };
 }
