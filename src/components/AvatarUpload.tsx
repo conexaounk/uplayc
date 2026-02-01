@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Upload, X } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-notification";
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
