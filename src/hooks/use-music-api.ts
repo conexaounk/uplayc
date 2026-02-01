@@ -14,7 +14,10 @@ export function useMusicApi() {
     queryKey: ['tracks', userId, search],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) return [];
+      if (!session?.access_token) {
+        console.warn('⚠️ useTracks: Sem token de autenticação');
+        return [];
+      }
 
       let url = '/tracks';
       const params = new URLSearchParams();
@@ -24,18 +27,29 @@ export function useMusicApi() {
 
       const queryString = params.toString();
       const fullUrl = queryString ? `${url}?${queryString}` : url;
+      const fullApiUrl = `${API_BASE}${fullUrl}`;
+
+      console.log('📡 useTracks: Tentando buscar de', fullApiUrl);
+      console.log('📡 useTracks: userId=', userId, 'search=', search);
 
       try {
-        const response = await fetch(`${API_BASE}${fullUrl}`, {
+        const response = await fetch(fullApiUrl, {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
             'Content-Type': 'application/json',
-          }
+          },
         });
 
-        if (!response.ok) return [];
-        
+        console.log('📡 useTracks: Response status:', response.status);
+
+        if (!response.ok) {
+          console.warn(`⚠️ useTracks: Erro HTTP ${response.status}:`, response.statusText);
+          return [];
+        }
+
         const data = await response.json();
+        console.log('✅ useTracks: Dados recebidos:', data);
 
         // Garantir que sempre retorna um array
         if (Array.isArray(data)) {
@@ -47,9 +61,14 @@ export function useMusicApi() {
         if (data?.data && Array.isArray(data.data)) {
           return data.data;
         }
+        console.warn('⚠️ useTracks: Resposta não é um array:', data);
         return [];
       } catch (error) {
-        console.error('Erro ao buscar tracks:', error);
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error('❌ Erro ao buscar tracks:', errorMsg);
+        console.error('❌ API_BASE:', API_BASE);
+        console.error('❌ Full URL:', fullApiUrl);
+        console.error('❌ Stack:', error);
         return [];
       }
     }
