@@ -120,11 +120,6 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
           </div>
 
           <div>
-            <Label>Preço (centavos)</Label>
-            <Input type="number" {...form.register('price_cents', { valueAsNumber: true })} />
-          </div>
-
-          <div>
             <Label>Tempo inicial da prévia (segundos)</Label>
             <Input
               type="number"
