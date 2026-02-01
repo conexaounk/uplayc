@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Music, Loader2, Edit, Play, ExternalLink } from "lucide-react";
-import { api } from "@/lib/apiService"; 
+import { Music, Loader2, Edit, Play, ExternalLink, X } from "lucide-react";
+import { api } from "@/lib/apiService";
 import { useToast } from "@/hooks/use-notification";
+import { AudioPreview } from "@/components/AudioPreview";
 
 // Interface exata do seu D1
 interface Track {
