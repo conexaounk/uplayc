@@ -28,6 +28,7 @@ import AdminPage from "@/pages/AdminPage";
 
 function Sidebar() {
   const [location] = useLocation();
+  const { user } = useAuth();
 
   const navItems = [
     { href: "/", icon: Home, label: "Home" },
@@ -35,6 +36,8 @@ function Sidebar() {
     { href: "#library", icon: Music, label: "Library" },
     { href: "#settings", icon: Settings, label: "Settings" },
   ];
+
+  if (!user) return null;
 
   return (
     <aside className="fixed left-5 top-[76px] bottom-5 w-[95px] hidden md:flex flex-col items-center py-6 glass-panel rounded-[40px] z-50 border border-white/10">
