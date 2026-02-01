@@ -27,6 +27,7 @@ import AdminPage from "@/pages/AdminPage";
 import SearchPage from "@/pages/SearchPage";
 import SettingsPage from "@/pages/SettingsPage";
 import MyTracksPage from "@/pages/MyTracksPage";
+import AdminSetupPage from "@/pages/AdminSetupPage";
 
 function Sidebar() {
   const [location] = useLocation();
