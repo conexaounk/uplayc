@@ -17,14 +17,6 @@ export default function AdminPage() {
   const [, setLocation] = useLocation();
   const toast = useToast();
 
-  // Proteção: checar role no banco de dados
-  useEffect(() => {
-    if (!authLoading && !isAdmin) {
-      toast.error("Acesso negado", "Apenas administradores podem acessar");
-      setLocation("/");
-    }
-  }, [isAdmin, authLoading, setLocation]);
-
   const [saving, setSaving] = useState(false);
   const [prices, setPrices] = useState({
     unit: "15.00",
@@ -38,6 +30,14 @@ export default function AdminPage() {
   const [editTrack, setEditTrack] = useState<any | null>(null);
   const [hiddenTrackIds, setHiddenTrackIds] = useState<string[]>([]);
   const [showHidden, setShowHidden] = useState(false);
+
+  // Proteção: checar role no banco de dados
+  useEffect(() => {
+    if (!authLoading && !isAdmin) {
+      toast.error("Acesso negado", "Apenas administradores podem acessar");
+      setLocation("/");
+    }
+  }, [isAdmin, authLoading, setLocation, toast]);
 
   if (authLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
 
