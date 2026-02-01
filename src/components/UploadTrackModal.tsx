@@ -145,14 +145,14 @@ export function UploadTrackModal({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-3">
-          <TabsList className="grid w-full grid-cols-2 bg-muted/20">
-            <TabsTrigger value="upload">Novo Upload</TabsTrigger>
-            <TabsTrigger value="browse">Banco Global</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
+          <TabsList className="grid w-full grid-cols-2 bg-muted/20 h-8">
+            <TabsTrigger value="upload" className="text-xs sm:text-sm">Novo Upload</TabsTrigger>
+            <TabsTrigger value="browse" className="text-xs sm:text-sm">Banco Global</TabsTrigger>
           </TabsList>
 
           {/* ================= UPLOAD ================= */}
-          <TabsContent value="upload" className="space-y-6 mt-6">
+          <TabsContent value="upload" className="space-y-3 mt-3">
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {!file ? (
                 <div
