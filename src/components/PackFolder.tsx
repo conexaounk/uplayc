@@ -30,6 +30,7 @@ export function PackBuilderDrawer({
   onFinalize,
 }: PackBuilderDrawerProps) {
   const [selectedTracks, setSelectedTracks] = useState<Track[]>(initialTracks);
+  const toast = useToast();
   const isFull = selectedTracks.length === 10;
 
   function handleSlotClick(index: number) {
