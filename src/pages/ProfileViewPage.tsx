@@ -11,6 +11,7 @@ import { Loader2, Edit, Plus, ShoppingCart, Music, Lock, Globe, Trash2 } from "l
 import { getStorageUrl } from "@/lib/storageUtils";
 import { UploadTrackModal } from "@/components/UploadTrackModal";
 import { BuyPackModal } from "@/components/BuyPackModal";
+import { useToast } from "@/hooks/use-notification";
 import { useState, useEffect } from "react";
 
 export default function ProfileViewPage() {
