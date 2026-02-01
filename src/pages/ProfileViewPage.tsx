@@ -199,10 +199,9 @@ export default function ProfileViewPage() {
                       startTime={track.preview_start_time || 0}
                       editable={true}
                       onStartTimeChange={(newStartTime) => {
-                        // Atualizar a track com o novo startTime
-                        updateTrackPublicityMutation.mutate({
+                        updateTrackMutation.mutate({
                           trackId: cleanTrackId,
-                          isPublic: track.is_public
+                          payload: { preview_start_time: newStartTime }
                         });
                       }}
                     />
