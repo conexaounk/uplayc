@@ -11,6 +11,8 @@ import { useToast } from "@/hooks/use-notification";
 import { getSettings, setSetting } from "@/lib/settingsService";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
+const API_BASE = import.meta.env.VITE_API_URL || "https://api.conexaounk.com";
+
 
 export default function AdminPage() {
   const { user, isLoading: authLoading, isAdmin } = useAuth();
@@ -39,7 +41,7 @@ export default function AdminPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error('Login necessário');
 
-      const response = await fetch('https://api.conexaounk.com/tracks', {
+      const response = await fetch(`${API_BASE}/tracks`, {
         headers: { 'Authorization': `Bearer ${session.access_token}` },
       });
 
@@ -109,7 +111,7 @@ export default function AdminPage() {
 
       const entries = Object.entries(prices);
       const results = await Promise.all(entries.map(async ([key, value]) => {
-        const response = await fetch('https://api.conexaounk.com/settings', {
+        const response = await fetch(`${API_BASE}/settings`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -165,7 +167,7 @@ export default function AdminPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error('Login necessário');
 
-      const res = await fetch(`https://api.conexaounk.com/tracks/${updated.id}`, {
+      const res = await fetch(`${API_BASE}/tracks/${updated.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
