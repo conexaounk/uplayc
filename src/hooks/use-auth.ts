@@ -11,22 +11,24 @@ export function useAuth() {
   const fetchUserRole = useCallback(async (userId: string) => {
     console.log("Fetching role for user:", userId);
     try {
+      // Usar query sem .single() para evitar erro se houver múltiplas linhas
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", userId)
-        .single();
+        .eq("user_id", userId);
 
       console.log("Role query result:", { data, error });
 
       if (error) {
-        console.log("Usuário sem role atribuído ou erro ao buscar:", error.message);
+        console.log("Erro ao buscar roles:", error.message, error.code);
         setUserRole(null);
         return;
       }
 
-      console.log("Setting user role:", data?.role);
-      setUserRole(data?.role || null);
+      // Pegar o primeiro role (normalmente só há um)
+      const role = (data && data.length > 0) ? data[0]?.role : null;
+      console.log("Setting user role:", role);
+      setUserRole(role);
     } catch (err) {
       console.error("Erro ao buscar user role:", err);
       setUserRole(null);
