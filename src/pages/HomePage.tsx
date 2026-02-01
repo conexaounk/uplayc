@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { usePacks } from "@/hooks/use-packs";
 import { useDJs } from "@/hooks/use-djs";
-import { useFollow } from "@/hooks/use-follow";
 import { PackCard } from "@/components/PackCard";
 import { PackDetailsModal } from "@/components/PackDetailsModal";
+import { FollowButton } from "@/components/FollowButton";
 import { Input } from "@/components/ui/input";
-import { Search, Play, Loader2, Heart } from "lucide-react";
+import { Search, Play, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import type { PackWithTracks } from "@/types/supabase";
 import { useAuth } from "@/hooks/use-auth";
