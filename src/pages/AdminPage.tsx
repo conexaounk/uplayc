@@ -17,6 +17,8 @@ export default function AdminPage() {
   const [, setLocation] = useLocation();
   const toast = useToast();
 
+  console.log("AdminPage render:", { authLoading, isAdmin, userId: user?.id });
+
   const [saving, setSaving] = useState(false);
   const [prices, setPrices] = useState({
     unit: "15.00",
