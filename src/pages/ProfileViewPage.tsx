@@ -75,13 +75,6 @@ export default function ProfileViewPage() {
                 </CardTitle>
               </div>
             </div>
-            <Button 
-              variant="outline" 
-              onClick={() => setLocation("/profile/edit")}
-              className="rounded-xl border-primary/50 hover:bg-primary/10"
-            >
-              <Edit size={18} className="mr-2" /> Editar Perfil
-            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-6">
@@ -97,9 +90,6 @@ export default function ProfileViewPage() {
           <h3 className="text-2xl font-bold flex items-center gap-2">
             Minhas Tracks
           </h3>
-          <Button onClick={() => setUploadModalOpen(true)} className="rounded-full">
-            <Plus size={18} className="mr-2" /> Nova Track
-          </Button>
         </div>
 
         {tracksLoading ? (
