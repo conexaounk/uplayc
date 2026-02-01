@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Folder, Music, CheckCircle2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-notification";
 
 export type Track = {
   id: string;
