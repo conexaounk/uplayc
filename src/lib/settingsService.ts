@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-const API_BASE = "https://api.conexaounk.com";
+const API_BASE = import.meta.env.VITE_API_URL || "https://api.conexaounk.com";
 
 export async function getSettings() {
   const { data: { session } } = await supabase.auth.getSession();
