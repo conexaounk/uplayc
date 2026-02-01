@@ -81,6 +81,11 @@ export default function HomePage() {
             </div>
           </div>
 
+          {packsError && <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-8 text-red-300">
+              <p className="font-semibold">Erro ao carregar packs:</p>
+              <p className="text-sm">{packsError.message}</p>
+            </div>}
+
           {packsLoading ? <div className="h-64 flex items-center justify-center">
               <Loader2 className="animate-spin text-primary w-10 h-10" />
             </div> : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
