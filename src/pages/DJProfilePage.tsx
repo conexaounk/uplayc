@@ -5,10 +5,11 @@ import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FollowButton } from "@/components/FollowButton";
-import { Loader2, MapPin, ShoppingCart, Music2, Heart } from "lucide-react";
+import { Loader2, MapPin, ShoppingCart, Music2, Heart, Plus } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
 import { useState } from "react";
 import { BuyPackModal } from "@/components/BuyPackModal";
+import { CreatePackModal } from "@/components/CreatePackModal";
 import { AudioPreview } from "@/components/AudioPreview";
 
 export default function DJProfilePage() {
@@ -26,6 +27,7 @@ export default function DJProfilePage() {
   const { isFollowing, isLoading: isLoadingFollow, handleToggleFollow, followerCount } = useFollow(id || "");
 
   const [buyPackModalOpen, setBuyPackModalOpen] = useState(false);
+  const [createPackModalOpen, setCreatePackModalOpen] = useState(false);
 
   // Estados de Carregamento/Erro
   if (djLoading) {
@@ -103,6 +105,14 @@ export default function DJProfilePage() {
           <span className="text-sm text-muted-foreground">{tracks.length} músicas</span>
         </div>
 
+        <Button
+          onClick={() => setCreatePackModalOpen(true)}
+          className="w-full bg-gradient-to-r from-primary to-purple-600 hover:opacity-90 font-bold uppercase tracking-tighter"
+          size="lg"
+        >
+          <Plus className="mr-2" size={20} /> Criar Pack
+        </Button>
+
         {tracksLoading ? (
           <div className="flex justify-center py-12"><Loader2 className="animate-spin" /></div>
         ) : (
@@ -173,13 +183,18 @@ export default function DJProfilePage() {
         )
       )}
 
-      {/* Modal e Audio */}
+      {/* Modals */}
       <BuyPackModal
         isOpen={buyPackModalOpen}
         onClose={() => setBuyPackModalOpen(false)}
         djName={djProfile.dj_name}
         djId={djProfile.id}
         allTracks={tracks}
+      />
+
+      <CreatePackModal
+        open={createPackModalOpen}
+        onOpenChange={setCreatePackModalOpen}
       />
     </div>
   );
