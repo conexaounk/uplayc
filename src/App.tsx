@@ -213,16 +213,11 @@ function AuthRedirect() {
   useEffect(() => {
     // Se o usuário estava deslogado e agora está logado
     if (!previousUserRef.current && user) {
-      // Se é admin, redireciona para /admin
-      if (isAdmin) {
-        setLocation("/admin");
-      } else {
-        // Caso contrário, redireciona para /profile
-        setLocation("/profile");
-      }
+      // Sempre redireciona para home
+      setLocation("/");
     }
     previousUserRef.current = user;
-  }, [user, isAdmin, setLocation]);
+  }, [user, setLocation]);
 
   return null;
 }
