@@ -34,10 +34,9 @@ export default function AdminPage() {
   // Proteção: checar role no banco de dados
   useEffect(() => {
     if (!authLoading && !isAdmin) {
-      toast.error("Acesso negado", "Apenas administradores podem acessar");
       setLocation("/");
     }
-  }, [isAdmin, authLoading, setLocation, toast.error]);
+  }, [isAdmin, authLoading, setLocation]);
 
   if (authLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
 
