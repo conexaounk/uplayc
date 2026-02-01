@@ -81,59 +81,6 @@ export const api = {
     });
   },
 
-  // Upload chunked para arquivos grandes
-  async uploadTrackChunked(file: File, metadata: any, onProgress?: (p: number) => void) {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session?.access_token) {
-      throw new Error("Usuário não autenticado");
-    }
-
-    const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB conforme API
-    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-    const uploadId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      const start = chunkIndex * CHUNK_SIZE;
-      const end = Math.min(start + CHUNK_SIZE, file.size);
-      const chunk = file.slice(start, end);
-
-      const headers = new Headers();
-      headers.set("Authorization", `Bearer ${session.access_token}`);
-      headers.set("X-Upload-Chunk", String(chunkIndex));
-      headers.set("X-Upload-Total-Chunks", String(totalChunks));
-      headers.set("X-Upload-Id", uploadId);
-
-      const response = await fetch(`${API_BASE}/upload-chunked`, {
-        method: "POST",
-        body: chunk, // Enviar chunk puro, não FormData
-        headers,
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Upload do chunk ${chunkIndex + 1}/${totalChunks} falhou: ${errorText}`);
-      }
-
-      if (onProgress) {
-        onProgress(((chunkIndex + 1) / totalChunks) * 100);
-      }
-    }
-
-    // 2. AGORA O PULO DO GATO: Salvar no D1
-    // Chamamos a rota /tracks com os metadados completos
-    const cleanedPayload = cleanPayload({
-      ...metadata,
-      upload_id: uploadId,
-    });
-    
-    console.log('📝 Payload limpo para /tracks (chunked):', cleanedPayload);
-    
-    return this.fetch("/tracks", {
-      method: "POST",
-      body: JSON.stringify(cleanedPayload),
-    });
-  },
 
   async updateTrackPublicity(trackId: string, isPublic: boolean) {
     return this.fetch(`/tracks/${trackId}`, {
