@@ -106,6 +106,21 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
           <DialogDescription>Altere informações da faixa. Remover não deleta do banco.</DialogDescription>
         </DialogHeader>
 
+        {/* Audio Preview with Editable Time Selector */}
+        {track?.audio_url && (
+          <div className="my-4">
+            <AudioPreview
+              url={track.audio_url}
+              title={track.title}
+              size="md"
+              showTime={true}
+              startTime={track.preview_start_time || 0}
+              onStartTimeChange={(time) => form.setValue('preview_start_time', time)}
+              editable={true}
+            />
+          </div>
+        )}
+
         <form className="space-y-4 mt-4" onSubmit={form.handleSubmit(onSubmit)}>
           <div>
             <Label>Título</Label>
