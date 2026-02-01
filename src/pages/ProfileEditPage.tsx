@@ -107,9 +107,6 @@ export default function ProfileEditPage() {
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
                 Editar Perfil
               </h1>
-              <p className="text-muted-foreground mt-1">
-                Atualize suas informações públicas
-              </p>
             </div>
           </div>
         </div>
