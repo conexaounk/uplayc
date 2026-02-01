@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useDJ } from "@/hooks/use-djs";
-import { useUserTracks } from "@/hooks/use-tracks";
+import { useMusicApi } from "@/hooks/use-music-api";
 import { useCart } from "@/hooks/use-cart";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
