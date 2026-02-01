@@ -139,6 +139,7 @@ export function AudioPreview({
         ref={audioRef}
         src={url}
         onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
         onEnded={() => {
           setIsPlaying(false);
           setProgress(0);
