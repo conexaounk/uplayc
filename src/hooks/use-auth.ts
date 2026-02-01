@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -8,7 +8,7 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Busca o role do usuário na tabela user_roles
-  const fetchUserRole = async (userId: string) => {
+  const fetchUserRole = useCallback(async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from("user_roles")
@@ -27,7 +27,7 @@ export function useAuth() {
       console.error("Erro ao buscar user role:", err);
       setUserRole(null);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // Get initial session
