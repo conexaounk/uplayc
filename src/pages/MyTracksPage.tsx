@@ -178,6 +178,10 @@ export default function MyTracksPage() {
                     variant="ghost"
                     size="icon"
                     className="h-9 w-9 rounded-full text-gray-500 hover:text-white"
+                    onClick={() => {
+                      setSelectedTrack(track);
+                      setEditModalOpen(true);
+                    }}
                   >
                     <Edit size={16} />
                   </Button>
