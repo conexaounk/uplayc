@@ -19,10 +19,7 @@ export default function HomePage() {
   } = usePacks({
     search: searchTerm
   });
-  const {
-    data: djs,
-    isLoading: djsLoading
-  } = useDJs();
+  const { data: djs } = useDJs();
   const [selectedPack, setSelectedPack] = useState<PackWithTracks | null>(null);
   const { user } = useAuth();
 
