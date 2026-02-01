@@ -125,7 +125,7 @@ export default function HomePage() {
             <a href="/djs" className="text-xs text-accent-purple hover:text-accent-purple/80">Ver Todos</a>
           </div>
           <div className="space-y-4">
-            {djsWithTracks.slice(0, 3).map((dj) => (
+            {djs?.slice(0, 3).map((dj) => (
               <div key={dj.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors">
                 <div className="flex items-center gap-3">
                   {dj.avatar_url && (
