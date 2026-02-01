@@ -1,7 +1,9 @@
 import { Switch, Route, Link, useLocation } from "wouter";
 import { PackProvider } from "@/context/packContext";
+import { PlayerProvider } from "@/context/PlayerContext";
 import { FloatingFolder } from "@/components/FloatingFolder";
 import { CreatePackModal } from "@/components/CreatePackModal";
+import { MiniPlayer } from "@/components/MiniPlayer";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
