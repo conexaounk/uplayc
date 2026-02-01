@@ -115,8 +115,9 @@ export function UploadTrackModal({
           artist: mainArtist,
           display_artist: displayArtist,
           genre: data.genre,
-          collaborations: data.collaborations, // Salvando o campo separado
-          userId: user.id, // Backend pode esperar userId em vez de user_id
+          collaborations: data.collaborations,
+          userId: user.id,
+          is_public: "false", // String porque vai no FormData
         },
         onProgress: setUploadProgress,
       });
