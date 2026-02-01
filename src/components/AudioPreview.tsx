@@ -102,7 +102,16 @@ export function AudioPreview({
       const rect = e.currentTarget.getBoundingClientRect();
       const percent = (e.clientX - rect.left) / rect.width;
       const newTime = percent * PREVIEW_DURATION;
-      audioRef.current.currentTime = Math.min(newTime, PREVIEW_DURATION);
+      audioRef.current.currentTime = previewStart + Math.min(newTime, PREVIEW_DURATION);
+    }
+  };
+
+  const handlePreviewStartChange = (newStart: number) => {
+    const maxStart = Math.max(0, musicDuration - PREVIEW_DURATION);
+    const clampedStart = Math.max(0, Math.min(newStart, maxStart));
+    setPreviewStart(clampedStart);
+    if (onStartTimeChange) {
+      onStartTimeChange(clampedStart);
     }
   };
 
