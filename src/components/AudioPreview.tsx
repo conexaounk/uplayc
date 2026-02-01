@@ -207,24 +207,7 @@ export function AudioPreview({
 
       {/* Preview Label & Time Selector */}
       <div className="text-xs text-muted-foreground mt-1.5 px-1 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="inline-block px-2 py-0.5 bg-primary/20 text-primary/80 rounded text-xs font-medium">
-            Prévia • 30 segundos {editable && `(início: ${formatTime(previewStart)})`}
-          </span>
-          {editable && musicDuration > PREVIEW_DURATION && (
-            <button
-              onClick={() => setShowTimeSelector(!showTimeSelector)}
-              className="text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
-              title="Ajustar tempo inicial da prévia"
-            >
-              {showTimeSelector ? (
-                <ChevronUp size={16} />
-              ) : (
-                <ChevronDown size={16} />
-              )}
-            </button>
-          )}
-        </div>
+        <div className="flex items-center justify-between" />
 
         {/* Time Selector */}
         {editable && showTimeSelector && musicDuration > PREVIEW_DURATION && (
