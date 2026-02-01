@@ -87,7 +87,7 @@ export default function AdminPage() {
       setTracks(list as any[]);
     } catch (e) {
       console.error('Erro ao buscar tracks:', e);
-      toast.error('Erro ao buscar tracks');
+      toast.error('Erro ao carregar', 'Não foi possível carregar as músicas');
     } finally {
       setLoadingTracks(false);
     }
