@@ -12,9 +12,8 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    // Fallback para index.html em rotas SPA (sem extensão de arquivo)
     middlewareMode: false,
-    // Middleware para fazer fallback para index.html em rotas SPA
-    middleware: undefined,
   },
   plugins: [
     react(),
