@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { FollowButton } from "@/components/FollowButton";
 import { Loader2, MapPin, ShoppingCart, Music2, Heart, Plus } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BuyPackModal } from "@/components/BuyPackModal";
 import { CreatePackModal } from "@/components/CreatePackModal";
 import { AudioPreview } from "@/components/AudioPreview";
