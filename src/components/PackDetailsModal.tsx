@@ -2,8 +2,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { PackWithTracks } from "@/types/supabase";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Clock, Activity, Download } from "lucide-react";
-import { AudioPlayer } from "./AudioPlayer";
-import { useState } from "react";
+import { AudioPreview } from "./AudioPreview";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCart } from "@/hooks/use-cart";
 import { getStorageUrl } from "@/lib/storageUtils";
@@ -22,7 +21,6 @@ function formatDuration(seconds: number | null): string {
 }
 
 export function PackDetailsModal({ pack, isOpen, onClose }: PackDetailsModalProps) {
-  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
   const { addItem } = useCart();
 
   if (!pack) return null;
@@ -103,24 +101,36 @@ export function PackDetailsModal({ pack, isOpen, onClose }: PackDetailsModalProp
           <ScrollArea className="flex-1 p-6">
             <div className="space-y-4">
               {pack.tracks?.map((track) => (
-                <div key={track.id} className="group flex flex-col gap-2">
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-1">
-                    <span className="flex items-center gap-2 w-20">
-                      <Clock size={12} /> {formatDuration(track.duration)}
-                    </span>
-                    {track.bpm && (
-                      <span className="flex items-center gap-2 font-mono text-xs bg-white/5 px-2 py-0.5 rounded">
-                        {track.bpm} BPM
-                      </span>
-                    )}
+                <div key={track.id} className="group flex flex-col gap-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-foreground">{track.name}</h4>
+                      <div className="flex items-center gap-3 mt-1 flex-wrap text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Clock size={12} /> {formatDuration(track.duration)}
+                        </span>
+                        {track.bpm && (
+                          <span className="flex items-center gap-1 bg-primary/20 text-primary/80 px-2 py-0.5 rounded">
+                            <Activity size={12} /> {track.bpm} BPM
+                          </span>
+                        )}
+                        {track.key && (
+                          <span className="bg-secondary/20 text-secondary/80 px-2 py-0.5 rounded">
+                            {track.key}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  <AudioPlayer
-                    url={track.preview_url || ""}
-                    title={track.name}
-                    isPlaying={playingTrackId === track.id}
-                    onPlayPause={() => setPlayingTrackId(playingTrackId === track.id ? null : track.id)}
-                  />
+                  {track.audio_url && (
+                    <AudioPreview
+                      url={track.audio_url}
+                      title={track.name}
+                      size="md"
+                      showTime={true}
+                    />
+                  )}
                 </div>
               ))}
 

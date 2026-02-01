@@ -1,16 +1,17 @@
 import { useAuth } from "@/hooks/use-auth";
 import { EditTrackModal } from "@/components/EditTrackModal";
+import { AudioPreview } from "@/components/AudioPreview";
 import { useDJ } from "@/hooks/use-djs";
 import { useMusicApi } from "@/hooks/use-music-api";
 import { useCart } from "@/hooks/use-cart";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Edit, Plus, Play, Pause, ShoppingCart, Music, Lock, Globe } from "lucide-react";
+import { Loader2, Edit, Plus, ShoppingCart, Music, Lock, Globe, Trash2 } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
 import { UploadTrackModal } from "@/components/UploadTrackModal";
 import { BuyPackModal } from "@/components/BuyPackModal";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 export default function ProfileViewPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -24,10 +25,6 @@ export default function ProfileViewPage() {
   const [, setLocation] = useLocation();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [buyPackModalOpen, setBuyPackModalOpen] = useState(false);
-  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const audioRef = useRef<HTMLAudioElement>(null);
-
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<any | null>(null);
 
@@ -37,36 +34,6 @@ export default function ProfileViewPage() {
       setLocation("/");
     }
   }, [authLoading, user, setLocation]);
-
-  // Lógica de Áudio (Preview 30s)
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-      if (audio.currentTime >= 30) {
-        audio.pause();
-        audio.currentTime = 0;
-        setPlayingTrackId(null);
-      }
-    };
-
-    audio.addEventListener("timeupdate", handleTimeUpdate);
-    return () => audio.removeEventListener("timeupdate", handleTimeUpdate);
-  }, []);
-
-  const handlePlayPreview = (trackId: string, audioUrl: string) => {
-    if (playingTrackId === trackId && audioRef.current && !audioRef.current.paused) {
-      audioRef.current.pause();
-      setPlayingTrackId(null);
-    } else if (audioRef.current) {
-      audioRef.current.src = audioUrl;
-      audioRef.current.currentTime = 0;
-      audioRef.current.play();
-      setPlayingTrackId(trackId);
-    }
-  };
 
   const handleAddTrackToCart = (track: any) => {
     addItem({
@@ -137,92 +104,105 @@ export default function ProfileViewPage() {
         {tracksLoading ? (
           <div className="flex justify-center py-10"><Loader2 className="animate-spin" /></div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {allUserTracks.map((track) => {
-              const isPlaying = playingTrackId === track.id;
+              // Sanitizar o ID removendo qualquer sufixo (ex: ":1")
+              const cleanTrackId = String(track.id).split(':')[0];
               return (
-                <div key={track.id} className="bg-muted/20 border border-white/5 rounded-2xl p-4 flex items-center gap-4 group transition-all hover:border-primary/30">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handlePlayPreview(track.id, track.audio_url)}
-                    className="w-12 h-12 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white"
-                  >
-                    {isPlaying ? <Pause /> : <Play className="ml-0.5" />}
-                  </Button>
-
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold truncate">{track.title}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {track.artist}
-                      {/* MOSTRANDO O NOVO CAMPO COLLABORATIONS */}
-                      {track.collaborations && (
-                        <span className="text-primary/70 ml-1">feat. {track.collaborations}</span>
-                      )}
-                      <span className="mx-2">•</span>
-                      <span className="capitalize">{track.genre}</span>
-                    </p>
-                    
-                    {isPlaying && (
-                      <div className="mt-2 flex items-center gap-2">
-                        <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary transition-all duration-300" 
-                            style={{ width: `${(currentTime / 30) * 100}%` }}
-                          />
-                        </div>
+                <div key={cleanTrackId} className="glass-effect rounded-xl p-5 sm:p-6 space-y-4 hover:border-primary/50 transition-all">
+                  {/* Track Info */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-lg">{track.title}</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {track.artist}
+                        {track.collaborations && (
+                          <span className="text-secondary ml-1">• feat. {track.collaborations}</span>
+                        )}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <span className="text-xs px-2 py-1 bg-primary/20 text-primary/80 rounded">
+                          {track.genre}
+                        </span>
+                        {track.track_type && (
+                          <span className="text-xs px-2 py-1 bg-secondary/20 text-secondary/80 rounded capitalize">
+                            {track.track_type}
+                          </span>
+                        )}
+                        {track.bpm && (
+                          <span className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded">
+                            {track.bpm} BPM
+                          </span>
+                        )}
                       </div>
-                    )}
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => updateTrackPublicityMutation.mutate({ trackId: cleanTrackId, isPublic: !track.is_public })}
+                        disabled={updateTrackPublicityMutation.isPending}
+                        title={track.is_public ? "Tornar privada" : "Publicar"}
+                        className={track.is_public ? "text-primary hover:text-destructive" : "text-muted-foreground hover:text-primary"}
+                      >
+                        {track.is_public ? <Globe size={20} /> : <Lock size={20} />}
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => { setSelectedTrack(track); setEditModalOpen(true); }}
+                        className="text-muted-foreground hover:text-primary"
+                        title="Editar"
+                      >
+                        <Edit size={18} />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleAddTrackToCart(track)}
+                        className="text-muted-foreground hover:text-primary"
+                        title="Adicionar ao carrinho"
+                      >
+                        <ShoppingCart size={20} />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          if (confirm('Remover essa música do seu perfil? Ela não será deletada do banco.')) {
+                            removeFromProfileMutation.mutate(cleanTrackId);
+                          }
+                        }}
+                        className="text-destructive hover:text-destructive/80"
+                        title="Remover do perfil"
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
                   </div>
 
-                  <div className="flex gap-2 items-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => updateTrackPublicityMutation.mutate({ trackId: track.id, isPublic: !track.is_public })}
-                      disabled={updateTrackPublicityMutation.isPending}
-                      title={track.is_public ? "Tornar privada" : "Publicar"}
-                      className={track.is_public ? "text-primary hover:text-destructive" : "text-muted-foreground hover:text-primary"}
-                    >
-                      {track.is_public ? <Globe size={20} /> : <Lock size={20} />}
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => { setSelectedTrack(track); setEditModalOpen(true); }}
-                      className="text-muted-foreground hover:text-primary"
-                      title="Editar"
-                    >
-                      <Edit size={18} />
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleAddTrackToCart(track)}
-                      className="text-muted-foreground hover:text-primary"
-                    >
-                      <ShoppingCart size={20} />
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        if (confirm('Remover essa música do seu perfil? Ela não será deletada do banco.')) {
-                          removeFromProfileMutation.mutate(track.id as string);
-                        }
-                      }}
-                      className="text-destructive hover:text-destructive/80"
-                      title="Remover do perfil"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
+                  {/* Audio Preview */}
+                  {track.audio_url && (
+                    <AudioPreview
+                      url={track.audio_url}
+                      title={track.title}
+                      size="md"
+                      showTime={true}
+                    />
+                  )}
                 </div>
               );
             })}
+            {allUserTracks.length === 0 && (
+              <div className="text-center py-12 text-muted-foreground border border-dashed border-white/10 rounded-xl">
+                <Music className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Você ainda não tem nenhuma música. <br /> Clique em "Nova Track" para começar!</p>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -247,7 +227,6 @@ export default function ProfileViewPage() {
         allTracks={allUserTracks}
       />
       <EditTrackModal track={selectedTrack} open={editModalOpen} onOpenChange={(v) => { setEditModalOpen(v); if (!v) setSelectedTrack(null); }} />
-      <audio ref={audioRef} crossOrigin="anonymous" />
     </div>
   );
 }

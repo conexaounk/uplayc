@@ -129,7 +129,7 @@ export function useMusicApi() {
   // Remover música do perfil do usuário (sem deletar do DB)
   const removeFromProfileMutation = useMutation({
     mutationFn: (trackId: string) =>
-      api.fetch('/user-library', { method: 'DELETE', body: JSON.stringify({ track_id: trackId }) }),
+      api.fetch(`/tracks/${trackId}`, { method: 'DELETE' }),
     onSuccess: () => {
       toast.success('Música removida do seu perfil');
       queryClient.invalidateQueries({ queryKey: ['tracks'] });

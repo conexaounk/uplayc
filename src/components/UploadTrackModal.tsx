@@ -25,6 +25,7 @@ import {
   Plus,
   Activity,
   Hash,
+  Sparkles,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -157,19 +158,19 @@ export function UploadTrackModal({
 
     const mainArtist = djProfile.dj_name;
     
+    // Metadados completos para o D1 - apenas campos com valores válidos
     const metadata = {
       title: data.title,
       artist: mainArtist,
       genre: data.genre,
       track_type: data.track_type,
-      price_cents: data.track_type === "mashup" ? Math.round(mashupPrice * 100) : (data.price_cents !== undefined && data.price_cents !== null ? Number(data.price_cents) : undefined),
-      ...(data.collaborations && data.collaborations.trim() !== "" && { 
-        collaborations: data.collaborations.trim() 
-      }),
-      bpm: data.bpm ? Number(data.bpm) : undefined,
-      ...(data.key && data.key.trim() !== "" && { 
-        key: data.key 
-      }),
+      user_id: user.id, // OBRIGATÓRIO para o seu Worker
+      price_cents: data.track_type === "mashup" 
+        ? Math.round(mashupPrice * 100) 
+        : (data.price_cents ?? 0),
+      collaborations: data.collaborations?.trim() || null,
+      bpm: data.bpm && data.bpm.trim() ? Number(data.bpm) : null,
+      key: (data.key && data.key.trim()) ? data.key.trim() : null,
       is_public: false,
     };
 
@@ -189,15 +190,16 @@ export function UploadTrackModal({
         },
       });
 
-      console.log("✅ Upload concluído:", result);
+      console.log("✅ Upload e salvamento no D1 concluído:", result);
       
-      toast.success("Música enviada com sucesso!");
+      toast.success("Música publicada e salva no banco!");
       setFile(null);
       setUploadProgress(0);
       form.reset();
       onOpenChange(false);
     } catch (error) {
-      console.error("❌ Erro no upload:", error);
+      console.error("❌ Erro ao processar upload ou salvar no banco:", error);
+      toast.error("Erro ao processar upload ou salvar no banco");
       setUploadProgress(0);
     }
   }
@@ -226,34 +228,43 @@ export function UploadTrackModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] bg-card border-white/10 w-[95vw] sm:w-[90vw] md:w-full p-3 sm:p-4 md:p-6 overflow-y-auto">
-        <DialogHeader className="pb-3 sm:pb-4">
-          <DialogTitle className="text-base sm:text-lg md:text-xl font-bold">
-            Gerenciar Músicas
-          </DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm">
-            Faça upload de uma nova produção ou adicione da biblioteca global.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] glass-effect w-[95vw] sm:w-[90vw] md:w-full p-0 overflow-hidden rounded-2xl">
+        {/* Header com gradiente */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 border-b border-white/10 p-6 sm:p-8">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-50" />
+          <div className="relative z-10">
+            <DialogTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              Gerenciar Músicas
+            </DialogTitle>
+            <DialogDescription className="text-sm sm:text-base text-muted-foreground mt-2">
+              Compartilhe suas produções com o mundo ou explore a biblioteca global
+            </DialogDescription>
+          </div>
+        </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
-          <TabsList className="grid w-full grid-cols-2 bg-muted/20 h-9 sm:h-10">
-            <TabsTrigger value="upload" className="text-xs sm:text-sm">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-0">
+          <TabsList className="grid w-full grid-cols-2 bg-transparent border-b border-white/10 h-12 sm:h-14 rounded-none mx-0 p-0">
+            <TabsTrigger value="upload" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent text-xs sm:text-sm font-medium transition-all">
+              <Upload className="w-4 h-4 mr-2" />
               Novo Upload
             </TabsTrigger>
-            <TabsTrigger value="browse" className="text-xs sm:text-sm">
+            <TabsTrigger value="browse" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent text-xs sm:text-sm font-medium transition-all">
+              <Search className="w-4 h-4 mr-2" />
               Banco Global
             </TabsTrigger>
           </TabsList>
 
           {/* ================= UPLOAD ================= */}
-          <TabsContent value="upload" className="space-y-4 mt-3 sm:mt-4">
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
+          <TabsContent value="upload" className="space-y-3 mt-6 p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
               {!file ? (
-                <div
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   onClick={() => document.getElementById("audio-input")?.click()}
-                  className="border-2 border-dashed rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 text-center cursor-pointer border-white/10 hover:bg-primary/5 hover:border-primary/50 transition-all group"
+                  className="group relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-dashed border-white/20 p-8 sm:p-12 md:p-16 text-center cursor-pointer hover:border-primary/50 transition-all duration-300 glass-effect-subtle"
                 >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <input
                     id="audio-input"
                     type="file"
@@ -261,24 +272,30 @@ export function UploadTrackModal({
                     className="hidden"
                     onChange={(e) => e.target.files && processFile(e.target.files[0])}
                   />
-                  <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-muted flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Upload className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-muted-foreground group-hover:text-primary" />
+                  <div className="relative z-10">
+                    <motion.div
+                      animate={{ y: [0, -8, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="w-16 sm:w-20 h-16 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:from-primary/30 group-hover:to-secondary/30 transition-all"
+                    >
+                      <Upload className="w-8 sm:w-10 h-8 sm:h-10 text-primary group-hover:text-secondary transition-colors" />
+                    </motion.div>
+                    <h3 className="text-base sm:text-lg font-semibold mb-2">
+                      Solte sua faixa aqui
+                    </h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      MP3, WAV, AIFF • até 500MB
+                    </p>
                   </div>
-                  <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-1">
-                    Clique para selecionar
-                  </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    MP3, WAV, AIFF (500MB máx)
-                  </p>
-                </div>
+                </motion.div>
               ) : (
-                <div className="space-y-2 sm:space-y-3">
-                  <div className="flex items-center gap-3 p-3 sm:p-4 border border-primary/20 bg-primary/5 rounded-lg">
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                      <Music className="text-primary w-4 h-4 sm:w-5 sm:h-5" />
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex items-center gap-4 p-4 sm:p-5 glass-effect rounded-xl hover:border-primary/50 transition-all">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center flex-shrink-0">
+                      <Music className="text-primary w-6 h-6 sm:w-7 sm:h-7" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-xs sm:text-sm truncate">{file.name}</p>
+                      <p className="font-semibold text-sm sm:text-base truncate">{file.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {(file.size / 1024 / 1024).toFixed(2)} MB
                       </p>
@@ -289,26 +306,32 @@ export function UploadTrackModal({
                       onClick={() => setFile(null)}
                       type="button"
                       disabled={uploadMutation.isPending}
-                      className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 sm:h-9 sm:w-9 p-0"
+                      className="hover:bg-destructive/10 hover:text-destructive h-9 w-9 p-0 rounded-lg"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-5 h-5" />
                     </Button>
                   </div>
 
                   {/* Barra de progresso */}
                   {uploadMutation.isPending && uploadProgress > 0 && (
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Enviando...</span>
-                        <span>{uploadProgress.toFixed(0)}%</span>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="space-y-2"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-medium text-muted-foreground">Enviando...</span>
+                        <span className="text-xs font-bold text-primary">{uploadProgress.toFixed(0)}%</span>
                       </div>
-                      <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-primary transition-all duration-300"
-                          style={{ width: `${uploadProgress}%` }}
+                      <div className="h-2.5 bg-muted/30 rounded-full overflow-hidden glass-effect">
+                        <motion.div 
+                          className="h-full bg-gradient-to-r from-primary to-secondary"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${uploadProgress}%` }}
+                          transition={{ duration: 0.3 }}
                         />
                       </div>
-                    </div>
+                    </motion.div>
                   )}
                 </div>
               )}
@@ -317,35 +340,35 @@ export function UploadTrackModal({
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-4"
+                  className="space-y-5 sm:space-y-6"
                 >
                   {/* Título */}
-                  <div className="space-y-1.5">
-                    <Label className="text-xs sm:text-sm font-medium">
-                      Título da Faixa <span className="text-red-500">*</span>
+                  <div className="space-y-0.5">
+                    <Label className="text-xs font-semibold text-foreground">
+                      Título da Faixa <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       placeholder="Ex: Toca Toca"
                       {...form.register("title")}
                       disabled={uploadMutation.isPending}
-                      className="bg-muted/30 text-xs sm:text-sm h-9 sm:h-10"
+                      className="premium-input h-7 text-xs"
                     />
                     {form.formState.errors.title && (
-                      <p className="text-red-500 text-xs">{form.formState.errors.title.message}</p>
+                      <p className="text-destructive text-xs font-medium">{form.formState.errors.title.message}</p>
                     )}
                   </div>
 
                   {/* Gênero */}
-                  <div className="space-y-1.5">
-                    <Label className="text-xs sm:text-sm font-medium">
-                      Gênero <span className="text-red-500">*</span>
+                  <div className="space-y-0.5">
+                    <Label className="text-xs font-semibold text-foreground">
+                      Gênero <span className="text-destructive">*</span>
                     </Label>
                     <select
                       {...form.register("genre")}
                       disabled={uploadMutation.isPending}
-                      className="w-full h-9 sm:h-10 bg-muted/30 border border-input rounded-md px-3 text-xs sm:text-sm focus:ring-2 focus:ring-primary disabled:opacity-50"
+                      className="premium-input h-7 text-xs w-full"
                     >
-                      <option value="">Selecione...</option>
+                      <option value="">Selecione um gênero...</option>
                       {GENRES.map((g) => (
                         <option key={g} value={g}>{g}</option>
                       ))}
@@ -354,49 +377,67 @@ export function UploadTrackModal({
                       <p className="text-red-500 text-xs">{form.formState.errors.genre.message}</p>
                     )}
 
-                    <div className="space-y-1.5 mt-2">
-                      <Label className="text-xs sm:text-sm font-medium">Tipo de Produção</Label>
-                      <div className="grid grid-cols-2 gap-2 mt-1">
+                    <div className="space-y-1 mt-2">
+                      <Label className="text-xs font-medium">Tipo de Produção</Label>
+                      <div className="grid grid-cols-2 gap-1.5 mt-1.5">
                         <Button
                           type="button"
                           variant={trackType === "mashup" ? "default" : "outline"}
                           onClick={() => form.setValue("track_type", "mashup")}
-                          className="h-9 text-xs"
+                          className={`h-7 text-[11px] font-semibold transition-all ${
+                            trackType === "mashup"
+                              ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
+                              : "glass-effect hover:bg-white/10"
+                          }`}
                         >
-                          Mashup (Preço Fixo)
+                          <Music className="w-3.5 h-3.5 mr-1" />
+                          Mashup
                         </Button>
                         <Button
                           type="button"
                           variant={trackType === "remix" ? "default" : "outline"}
                           onClick={() => form.setValue("track_type", "remix")}
-                          className="h-9 text-xs"
+                          className={`h-7 text-[11px] font-semibold transition-all ${
+                            trackType === "remix"
+                              ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
+                              : "glass-effect hover:bg-white/10"
+                          }`}
                         >
-                          Remix (Preço Livre)
+                          <Sparkles className="w-3.5 h-3.5 mr-1" />
+                          Remix
                         </Button>
                       </div>
                       {form.formState.errors.track_type && (
-                        <p className="text-red-500 text-xs">{form.formState.errors.track_type.message}</p>
+                        <p className="text-destructive text-xs font-medium mt-2">{form.formState.errors.track_type.message}</p>
                       )}
 
                       {/* Lógica de preço condicional */}
-                      <div className="p-4 rounded-lg border border-white/10 bg-muted/20 mt-3">
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-2 rounded-lg glass-effect mt-1.5"
+                      >
                         {trackType === "mashup" ? (
                           <div className="flex justify-between items-center">
                             <div>
-                              <p className="text-xs font-bold uppercase text-primary">Preço Tabelado</p>
-                              <p className="text-sm text-muted-foreground italic">Incluso no Pack de 10</p>
+                              <p className="text-[10px] font-bold uppercase text-muted-foreground">Preço Tabelado</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">Definido pela plataforma</p>
                             </div>
-                            <div className="text-xl font-black">R$ {mashupPrice.toFixed(2).replace('.', ',')}</div>
+                            <div className="text-right">
+                              <div className="text-xl sm:text-2xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                                R$ {mashupPrice.toFixed(2).replace('.', ',')}
+                              </div>
+                            </div>
                           </div>
                         ) : (
-                          <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase">Valor do Remix (R$)</Label>
+                          <div className="space-y-0.5 mt-1.5">
+                            <Label className="text-xs font-semibold">Valor do Remix (R$)</Label>
                             <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-semibold">R$</span>
                               <Input
                                 type="number"
-                                placeholder="0,00"
-                                className="pl-9 bg-background"
+                                placeholder="19,90"
+                                className="pl-10 premium-input h-7 text-xs"
                                 value={priceCents !== undefined && priceCents !== null ? (priceCents / 100) : ''}
                                 onChange={(e) => {
                                   const v = e.target.value;
@@ -410,111 +451,108 @@ export function UploadTrackModal({
                               />
                             </div>
                             <p className="text-[10px] text-muted-foreground">
-                              *Remixes individuais não entram no pacote promocional de Mashups.
+                              *Remixes individuais têm preço livre.
                             </p>
                           </div>
                         )}
-                      </div>
-                    </div> 
+                      </motion.div>
+                    </div>
                   </div>
 
                   {/* BPM e Key - OPCIONAIS */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                        <Activity className="w-3.5 h-3.5" />
-                        BPM <span className="text-muted-foreground text-xs">(opcional)</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="space-y-0.5">
+                      <Label className="text-xs font-semibold flex items-center gap-1">
+                        <Activity className="w-3 h-3 text-secondary" />
+                        BPM
+                        <span className="text-[10px] text-muted-foreground font-normal">(opt.)</span>
                       </Label>
                       <Input
                         type="number"
-                        placeholder="Ex: 128"
+                        placeholder="128"
                         {...form.register("bpm")}
                         disabled={uploadMutation.isPending}
-                        className="bg-muted/30 text-xs sm:text-sm h-9 sm:h-10"
+                        className="premium-input h-7 text-xs"
                         min="1"
                         max="300"
                       />
                       {form.formState.errors.bpm && (
-                        <p className="text-red-500 text-xs">{form.formState.errors.bpm.message}</p>
+                        <p className="text-destructive text-xs font-medium">{form.formState.errors.bpm.message}</p>
                       )}
                     </div>
 
-                    <div className="space-y-1.5">
-                      <Label className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                        <Hash className="w-3.5 h-3.5" />
-                        Key <span className="text-muted-foreground text-xs">(opcional)</span>
+                    <div className="space-y-0.5">
+                      <Label className="text-xs font-semibold flex items-center gap-1">
+                        <Hash className="w-3 h-3 text-secondary" />
+                        Key
+                        <span className="text-[10px] text-muted-foreground font-normal">(opt.)</span>
                       </Label>
                       <select
                         {...form.register("key")}
                         disabled={uploadMutation.isPending}
-                        className="w-full h-9 sm:h-10 bg-muted/30 border border-input rounded-md px-3 text-xs sm:text-sm focus:ring-2 focus:ring-primary disabled:opacity-50"
+                        className="premium-input h-7 text-xs w-full"
                       >
-                        <option value="">Selecione...</option>
+                        <option value="">Selecione uma key...</option>
                         {KEYS.map((k) => (
                           <option key={k} value={k}>{k}</option>
                         ))}
                       </select>
                     </div>
-
-                    <div className="space-y-1.5">
-                      <Label className="text-xs sm:text-sm font-medium">
-                        Preço (centavos) <span className="text-muted-foreground text-xs">(opcional)</span>
-                      </Label>
-                      <Input
-                        type="number"
-                        placeholder="Ex: 0"
-                        {...form.register("price_cents", { valueAsNumber: true })}
-                        disabled={uploadMutation.isPending}
-                        className="bg-muted/30 text-xs sm:text-sm h-9 sm:h-10"
-                        min="0"
-                      />
-                      {form.formState.errors.price_cents && (
-                        <p className="text-red-500 text-xs">{form.formState.errors.price_cents.message}</p>
-                      )}
-                    </div>
                   </div>
 
                   {/* Colaborações */}
-                  <div className="space-y-1.5">
-                    <Label className="text-xs sm:text-sm font-medium">
-                      Colaborações (Feat) <span className="text-muted-foreground text-xs">(opcional)</span>
+                  <div className="space-y-0.5">
+                    <Label className="text-xs font-semibold flex items-center gap-1">
+                      <Music className="w-3 h-3 text-secondary" />
+                      Colaborações (Feat)
+                      <span className="text-[10px] text-muted-foreground font-normal">(opt.)</span>
                     </Label>
                     <Input
-                      placeholder="Ex: MC Fulano, DJ Ciclano"
+                      placeholder="MC Fulano, DJ Ciclano..."
                       {...form.register("collaborations")}
                       disabled={uploadMutation.isPending}
-                      className="bg-muted/30 text-xs sm:text-sm h-9 sm:h-10"
+                      className="premium-input h-7 text-xs"
                     />
                   </div>
 
                   {/* Botão de envio */}
-                  <Button
-                    type="submit"
-                    disabled={uploadMutation.isPending}
-                    className="w-full h-10 sm:h-11 text-xs sm:text-sm font-bold bg-primary hover:bg-primary/90 mt-2"
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-2"
                   >
-                    {uploadMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 animate-spin" size={16} />
-                        <span>
-                          Enviando {uploadProgress > 0 ? `${uploadProgress.toFixed(0)}%` : '...'}
-                        </span>
-                      </>
-                    ) : (
-                      "Publicar Música"
-                    )}
-                  </Button>
+                    <Button
+                      type="submit"
+                      disabled={uploadMutation.isPending}
+                      className="w-full h-8 text-xs font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-lg hover:shadow-primary/30 transition-all"
+                    >
+                      {uploadMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-1.5 animate-spin" size={14} />
+                          <span>
+                            Enviando {uploadProgress > 0 ? `${uploadProgress.toFixed(0)}%` : '...'}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-3 h-3 mr-1.5" />
+                          Publicar
+                        </>
+                      )}
+                    </Button>
+                  </motion.div>
                 </motion.div>
               )}
             </form>
           </TabsContent>
 
           {/* ================= BROWSE ================= */}
-          <TabsContent value="browse" className="space-y-3 mt-3 sm:mt-4">
+          <TabsContent value="browse" className="space-y-4 mt-6 p-6 sm:p-8 overflow-y-auto max-h-[calc(90vh-200px)]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
-                className="pl-9 bg-muted/30 h-9 sm:h-10 text-xs sm:text-sm"
+                className="pl-12 premium-input"
                 placeholder="Buscar por título, artista ou gênero..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -522,42 +560,54 @@ export function UploadTrackModal({
             </div>
 
             {tracksLoading ? (
-              <div className="py-12 flex justify-center">
-                <Loader2 className="animate-spin text-primary" size={24} />
+              <div className="py-16 flex justify-center">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                >
+                  <Loader2 className="text-primary" size={32} />
+                </motion.div>
               </div>
             ) : (
-              <div className="space-y-2 max-h-[350px] sm:max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+              <div className="grid gap-3 max-h-[350px] sm:max-h-[400px] overflow-y-auto pr-2">
                 {tracks.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Music className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
-                    <p className="text-muted-foreground text-xs sm:text-sm">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-12"
+                  >
+                    <Music className="w-16 h-16 mx-auto mb-4 text-muted-foreground/30" />
+                    <p className="text-muted-foreground text-sm">
                       {searchQuery 
-                        ? "Nenhuma música encontrada com esse termo." 
-                        : "Nenhuma música disponível no momento."}
+                        ? "Nenhuma música encontrada." 
+                        : "Nenhuma música disponível."}
                     </p>
-                  </div>
+                  </motion.div>
                 ) : (
                   tracks.map((track: any) => (
-                    <div
+                    <motion.div
                       key={track.id}
-                      className="flex items-center justify-between gap-2 sm:gap-3 p-2.5 sm:p-3 border border-white/5 rounded-lg bg-card/50 hover:border-primary/30 hover:bg-card/70 transition-all"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="group flex items-center justify-between gap-3 p-3 sm:p-4 glass-effect rounded-lg hover:border-primary/50 transition-all cursor-pointer"
+                      onClick={() => handleSelectTrack(track.id)}
                     >
-                      <div className="flex gap-2 sm:gap-3 items-center overflow-hidden flex-1">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Music className="text-primary w-4 h-4 sm:w-5 sm:h-5" />
+                      <div className="flex gap-3 items-center overflow-hidden flex-1">
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center flex-shrink-0 group-hover:from-primary/30 group-hover:to-secondary/30 transition-all">
+                          <Music className="text-primary w-5 h-5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs sm:text-sm font-bold truncate">
+                          <p className="text-sm font-semibold truncate">
                             {track.title}
                           </p>
-                          <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                          <p className="text-xs text-muted-foreground truncate">
                             {track.artist}
                             {track.collaborations && (
-                              <span className="text-primary/70"> feat. {track.collaborations}</span>
+                              <span className="text-secondary"> • {track.collaborations}</span>
                             )}
                           </p>
-                          <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1">
-                            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary rounded">
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            <span className="text-xs px-2 py-1 bg-primary/20 text-primary/80 rounded-md font-medium">
                               {track.genre}
                             </span>
                             {track.bpm && (
@@ -585,7 +635,7 @@ export function UploadTrackModal({
                       >
                         <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </Button>
-                    </div>
+                    </motion.div>
                   ))
                 )}
               </div>

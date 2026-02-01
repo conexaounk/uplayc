@@ -65,7 +65,9 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
       is_public: !!data.is_public,
     };
 
-    updateTrackMutation.mutate({ trackId: track.id, payload }, {
+    // Sanitizar ID removendo sufixos (ex: ":1")
+    const cleanTrackId = String(track.id).split(':')[0];
+    updateTrackMutation.mutate({ trackId: cleanTrackId, payload }, {
       onSuccess: () => onOpenChange(false),
     });
   };
@@ -73,7 +75,9 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
   const handleRemoveFromProfile = () => {
     if (!track) return;
     if (!confirm('Remover essa música do seu perfil? Ela não será deletada do banco, apenas removida do seu perfil.')) return;
-    removeFromProfileMutation.mutate(track.id);
+    // Sanitizar ID removendo sufixos (ex: ":1")
+    const cleanTrackId = String(track.id).split(':')[0];
+    removeFromProfileMutation.mutate(cleanTrackId);
     onOpenChange(false);
   };
 

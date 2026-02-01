@@ -3,6 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 
 const API_BASE = "https://api.conexaounk.com";
 
+// Helper para remover undefined, strings vazias e valores inválidos
+function cleanPayload(obj: any) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, value]) => {
+      // Remove undefined e valores inválidos
+      if (value === undefined) return false;
+      // Mantém null, 0, false, [] e {} (devem ser explícitos)
+      return true;
+    })
+  );
+}
+
 export const api = {
   async fetch(endpoint: string, options: RequestInit = {}) {
     const { data: { session } } = await supabase.auth.getSession();
@@ -39,34 +51,37 @@ export const api = {
       return this.uploadTrackChunked(file, metadata, onProgress);
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
-    // Campos permitidos pela API
-    const allowedFields = ["title", "genre", "artist", "collaborations", "is_public"];
-
-    Object.entries(metadata).forEach(([key, value]) => {
-      if (allowedFields.includes(key) && value !== undefined && value !== null) {
-        formData.append(key, String(value));
-      }
-    });
-
+    // 1. Upload do arquivo para o R2 (Retorna apenas a URL)
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${session.access_token}`);
-    // NÃO definir Content-Type para FormData
-
-    const response = await fetch(`${API_BASE}/upload`, {
+    // Enviamos o arquivo puro (body: file) para o Worker ler com arrayBuffer()
+    const uploadResponse = await fetch(`${API_BASE}/upload`, {
       method: "POST",
-      body: formData,
+      body: file,
       headers,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Upload falhou (${response.status}): ${errorText}`);
+    if (!uploadResponse.ok) {
+      const errorText = await uploadResponse.text();
+      throw new Error(`Upload para R2 falhou (${uploadResponse.status}): ${errorText}`);
     }
     
-    return response.json();
+    const uploadResult = await uploadResponse.json();
+
+    // 2. AGORA O PULO DO GATO: Salvar no D1
+    // Chamamos a rota /tracks com os metadados completos
+    const cleanedPayload = cleanPayload({
+      ...metadata,
+      audio_url: uploadResult.publicUrl, // Link que veio do R2
+      r2_key_full: uploadResult.r2_key,
+    });
+    
+    console.log('📝 Payload limpo para /tracks:', cleanedPayload);
+    
+    return this.fetch("/tracks", {
+      method: "POST",
+      body: JSON.stringify(cleanedPayload),
+    });
   },
 
   // Upload chunked para arquivos grandes
@@ -86,19 +101,6 @@ export const api = {
       const end = Math.min(start + CHUNK_SIZE, file.size);
       const chunk = file.slice(start, end);
 
-      const formData = new FormData();
-      formData.append("file", chunk);
-
-      // Adicionar metadata apenas no primeiro chunk
-      if (chunkIndex === 0) {
-        const allowedFields = ["title", "genre", "artist", "collaborations", "is_public"];
-        Object.entries(metadata).forEach(([key, value]) => {
-          if (allowedFields.includes(key) && value !== undefined && value !== null) {
-            formData.append(key, String(value));
-          }
-        });
-      }
-
       const headers = new Headers();
       headers.set("Authorization", `Bearer ${session.access_token}`);
       headers.set("X-Upload-Chunk", String(chunkIndex));
@@ -107,7 +109,7 @@ export const api = {
 
       const response = await fetch(`${API_BASE}/upload-chunked`, {
         method: "POST",
-        body: formData,
+        body: chunk, // Enviar chunk puro, não FormData
         headers,
       });
 
@@ -121,8 +123,19 @@ export const api = {
       }
     }
 
-    // Retornar resultado do último chunk
-    return { success: true, uploadId };
+    // 2. AGORA O PULO DO GATO: Salvar no D1
+    // Chamamos a rota /tracks com os metadados completos
+    const cleanedPayload = cleanPayload({
+      ...metadata,
+      upload_id: uploadId,
+    });
+    
+    console.log('📝 Payload limpo para /tracks (chunked):', cleanedPayload);
+    
+    return this.fetch("/tracks", {
+      method: "POST",
+      body: JSON.stringify(cleanedPayload),
+    });
   },
 
   async updateTrackPublicity(trackId: string, isPublic: boolean) {

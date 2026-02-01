@@ -3,10 +3,11 @@ import { useMusicApi } from "@/hooks/use-music-api"; // 1. ALTERADO: Importando 
 import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, MapPin, ShoppingCart, Play, Pause, Music2 } from "lucide-react";
+import { Loader2, MapPin, ShoppingCart, Music2 } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { BuyPackModal } from "@/components/BuyPackModal";
+import { AudioPreview } from "@/components/AudioPreview";
 
 export default function DJProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -20,40 +21,6 @@ export default function DJProfilePage() {
   const { data: tracks = [], isLoading: tracksLoading } = useTracks(id);
 
   const [buyPackModalOpen, setBuyPackModalOpen] = useState(false);
-  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const audioRef = useRef<HTMLAudioElement>(null);
-
-  // 4. Lógica de Áudio (Preview de 30s)
-  const handlePlayPreview = (trackId: string, audioUrl: string) => {
-    if (playingTrackId === trackId && audioRef.current && !audioRef.current.paused) {
-      audioRef.current.pause();
-      setPlayingTrackId(null);
-    } else {
-      if (audioRef.current) {
-        audioRef.current.src = audioUrl;
-        audioRef.current.play();
-        setPlayingTrackId(trackId);
-      }
-    }
-  };
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-      if (audio.currentTime >= 30) {
-        audio.pause();
-        audio.currentTime = 0;
-        setPlayingTrackId(null);
-      }
-    };
-
-    audio.addEventListener("timeupdate", handleTimeUpdate);
-    return () => audio.removeEventListener("timeupdate", handleTimeUpdate);
-  }, []);
 
   // Estados de Carregamento/Erro
   if (djLoading) {
@@ -116,53 +83,46 @@ export default function DJProfilePage() {
         {tracksLoading ? (
           <div className="flex justify-center py-12"><Loader2 className="animate-spin" /></div>
         ) : (
-          <div className="grid gap-3">
+          <div className="space-y-4">
             {tracks.length === 0 ? (
                 <p className="text-muted-foreground text-center py-10 italic">Nenhuma música publicada por este DJ ainda.</p>
             ) : (
                 tracks.map((track: any) => {
-                const isPlaying = playingTrackId === track.id;
-                
                 return (
                     <div 
                     key={track.id}
-                    className="group bg-card/40 border border-white/5 p-4 rounded-2xl flex items-center gap-4 hover:border-primary/40 transition-all"
+                    className="group glass-effect rounded-xl p-5 sm:p-6 space-y-4 hover:border-primary/50 transition-all"
                     >
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handlePlayPreview(track.id, track.audio_url)}
-                        className="w-12 h-12 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all flex-shrink-0"
-                    >
-                        {isPlaying ? <Pause /> : <Play className="ml-1" />}
-                    </Button>
-
-                    <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-lg truncate">{track.title}</h4>
-                        <p className="text-sm text-muted-foreground truncate">
-                        <span className="text-primary font-medium">{track.artist}</span>
-                        {/* EXIBIÇÃO DO FEAT (Collaborations) */}
-                        {track.collaborations && (
-                            <span className="text-xs italic ml-1 opacity-80 text-white/70">
-                            (feat. {track.collaborations})
-                            </span>
-                        )}
-                        <span className="mx-2 opacity-50">•</span>
-                        <span className="capitalize opacity-70">{track.genre}</span>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <h4 className="font-bold text-lg">{track.title}</h4>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {track.artist}
+                          {track.collaborations && (
+                            <span className="text-secondary ml-1">• feat. {track.collaborations}</span>
+                          )}
                         </p>
-                        
-                        {isPlaying && (
-                        <div className="mt-3 flex items-center gap-3">
-                            <div className="h-1.5 flex-1 bg-white/10 rounded-full overflow-hidden">
-                            <div 
-                                className="h-full bg-primary shadow-[0_0_10px_rgba(144,19,254,0.5)] transition-all duration-300" 
-                                style={{ width: `${(currentTime / 30) * 100}%` }}
-                            />
-                            </div>
-                            <span className="text-[10px] font-mono text-primary">0:{Math.floor(currentTime).toString().padStart(2, '0')} / 0:30</span>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <span className="text-xs px-2 py-1 bg-primary/20 text-primary/80 rounded">
+                            {track.genre}
+                          </span>
+                          {track.bpm && (
+                            <span className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded">
+                              {track.bpm} BPM
+                            </span>
+                          )}
                         </div>
-                        )}
+                      </div>
                     </div>
+                    
+                    {track.audio_url && (
+                      <AudioPreview
+                        url={track.audio_url}
+                        title={track.title}
+                        size="md"
+                        showTime={true}
+                      />
+                    )}
                     </div>
                 );
                 })
@@ -198,7 +158,6 @@ export default function DJProfilePage() {
         djId={djProfile.id}
         allTracks={tracks}
       />
-      <audio ref={audioRef} crossOrigin="anonymous" />
     </div>
   );
 }
