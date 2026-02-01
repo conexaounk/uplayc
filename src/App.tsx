@@ -195,6 +195,8 @@ function AuthRedirect() {
   return null;
 }
 function App() {
+  const [isPlaying, setIsPlaying] = useState(false);
+
   return <QueryClientProvider client={queryClient}>
       <NotificationProvider>
         <CartProvider>
@@ -204,9 +206,10 @@ function App() {
               <div className="min-h-screen text-foreground font-body flex flex-col overflow-x-hidden">
                 <Sidebar />
                 <Navbar />
-                <div className="flex-1 pt-16 md:pt-16 md:ml-[110px] overflow-hidden">
+                <div className="flex-1 pt-16 md:pt-16 md:ml-[110px] overflow-hidden pb-24">
                   <Router />
                 </div>
+                <MusicPlayer isPlaying={isPlaying} onPlayPause={() => setIsPlaying(!isPlaying)} />
                 <CartSidebar />
                 <NotificationCenter />
                 <FloatingFolder />
