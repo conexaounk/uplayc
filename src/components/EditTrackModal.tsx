@@ -66,6 +66,7 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
       key: data.key || null,
       price_cents: data.price_cents ?? null,
       is_public: !!data.is_public,
+      preview_start_time: data.preview_start_time ?? null,
     };
 
     // Sanitizar ID removendo sufixos (ex: ":1")
