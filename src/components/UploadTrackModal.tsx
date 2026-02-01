@@ -73,7 +73,8 @@ export function UploadTrackModal({
 
   // 2. AJUSTE AQUI: Chamamos o hook useTracks passando a busca
   // Passamos undefined no primeiro argumento (userId) para buscar no banco geral
-  const { data: tracks = [], isLoading: tracksLoading } = useTracks(undefined, searchQuery);
+  const { data: tracksData, isLoading: tracksLoading } = useTracks(undefined, searchQuery);
+  const tracks = Array.isArray(tracksData) ? tracksData : [];
 
   const form = useForm<MetadataForm>({
     resolver: zodResolver(metadataSchema),
