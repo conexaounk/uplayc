@@ -36,6 +36,7 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
       key: '',
       price_cents: undefined,
       is_public: undefined,
+      preview_start_time: undefined,
     }
   });
 
