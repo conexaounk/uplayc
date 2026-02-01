@@ -33,9 +33,9 @@ export default function HomePage() {
     return packs?.some(pack => pack.dj_id === dj.id);
   }) ?? [];
 
-  return <div className={`h-full overflow-hidden flex flex-col ${user ? 'lg:flex-row' : 'flex-col'} gap-8 p-6`}>
+  return <div className="h-full overflow-hidden flex flex-col lg:flex-row gap-8 p-6">
     {/* Main Content */}
-    <div className={`${user ? 'flex-1' : 'w-full'} overflow-y-auto scrollbar-hide pb-12 space-y-10 pr-2`}>
+    <div className="flex-1 overflow-y-auto scrollbar-hide pb-12 space-y-10 pr-2">
       {/* Hero Section */}
       <section className="relative h-[400px] flex items-center overflow-hidden glass-panel rounded-3xl border border-white/10">
         <div className="absolute inset-0">
