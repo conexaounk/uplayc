@@ -26,6 +26,8 @@ import {
   Activity,
   Hash,
   Sparkles,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -51,13 +53,10 @@ const KEYS = [
   "7A", "7B", "8A", "8B", "9A", "9B", "10A", "10B", "11A", "11B", "12A", "12B"
 ];
 
-
-
 const metadataSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
   genre: z.string().min(1, "Gênero é obrigatório"),
   track_type: z.enum(["mashup", "remix"]),
-  // aceita valores vindos de inputs como string e converte para number
   price_cents: z.coerce.number().optional(),
   collaborations: z.string().optional(),
   bpm: z.string()
@@ -105,15 +104,12 @@ export function UploadTrackModal({
     },
   });
 
-  // Observa mudanças de tipo e preço para atualizar a UI condicional
   const trackType = form.watch("track_type");
   const priceCents = form.watch("price_cents");
 
-  // Preço do Mashup vindo do D1 (em reais)
   const [mashupPrice, setMashupPrice] = useState<number>(15);
 
   useEffect(() => {
-    // Busca o preço do D1 quando o modal abrir
     if (!open) return;
     fetch('https://api.conexaounk.com/settings')
       .then((res) => res.json())
@@ -121,10 +117,8 @@ export function UploadTrackModal({
         try {
           const raw = data?.settings?.mashup_unit_price;
           if (raw !== undefined && raw !== null) {
-            // Suporta tanto valor em centavos (ex: 1500) quanto string '15.00'
             const num = Number(raw);
             if (!isNaN(num)) {
-              // Se o número parecer grande (>100), assumimos que veio em centavos
               const value = num > 100 ? (num / 100) : num;
               setMashupPrice(value);
             }
@@ -158,13 +152,12 @@ export function UploadTrackModal({
 
     const mainArtist = djProfile.dj_name;
     
-    // Metadados completos para o D1 - apenas campos com valores válidos
     const metadata = {
       title: data.title,
       artist: mainArtist,
       genre: data.genre,
       track_type: data.track_type,
-      user_id: user.id, // OBRIGATÓRIO para o seu Worker
+      user_id: user.id,
       price_cents: data.track_type === "mashup" 
         ? Math.round(mashupPrice * 100) 
         : (data.price_cents ?? 0),
@@ -255,8 +248,8 @@ export function UploadTrackModal({
           </TabsList>
 
           {/* ================= UPLOAD ================= */}
-          <TabsContent value="upload" className="space-y-3 mt-6 p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+          <TabsContent value="upload" className="space-y-4 mt-6 p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {!file ? (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -289,270 +282,320 @@ export function UploadTrackModal({
                   </div>
                 </motion.div>
               ) : (
-                <div className="space-y-3 sm:space-y-4">
-                  <div className="flex items-center gap-4 p-4 sm:p-5 glass-effect rounded-xl hover:border-primary/50 transition-all">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center flex-shrink-0">
-                      <Music className="text-primary w-6 h-6 sm:w-7 sm:h-7" />
+                <div className="space-y-4">
+                  {/* Card do arquivo */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-4 sm:p-5 backdrop-blur-sm"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-secondary/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                        <Music className="relative z-10 text-primary w-7 h-7 sm:w-8 sm:h-8 drop-shadow-lg" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-sm sm:text-base truncate text-foreground">{file.name}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setFile(null)}
+                        type="button"
+                        disabled={uploadMutation.isPending}
+                        className="hover:bg-destructive/10 hover:text-destructive h-10 w-10 p-0 rounded-lg transition-all"
+                      >
+                        <X className="w-5 h-5" />
+                      </Button>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm sm:text-base truncate">{file.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {(file.size / 1024 / 1024).toFixed(2)} MB
-                      </p>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setFile(null)}
-                      type="button"
-                      disabled={uploadMutation.isPending}
-                      className="hover:bg-destructive/10 hover:text-destructive h-9 w-9 p-0 rounded-lg"
-                    >
-                      <X className="w-5 h-5" />
-                    </Button>
-                  </div>
 
-                  {/* Barra de progresso */}
-                  {uploadMutation.isPending && uploadProgress > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="space-y-2"
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs font-medium text-muted-foreground">Enviando...</span>
-                        <span className="text-xs font-bold text-primary">{uploadProgress.toFixed(0)}%</span>
-                      </div>
-                      <div className="h-2.5 bg-muted/30 rounded-full overflow-hidden glass-effect">
-                        <motion.div 
-                          className="h-full bg-gradient-to-r from-primary to-secondary"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${uploadProgress}%` }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
-              )}
-
-              {file && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="space-y-5 sm:space-y-6"
-                >
-                  {/* Título */}
-                  <div className="space-y-0.5">
-                    <Label className="text-xs font-semibold text-foreground">
-                      Título da Faixa <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      placeholder="Ex: Toca Toca"
-                      {...form.register("title")}
-                      disabled={uploadMutation.isPending}
-                      className="premium-input h-7 text-xs"
-                    />
-                    {form.formState.errors.title && (
-                      <p className="text-destructive text-xs font-medium">{form.formState.errors.title.message}</p>
-                    )}
-                  </div>
-
-                  {/* Gênero */}
-                  <div className="space-y-0.5">
-                    <Label className="text-xs font-semibold text-foreground">
-                      Gênero <span className="text-destructive">*</span>
-                    </Label>
-                    <select
-                      {...form.register("genre")}
-                      disabled={uploadMutation.isPending}
-                      className="premium-input h-7 text-xs w-full"
-                    >
-                      <option value="">Selecione um gênero...</option>
-                      {GENRES.map((g) => (
-                        <option key={g} value={g}>{g}</option>
-                      ))}
-                    </select>
-                    {form.formState.errors.genre && (
-                      <p className="text-red-500 text-xs">{form.formState.errors.genre.message}</p>
-                    )}
-
-                    <div className="space-y-1 mt-2">
-                      <Label className="text-xs font-medium">Tipo de Produção</Label>
-                      <div className="grid grid-cols-2 gap-1.5 mt-1.5">
-                        <Button
-                          type="button"
-                          variant={trackType === "mashup" ? "default" : "outline"}
-                          onClick={() => form.setValue("track_type", "mashup")}
-                          className={`h-7 text-[11px] font-semibold transition-all ${
-                            trackType === "mashup"
-                              ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
-                              : "glass-effect hover:bg-white/10"
-                          }`}
-                        >
-                          <Music className="w-3.5 h-3.5 mr-1" />
-                          Mashup
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={trackType === "remix" ? "default" : "outline"}
-                          onClick={() => form.setValue("track_type", "remix")}
-                          className={`h-7 text-[11px] font-semibold transition-all ${
-                            trackType === "remix"
-                              ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
-                              : "glass-effect hover:bg-white/10"
-                          }`}
-                        >
-                          <Sparkles className="w-3.5 h-3.5 mr-1" />
-                          Remix
-                        </Button>
-                      </div>
-                      {form.formState.errors.track_type && (
-                        <p className="text-destructive text-xs font-medium mt-2">{form.formState.errors.track_type.message}</p>
-                      )}
-
-                      {/* Lógica de preço condicional */}
+                    {/* Barra de progresso */}
+                    {uploadMutation.isPending && uploadProgress > 0 && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-2 rounded-lg glass-effect mt-1.5"
+                        className="mt-4 space-y-2"
                       >
-                        {trackType === "mashup" ? (
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <p className="text-[10px] font-bold uppercase text-muted-foreground">Preço Tabelado</p>
-                              <p className="text-xs text-muted-foreground mt-0.5">Definido pela plataforma</p>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-xl sm:text-2xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                                R$ {mashupPrice.toFixed(2).replace('.', ',')}
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-0.5 mt-1.5">
-                            <Label className="text-xs font-semibold">Valor do Remix (R$)</Label>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-semibold">R$</span>
-                              <Input
-                                type="number"
-                                placeholder="19,90"
-                                className="pl-10 premium-input h-7 text-xs"
-                                value={priceCents !== undefined && priceCents !== null ? (priceCents / 100) : ''}
-                                onChange={(e) => {
-                                  const v = e.target.value;
-                                  const n = Number(v);
-                                  if (isNaN(n)) {
-                                    form.setValue("price_cents", undefined);
-                                  } else {
-                                    form.setValue("price_cents", Math.round(n * 100));
-                                  }
-                                }}
-                              />
-                            </div>
-                            <p className="text-[10px] text-muted-foreground">
-                              *Remixes individuais têm preço livre.
-                            </p>
-                          </div>
-                        )}
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-medium text-muted-foreground">Enviando...</span>
+                          <span className="text-xs font-bold text-primary">{uploadProgress.toFixed(0)}%</span>
+                        </div>
+                        <div className="h-2 bg-white/5 rounded-full overflow-hidden backdrop-blur-sm border border-white/10">
+                          <motion.div 
+                            className="h-full bg-gradient-to-r from-primary via-secondary to-primary"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${uploadProgress}%` }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </div>
                       </motion.div>
-                    </div>
-                  </div>
+                    )}
+                  </motion.div>
 
-                  {/* BPM e Key - OPCIONAIS */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <div className="space-y-0.5">
-                      <Label className="text-xs font-semibold flex items-center gap-1">
-                        <Activity className="w-3 h-3 text-secondary" />
-                        BPM
-                        <span className="text-[10px] text-muted-foreground font-normal">(opt.)</span>
-                      </Label>
-                      <Input
-                        type="number"
-                        placeholder="128"
-                        {...form.register("bpm")}
-                        disabled={uploadMutation.isPending}
-                        className="premium-input h-7 text-xs"
-                        min="1"
-                        max="300"
-                      />
-                      {form.formState.errors.bpm && (
-                        <p className="text-destructive text-xs font-medium">{form.formState.errors.bpm.message}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-0.5">
-                      <Label className="text-xs font-semibold flex items-center gap-1">
-                        <Hash className="w-3 h-3 text-secondary" />
-                        Key
-                        <span className="text-[10px] text-muted-foreground font-normal">(opt.)</span>
-                      </Label>
-                      <select
-                        {...form.register("key")}
-                        disabled={uploadMutation.isPending}
-                        className="premium-input h-7 text-xs w-full"
-                      >
-                        <option value="">Selecione uma key...</option>
-                        {KEYS.map((k) => (
-                          <option key={k} value={k}>{k}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Colaborações */}
-                  <div className="space-y-0.5">
-                    <Label className="text-xs font-semibold flex items-center gap-1">
-                      <Music className="w-3 h-3 text-secondary" />
-                      Colaborações (Feat)
-                      <span className="text-[10px] text-muted-foreground font-normal">(opt.)</span>
-                    </Label>
-                    <Input
-                      placeholder="MC Fulano, DJ Ciclano..."
-                      {...form.register("collaborations")}
-                      disabled={uploadMutation.isPending}
-                      className="premium-input h-7 text-xs"
-                    />
-                  </div>
-
-                  {/* Botão de envio */}
+                  {/* Formulário */}
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="mt-2"
+                    className="space-y-5"
                   >
-                    <Button
-                      type="submit"
-                      disabled={uploadMutation.isPending}
-                      className="w-full h-8 text-xs font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-lg hover:shadow-primary/30 transition-all"
-                    >
-                      {uploadMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-1.5 animate-spin" size={14} />
-                          <span>
-                            Enviando {uploadProgress > 0 ? `${uploadProgress.toFixed(0)}%` : '...'}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="w-3 h-3 mr-1.5" />
-                          Publicar
-                        </>
+                    {/* Título */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-foreground flex items-center gap-1">
+                        Título da Faixa 
+                        <span className="text-destructive text-base">*</span>
+                      </Label>
+                      <Input
+                        placeholder="Ex: Toca Toca"
+                        {...form.register("title")}
+                        disabled={uploadMutation.isPending}
+                        className="h-11 sm:h-12 text-sm font-medium bg-white/5 border-white/10 focus:border-primary/50 transition-all"
+                      />
+                      {form.formState.errors.title && (
+                        <p className="text-destructive text-xs font-medium flex items-center gap-1">
+                          <span className="w-1 h-1 rounded-full bg-destructive inline-block" />
+                          {form.formState.errors.title.message}
+                        </p>
                       )}
-                    </Button>
+                    </div>
+
+                    {/* Gênero com select customizado */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-foreground flex items-center gap-1">
+                        Gênero Musical
+                        <span className="text-destructive text-base">*</span>
+                      </Label>
+                      <div className="relative">
+                        <select
+                          {...form.register("genre")}
+                          disabled={uploadMutation.isPending}
+                          className="h-11 sm:h-12 w-full text-sm font-medium bg-white/5 border border-white/10 rounded-lg px-4 pr-10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer hover:bg-white/10"
+                        >
+                          <option value="" className="bg-background">Selecione um gênero...</option>
+                          {GENRES.map((g) => (
+                            <option key={g} value={g} className="bg-background">{g}</option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                      </div>
+                      {form.formState.errors.genre && (
+                        <p className="text-destructive text-xs font-medium flex items-center gap-1">
+                          <span className="w-1 h-1 rounded-full bg-destructive inline-block" />
+                          {form.formState.errors.genre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Tipo de Produção */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-foreground">Tipo de Produção</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <motion.button
+                          type="button"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => form.setValue("track_type", "mashup")}
+                          className={`relative h-12 sm:h-14 rounded-xl font-bold text-sm transition-all overflow-hidden ${
+                            trackType === "mashup"
+                              ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30 border-2 border-primary/50"
+                              : "bg-white/5 text-muted-foreground border-2 border-white/10 hover:border-white/20 hover:bg-white/10"
+                          }`}
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            <Music className="w-4 h-4" />
+                            <span>Mashup</span>
+                            {trackType === "mashup" && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center"
+                              >
+                                <Check className="w-3 h-3" />
+                              </motion.div>
+                            )}
+                          </div>
+                        </motion.button>
+
+                        <motion.button
+                          type="button"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => form.setValue("track_type", "remix")}
+                          className={`relative h-12 sm:h-14 rounded-xl font-bold text-sm transition-all overflow-hidden ${
+                            trackType === "remix"
+                              ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30 border-2 border-primary/50"
+                              : "bg-white/5 text-muted-foreground border-2 border-white/10 hover:border-white/20 hover:bg-white/10"
+                          }`}
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            <span>Remix</span>
+                            {trackType === "remix" && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center"
+                              >
+                                <Check className="w-3 h-3" />
+                              </motion.div>
+                            )}
+                          </div>
+                        </motion.button>
+                      </div>
+                    </div>
+
+                    {/* Card de Preço */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-4 sm:p-5 backdrop-blur-sm"
+                    >
+                      {trackType === "mashup" ? (
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                              Preço Tabelado
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Definido pela plataforma
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                              R$ {mashupPrice.toFixed(2).replace('.', ',')}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold flex items-center gap-2">
+                            Valor do Remix
+                            <span className="text-xs font-normal text-muted-foreground">(preço livre)</span>
+                          </Label>
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-bold">
+                              R$
+                            </span>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              placeholder="19,90"
+                              className="pl-12 h-11 sm:h-12 text-sm font-medium bg-white/5 border-white/10 focus:border-primary/50"
+                              value={priceCents !== undefined && priceCents !== null ? (priceCents / 100) : ''}
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                const n = Number(v);
+                                if (isNaN(n)) {
+                                  form.setValue("price_cents", undefined);
+                                } else {
+                                  form.setValue("price_cents", Math.round(n * 100));
+                                }
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+
+                    {/* BPM e Key */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-semibold flex items-center gap-2">
+                          <Activity className="w-4 h-4 text-secondary" />
+                          BPM
+                          <span className="text-xs font-normal text-muted-foreground">(opcional)</span>
+                        </Label>
+                        <Input
+                          type="number"
+                          placeholder="128"
+                          {...form.register("bpm")}
+                          disabled={uploadMutation.isPending}
+                          className="h-11 sm:h-12 text-sm font-medium bg-white/5 border-white/10 focus:border-primary/50"
+                          min="1"
+                          max="300"
+                        />
+                        {form.formState.errors.bpm && (
+                          <p className="text-destructive text-xs font-medium">{form.formState.errors.bpm.message}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-sm font-semibold flex items-center gap-2">
+                          <Hash className="w-4 h-4 text-secondary" />
+                          Key
+                          <span className="text-xs font-normal text-muted-foreground">(opcional)</span>
+                        </Label>
+                        <div className="relative">
+                          <select
+                            {...form.register("key")}
+                            disabled={uploadMutation.isPending}
+                            className="h-11 sm:h-12 w-full text-sm font-medium bg-white/5 border border-white/10 rounded-lg px-4 pr-10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer hover:bg-white/10"
+                          >
+                            <option value="" className="bg-background">Selecione...</option>
+                            {KEYS.map((k) => (
+                              <option key={k} value={k} className="bg-background">{k}</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Colaborações */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold flex items-center gap-2">
+                        <Music className="w-4 h-4 text-secondary" />
+                        Colaborações (Feat)
+                        <span className="text-xs font-normal text-muted-foreground">(opcional)</span>
+                      </Label>
+                      <Input
+                        placeholder="MC Fulano, DJ Ciclano..."
+                        {...form.register("collaborations")}
+                        disabled={uploadMutation.isPending}
+                        className="h-11 sm:h-12 text-sm font-medium bg-white/5 border-white/10 focus:border-primary/50"
+                      />
+                    </div>
+
+                    {/* Botão de envio */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <Button
+                        type="submit"
+                        disabled={uploadMutation.isPending}
+                        className="w-full h-12 sm:h-14 text-sm font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-xl hover:shadow-primary/40 transition-all rounded-xl"
+                      >
+                        {uploadMutation.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 animate-spin" size={18} />
+                            <span>
+                              Enviando {uploadProgress > 0 ? `${uploadProgress.toFixed(0)}%` : '...'}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4 mr-2" />
+                            Publicar Música
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
                   </motion.div>
-                </motion.div>
+                </div>
               )}
             </form>
           </TabsContent>
 
           {/* ================= BROWSE ================= */}
-          <TabsContent value="browse" className="space-y-4 mt-6 p-6 sm:p-8 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <TabsContent value="browse" className="space-y-4 mt-6 p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
-                className="pl-12 premium-input"
+                className="pl-12 h-12 sm:h-14 text-sm font-medium bg-white/5 border-white/10 focus:border-primary/50"
                 placeholder="Buscar por título, artista ou gênero..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -589,52 +632,59 @@ export function UploadTrackModal({
                       key={track.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="group flex items-center justify-between gap-3 p-3 sm:p-4 glass-effect rounded-lg hover:border-primary/50 transition-all cursor-pointer"
+                      whileHover={{ scale: 1.01 }}
+                      className="group relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-4 backdrop-blur-sm hover:border-primary/50 transition-all cursor-pointer"
                       onClick={() => handleSelectTrack(track.id)}
                     >
-                      <div className="flex gap-3 items-center overflow-hidden flex-1">
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center flex-shrink-0 group-hover:from-primary/30 group-hover:to-secondary/30 transition-all">
-                          <Music className="text-primary w-5 h-5" />
+                      <div className="flex items-center gap-4">
+                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-secondary/20 flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:from-primary/30 group-hover:to-secondary/30 transition-all">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                          <Music className="relative z-10 text-primary w-6 h-6 sm:w-7 sm:h-7 drop-shadow-lg" />
                         </div>
+                        
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold truncate">
+                          <p className="text-sm sm:text-base font-bold truncate text-foreground">
                             {track.title}
                           </p>
-                          <p className="text-xs text-muted-foreground truncate">
+                          <p className="text-xs sm:text-sm text-muted-foreground truncate">
                             {track.artist}
                             {track.collaborations && (
                               <span className="text-secondary"> • {track.collaborations}</span>
                             )}
                           </p>
                           <div className="flex flex-wrap gap-2 mt-2">
-                            <span className="text-xs px-2 py-1 bg-primary/20 text-primary/80 rounded-md font-medium">
+                            <span className="text-xs px-2.5 py-1 bg-primary/20 text-primary rounded-lg font-semibold border border-primary/30">
                               {track.genre}
                             </span>
                             {track.bpm && (
-                              <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground rounded flex items-center gap-0.5">
-                                <Activity className="w-2.5 h-2.5" />
-                                {track.bpm} BPM
+                              <span className="text-xs px-2 py-1 bg-white/5 text-muted-foreground rounded-lg flex items-center gap-1 border border-white/10">
+                                <Activity className="w-3 h-3" />
+                                {track.bpm}
                               </span>
                             )}
                             {track.key && (
-                              <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground rounded flex items-center gap-0.5">
-                                <Hash className="w-2.5 h-2.5" />
+                              <span className="text-xs px-2 py-1 bg-white/5 text-muted-foreground rounded-lg flex items-center gap-1 border border-white/10">
+                                <Hash className="w-3 h-3" />
                                 {track.key}
                               </span>
                             )}
                           </div>
                         </div>
+
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="hover:bg-primary/10 hover:text-primary h-10 w-10 p-0 flex-shrink-0 rounded-lg transition-all"
+                          disabled={addTrackToProfileMutation.isPending}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSelectTrack(track.id);
+                          }}
+                          title="Adicionar ao seu perfil"
+                        >
+                          <Plus className="w-5 h-5" />
+                        </Button>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="hover:bg-primary/10 hover:text-primary h-8 w-8 sm:h-9 sm:w-9 p-0 flex-shrink-0"
-                        disabled={addTrackToProfileMutation.isPending}
-                        onClick={() => handleSelectTrack(track.id)}
-                        title="Adicionar ao seu perfil"
-                      >
-                        <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      </Button>
                     </motion.div>
                   ))
                 )}
