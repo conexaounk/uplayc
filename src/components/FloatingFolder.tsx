@@ -6,6 +6,8 @@ import { PixCheckoutModal, OrderData } from '@/components/PixCheckoutModal';
 import { usePack } from '@/context/packContext';
 import { useToast } from '@/hooks/use-notification';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://api.conexaounk.com';
+
 export function FloatingFolder() {
   const { currentPack, removeTrack, finalize } = usePack();
   const toast = useToast();
@@ -77,7 +79,7 @@ export function FloatingFolder() {
                       items: currentPack.tracks.map((t) => t.id),
                     };
 
-                    const res = await fetch('https://api.conexaounk.com/orders', {
+                    const res = await fetch(`${API_BASE}/orders`, {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
