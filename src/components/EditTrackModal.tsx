@@ -18,6 +18,7 @@ const schema = z.object({
   key: z.string().optional(),
   price_cents: z.number().optional().nullable(),
   is_public: z.boolean().optional(),
+  preview_start_time: z.number().optional().nullable(),
 });
 
 type FormData = z.infer<typeof schema>;
