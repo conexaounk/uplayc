@@ -149,20 +149,22 @@ function AuthRedirect() {
 }
 function App() {
   return <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <PackProvider>
-          <TooltipProvider>
-            <AuthRedirect />
-            <div className="bg-background min-h-screen text-foreground font-body flex flex-col">
-              <Navbar />
-              <Router />
-              <CartSidebar />
-              <Toaster />
-              <FloatingFolder />
-            </div>
-          </TooltipProvider>
-        </PackProvider>
-      </CartProvider>
+      <NotificationProvider>
+        <CartProvider>
+          <PackProvider>
+            <TooltipProvider>
+              <AuthRedirect />
+              <div className="bg-background min-h-screen text-foreground font-body flex flex-col">
+                <Navbar />
+                <Router />
+                <CartSidebar />
+                <NotificationCenter />
+                <FloatingFolder />
+              </div>
+            </TooltipProvider>
+          </PackProvider>
+        </CartProvider>
+      </NotificationProvider>
     </QueryClientProvider>;
 }
 export default App;
