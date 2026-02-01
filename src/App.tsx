@@ -75,18 +75,7 @@ function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="w-12 h-12 flex items-center justify-center rounded-xl text-gray-500 hover:text-white transition-colors cursor-pointer group">
-              <Bell className="w-5 h-5" />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="right" className="ml-2">
-            Notificações
-          </TooltipContent>
-        </Tooltip>
-      </div>
+      <div className="mt-auto -mt-[3px]" />
     </aside>
   );
 }
