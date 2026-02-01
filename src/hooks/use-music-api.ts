@@ -132,9 +132,8 @@ export function useMusicApi() {
   const removeFromProfileMutation = useMutation({
     mutationFn: (trackId: string) => {
       console.log(`🗑️ Removendo track ${trackId} do perfil (não do banco)`);
-      return api.fetch(`/user-library`, {
-        method: 'DELETE',
-        body: JSON.stringify({ track_id: trackId })
+      return api.fetch(`/user-library/${trackId}`, {
+        method: 'DELETE'
       });
     },
     onSuccess: () => {
