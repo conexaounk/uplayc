@@ -30,8 +30,7 @@ import {
   Check,
 } from "lucide-react";
 
-import { toast } from "sonner";
-
+import { useToast } from "@/hooks/use-notification";
 import { useAuth } from "@/hooks/use-auth";
 import { useDJ } from "@/hooks/use-djs";
 import { useMusicApi } from "@/hooks/use-music-api";
