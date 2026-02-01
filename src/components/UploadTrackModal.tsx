@@ -221,10 +221,10 @@ export function UploadTrackModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] glass-effect w-[95vw] sm:w-[90vw] md:w-full p-0 overflow-hidden rounded-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] glass-effect w-[95vw] sm:w-[90vw] md:w-full p-0 overflow-hidden rounded-2xl" style={{ left: "58%", margin: "16px auto 50px", padding: "8px 32px 29px 21px" }}>
         {/* Header com gradiente */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 border-b border-white/10 p-6 sm:p-8">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-50" />
+        <div className="relative overflow-hidden bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 border-b border-white/10 p-6 sm:p-8 rounded-[29px]">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-50 rounded-[29px]" />
           <div className="relative z-10">
             <DialogTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
               Gerenciar Músicas
