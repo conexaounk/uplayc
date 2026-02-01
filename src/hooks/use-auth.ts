@@ -7,28 +7,38 @@ export function useAuth() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Busca o role do usuário na tabela user_roles
+  // Busca o role do usuário usando RPC function
   const fetchUserRole = useCallback(async (userId: string) => {
     console.log("Fetching role for user:", userId);
     try {
-      // Usar query sem .single() para evitar erro se houver múltiplas linhas
+      // Chamar função RPC que não tem problemas de RLS
       const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId);
+        .rpc("get_user_role");
 
-      console.log("Role query result:", { data, error });
+      console.log("Role RPC result:", { data, error });
 
       if (error) {
-        console.log("Erro ao buscar roles:", error.message, error.code);
-        setUserRole(null);
+        console.log("Erro ao buscar role via RPC:", error.message, error.code);
+        // Fallback: tentar query direta
+        const { data: roleData, error: queryError } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", userId);
+
+        if (queryError) {
+          console.log("Fallback query também falhou:", queryError.message);
+          setUserRole(null);
+          return;
+        }
+
+        const role = (roleData && roleData.length > 0) ? roleData[0]?.role : null;
+        console.log("Using fallback role:", role);
+        setUserRole(role);
         return;
       }
 
-      // Pegar o primeiro role (normalmente só há um)
-      const role = (data && data.length > 0) ? data[0]?.role : null;
-      console.log("Setting user role:", role);
-      setUserRole(role);
+      console.log("Setting user role from RPC:", data);
+      setUserRole(data);
     } catch (err) {
       console.error("Erro ao buscar user role:", err);
       setUserRole(null);
