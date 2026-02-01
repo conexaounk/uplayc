@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Save, Loader2, ShieldCheck, Lock, Edit, Trash2, EyeOff, Eye } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-notification";
 import { api } from "@/lib/apiService";
 import { getSettings, setSetting } from "@/lib/settingsService";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
