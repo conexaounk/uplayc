@@ -6,6 +6,7 @@ import { Music, Loader2, Edit, Play, ExternalLink, Plus } from "lucide-react";
 import { api } from "@/lib/apiService";
 import { useToast } from "@/hooks/use-notification";
 import { UploadTrackModal } from "@/components/UploadTrackModal";
+import { EditTrackModal } from "@/components/EditTrackModal";
 import { PlayerContext } from "@/context/PlayerContext";
 
 // Interface exata do seu D1
