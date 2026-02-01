@@ -153,31 +153,6 @@ export default function HomePage() {
           ))}
         </div>
       </div>
-
-      {/* Notifications Card */}
-      <div className="glass-panel p-6 rounded-3xl border border-white/10">
-        <h3 className="font-bold text-white text-lg mb-4">Notificações</h3>
-        <div className="space-y-4">
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-xl bg-accent-purple/20 flex items-center justify-center flex-shrink-0 text-accent-purple">
-              🎵
-            </div>
-            <div>
-              <p className="text-xs text-gray-300"><span className="text-white font-medium">Novo lançamento:</span> Deep House Vol.5</p>
-              <p className="text-[10px] text-gray-500 mt-1">2 horas atrás</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-xl bg-accent-blue/20 flex items-center justify-center flex-shrink-0 text-accent-blue">
-              🎧
-            </div>
-            <div>
-              <p className="text-xs text-gray-300"><span className="text-white font-medium">Artista seguido:</span> UNK lançou novo pack!</p>
-              <p className="text-[10px] text-gray-500 mt-1">5 horas atrás</p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <PackDetailsModal pack={selectedPack} isOpen={!!selectedPack} onClose={() => setSelectedPack(null)} />
