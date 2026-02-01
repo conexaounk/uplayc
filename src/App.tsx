@@ -30,13 +30,14 @@ import MyTracksPage from "@/pages/MyTracksPage";
 
 function Sidebar() {
   const [location] = useLocation();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   const navItems = [
     { href: "/", icon: Home, label: "Home" },
     { href: "/buscar", icon: Search, label: "Buscar" },
     { href: "/minhas-tracks", icon: Music, label: "Minhas Tracks" },
     { href: "/configuracoes", icon: Settings, label: "Configurações" },
+    ...(isAdmin ? [{ href: "/admin", icon: Shield, label: "Admin" }] : []),
   ];
 
   if (!user) return null;
