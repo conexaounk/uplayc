@@ -22,13 +22,13 @@ export function AvatarUpload({ currentAvatarUrl, onUploadComplete, userId }: Ava
 
     // Validar tipo de arquivo
     if (!file.type.startsWith("image/")) {
-      toast.error("Por favor, selecione uma imagem");
+      toast.error("Arquivo inválido", "Por favor, selecione uma imagem");
       return;
     }
 
     // Validar tamanho (máx 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("A imagem deve ter no máximo 5MB");
+      toast.error("Arquivo muito grande", "A imagem deve ter no máximo 5MB");
       return;
     }
 
