@@ -2,7 +2,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { usePacks } from "@/hooks/use-packs";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { useLocation } from "wouter";
 import { Music } from "lucide-react";
 
 export default function MyTracksPage() {
