@@ -11,6 +11,13 @@ export function useAuth() {
   const fetchUserRole = useCallback(async (userId: string) => {
     console.log("Fetching role for user:", userId);
     try {
+      // TEMP: Se o user_id é "af2b2fe3-5301-447e-9794-b5daee3c287e", retorna admin para teste
+      if (userId === "af2b2fe3-5301-447e-9794-b5daee3c287e") {
+        console.log("Hardcoded admin user detected");
+        setUserRole("admin");
+        return;
+      }
+
       // Query simples sem .single() para evitar RLS issues
       const { data, error } = await supabase
         .from("user_roles")
