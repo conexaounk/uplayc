@@ -305,8 +305,9 @@ export function UploadTrackModal({
                         size="sm"
                         variant="ghost"
                         className="hover:bg-primary/10 hover:text-primary h-7 w-7 p-0"
-                        disabled={addToLibraryMutation.isPending}
+                        disabled={addTrackToProfileMutation.isPending}
                         onClick={() => handleSelectTrack(track.id)}
+                        title="Adicionar ao seu perfil"
                         >
                         <Plus className="w-3 h-3" />
                         </Button>
