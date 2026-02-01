@@ -167,7 +167,7 @@ export default function MyTracksPage() {
                     variant="secondary"
                     size="icon"
                     className="h-9 w-9 rounded-full bg-white/5 hover:bg-primary hover:text-white transition-colors"
-                    onClick={() => setSelectedTrack(track)}
+                    onClick={() => playerContext?.setCurrentTrack(track)}
                     title="Ouvir prévia (30 segundos)"
                   >
                     <Play size={16} fill="currentColor" />
