@@ -99,17 +99,6 @@ export default function HomePage() {
         </div>}
       </section>
 
-      {/* Top DJs Section */}
-      <section>
-        <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-          <Users size={24} />
-        </h2>
-        {djsLoading || packsLoading ? <div className="h-40 flex items-center justify-center">
-          <Loader2 className="animate-spin text-accent-purple w-10 h-10" />
-        </div> : <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {djsWithTracks.slice(0, 8).map(dj => <DJCard key={dj.id} dj={dj} />)}
-        </div>}
-      </section>
     </div>
 
     {/* Right Sidebar */}
