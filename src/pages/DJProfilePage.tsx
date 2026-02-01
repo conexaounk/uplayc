@@ -13,14 +13,17 @@ import { AudioPreview } from "@/components/AudioPreview";
 
 export default function DJProfilePage() {
   const { id } = useParams<{ id: string }>();
-  
+
   // 2. Hooks de Dados
   const { data: djProfile, isLoading: djLoading } = useDJ(id || "");
-  
+
   // 3. ALTERADO: Usando o hook novo para buscar as músicas deste DJ específico
   const { useTracks } = useMusicApi();
   // Passamos o 'id' do DJ vindo da URL para filtrar apenas as músicas dele
   const { data: tracks = [], isLoading: tracksLoading } = useTracks(id);
+
+  // 4. Hook para gerenciar follow/unfollow
+  const { isFollowing, isLoading: isLoadingFollow, handleToggleFollow, followerCount } = useFollow(id || "");
 
   const [buyPackModalOpen, setBuyPackModalOpen] = useState(false);
 
