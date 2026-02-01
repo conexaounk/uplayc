@@ -235,7 +235,7 @@ export function UploadTrackModal({
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-0" style={{ marginLeft: "-10px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
           <TabsList className="grid w-full grid-cols-2 bg-transparent border-b border-white/10 h-12 sm:h-14 rounded-none mx-0 p-0">
             <TabsTrigger value="upload" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent text-xs sm:text-sm font-medium transition-all">
               <Upload className="w-4 h-4 mr-2" />
@@ -248,7 +248,7 @@ export function UploadTrackModal({
           </TabsList>
 
           {/* ================= UPLOAD ================= */}
-          <TabsContent value="upload" className="space-y-4 mt-6 p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <TabsContent value="upload" className="space-y-4 p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-200px)]" style={{ margin: "24px 1px 0 0", padding: "24px 0 24px 24px" }}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {!file ? (
                 <motion.div
