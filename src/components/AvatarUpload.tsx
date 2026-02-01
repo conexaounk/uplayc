@@ -14,6 +14,7 @@ interface AvatarUploadProps {
 export function AvatarUpload({ currentAvatarUrl, onUploadComplete, userId }: AvatarUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const toast = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
