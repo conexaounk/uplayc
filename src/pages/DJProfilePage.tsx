@@ -1,6 +1,5 @@
 import { useDJ } from "@/hooks/use-djs";
 import { useMusicApi } from "@/hooks/use-music-api"; // 1. ALTERADO: Importando o hook centralizado
-import { useDJ } from "@/hooks/use-djs";
 import { useFollow } from "@/hooks/use-follow";
 import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
