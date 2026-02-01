@@ -21,8 +21,12 @@ export function useMusicApi() {
       const response = await api.fetch(queryString ? `${url}?${queryString}` : url);
 
       // Garantir que sempre retorna um array
+      // API retorna { success, count, tracks: [...] }
       if (Array.isArray(response)) {
         return response;
+      }
+      if (response?.tracks && Array.isArray(response.tracks)) {
+        return response.tracks;
       }
       if (response?.data && Array.isArray(response.data)) {
         return response.data;
