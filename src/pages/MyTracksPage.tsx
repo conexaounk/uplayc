@@ -106,13 +106,9 @@ export default function MyTracksPage() {
       <header className="flex justify-between items-end">
         <div>
           <h1 className="text-4xl font-black text-white">Minhas Tracks</h1>
-          <p className="text-gray-400 mt-2">
-            Gerenciando tracks: <span className="text-primary/80 text-xs font-mono">{user.email}</span>
-          </p>
         </div>
         <div className="text-right">
           <span className="text-2xl font-bold text-primary">{tracks.length}</span>
-          <p className="text-[10px] uppercase tracking-widest text-gray-500">Total no D1</p>
         </div>
       </header>
 
