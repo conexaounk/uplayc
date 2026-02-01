@@ -31,9 +31,9 @@ function Sidebar() {
 
   const navItems = [
     { href: "/", icon: Home, label: "Home" },
-    { href: "/djs", icon: Search, label: "Artists" },
-    { href: "#library", icon: Music, label: "Library" },
-    { href: "#settings", icon: Settings, label: "Settings" },
+    { href: "/buscar", icon: Search, label: "Buscar" },
+    { href: "/minhas-tracks", icon: Music, label: "Minhas Tracks" },
+    { href: "/configuracoes", icon: Settings, label: "Configurações" },
   ];
 
   if (!user) return null;
@@ -46,28 +46,42 @@ function Sidebar() {
           const isActive = location === item.href;
 
           return (
-            <Link key={item.href} href={item.href}>
-              <div className="relative w-full flex justify-center group cursor-pointer">
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[20px] bg-purple-500 rounded-r-full shadow-[0_0_10px_#a855f7]"></div>
-                )}
-                <div className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${
-                  isActive
-                    ? "bg-white/10 border border-white/20"
-                    : "bg-white/5 border border-white/5 group-hover:bg-white/10"
-                }`}>
-                  <Icon className="w-6 h-6 text-white/70 group-hover:text-white transition-colors" />
-                </div>
-              </div>
-            </Link>
+            <Tooltip key={item.href}>
+              <TooltipTrigger asChild>
+                <Link href={item.href}>
+                  <div className="relative w-full flex justify-center group cursor-pointer">
+                    {isActive && (
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[20px] bg-purple-500 rounded-r-full shadow-[0_0_10px_#a855f7]"></div>
+                    )}
+                    <div className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${
+                      isActive
+                        ? "bg-white/10 border border-white/20"
+                        : "bg-white/5 border border-white/5 group-hover:bg-white/10"
+                    }`}>
+                      <Icon className="w-6 h-6 text-white/70 group-hover:text-white transition-colors" />
+                    </div>
+                  </div>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="ml-2">
+                {item.label}
+              </TooltipContent>
+            </Tooltip>
           );
         })}
       </nav>
 
       <div className="mt-auto">
-        <div className="w-12 h-12 flex items-center justify-center rounded-xl text-gray-500 hover:text-white transition-colors cursor-pointer group">
-          <Bell className="w-5 h-5" />
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="w-12 h-12 flex items-center justify-center rounded-xl text-gray-500 hover:text-white transition-colors cursor-pointer group">
+              <Bell className="w-5 h-5" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="ml-2">
+            Notificações
+          </TooltipContent>
+        </Tooltip>
       </div>
     </aside>
   );
