@@ -23,6 +23,20 @@ export default function DJProfilePage() {
   // Passamos o 'id' do DJ vindo da URL para filtrar apenas as músicas dele
   const { data: tracks = [], isLoading: tracksLoading } = useTracks(id);
 
+  // Debug: Log tracks data
+  useEffect(() => {
+    if (tracks.length > 0) {
+      console.log("📀 Tracks carregados:", tracks);
+      tracks.forEach((track: any) => {
+        console.log(`🎵 Track "${track.title}":`, {
+          id: track.id,
+          audio_url: track.audio_url,
+          has_audio: !!track.audio_url
+        });
+      });
+    }
+  }, [tracks]);
+
   // 4. Hook para gerenciar follow/unfollow
   const { isFollowing, isLoading: isLoadingFollow, handleToggleFollow, followerCount } = useFollow(id || "");
 
