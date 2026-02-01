@@ -119,9 +119,7 @@ export default function HomePage() {
                   <p className="text-xs text-gray-400">{dj.city || 'Artista'}</p>
                 </div>
               </div>
-              <button className="border border-white/20 rounded-full px-4 py-1 text-xs text-white hover:bg-white hover:text-black transition">
-                Seguir
-              </button>
+              <FollowButton userId={dj.id} size="sm" />
             </div>
           ))}
         </div>
