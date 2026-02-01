@@ -464,13 +464,8 @@ export function UploadTrackModal({
                             </p>
                           </div>
                           <div className="text-right">
-                            <div className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" style={{ fontWeight: "100", lineHeight: "40px", marginLeft: "-2px" }}>
-                              <div style={{ fontWeight: "400", fontSize: "22px", lineHeight: "43px" }}>
-                                R${" "}
-                              </div>
-                              <div style={{ fontWeight: "500", lineHeight: "15px", fontSize: "24px" }}>
-                                {mashupPrice.toFixed(2).replace('.', ',')}
-                              </div>
+                            <div className="text-3xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                              R$ {mashupPrice.toFixed(2).replace('.', ',')}
                             </div>
                           </div>
                         </div>
