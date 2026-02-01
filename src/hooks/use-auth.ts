@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -7,46 +7,15 @@ export function useAuth() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Busca o role do usuário na tabela user_roles
-  const fetchUserRole = useCallback(async (userId: string) => {
-    console.log("Fetching role for user:", userId);
-    try {
-      // TEMP: Retorna admin = true para todos para testes
-      console.log("TEMPORARY: Setting all users as admin");
-      setUserRole("admin");
-      return;
-
-      // TODO: Remover depois de testar - código original abaixo:
-      /*
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("*");
-
-      if (error) {
-        console.log("Erro ao buscar roles:", error.message);
-        setUserRole(null);
-        return;
-      }
-
-      const userRoleRecord = data?.find((r: any) => r.user_id === userId);
-      const role = userRoleRecord?.role || null;
-      setUserRole(role);
-      */
-    } catch (err) {
-      console.error("Erro ao buscar user role:", err);
-      setUserRole(null);
-    }
-  }, []);
-
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
 
-      // Busca o role se houver usuário autenticado
+      // TEMP: Set all users as admin for testing
       if (currentUser?.id) {
-        await fetchUserRole(currentUser.id);
+        setUserRole("admin");
       } else {
         setUserRole(null);
       }
@@ -60,9 +29,9 @@ export function useAuth() {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
 
-        // Busca o role se houver usuário autenticado
+        // TEMP: Set all users as admin for testing
         if (currentUser?.id) {
-          await fetchUserRole(currentUser.id);
+          setUserRole("admin");
         } else {
           setUserRole(null);
         }
@@ -72,7 +41,7 @@ export function useAuth() {
     );
 
     return () => subscription.unsubscribe();
-  }, [fetchUserRole]);
+  }, []);
 
   const logout = async () => {
     setUserRole(null);
