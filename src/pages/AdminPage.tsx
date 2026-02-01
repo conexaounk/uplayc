@@ -13,18 +13,9 @@ import { getSettings, setSetting } from "@/lib/settingsService";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export default function AdminPage() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, isAdmin } = useAuth();
   const [, setLocation] = useLocation();
   const toast = useToast();
-
-  // Proteção: checar role no metadata do Supabase
-  useEffect(() => {
-    const isAdmin = user?.app_metadata?.role === 'admin' || user?.user_metadata?.is_admin === true;
-    if (!authLoading && !isAdmin) {
-      toast.error("Acesso negado", "Apenas administradores podem acessar");
-      setLocation("/");
-    }
-  }, [user, authLoading, setLocation]);
 
   const [saving, setSaving] = useState(false);
   const [prices, setPrices] = useState({
@@ -40,7 +31,23 @@ export default function AdminPage() {
   const [hiddenTrackIds, setHiddenTrackIds] = useState<string[]>([]);
   const [showHidden, setShowHidden] = useState(false);
 
+  // Mostrar loading enquanto carrega
   if (authLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
+
+  // Proteção: checar role no banco de dados DEPOIS de carregar
+  if (!isAdmin) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
+          <p className="text-muted-foreground mb-6">Apenas administradores podem acessar esta página</p>
+          <Button onClick={() => setLocation("/")} className="bg-primary hover:bg-primary/80">
+            Voltar para Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // Função para salvar no backend (POST /settings para cada chave)
   const handleSave = async () => {

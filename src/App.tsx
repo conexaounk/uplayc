@@ -11,7 +11,7 @@ import { CartProvider, useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/hooks/use-auth";
 import { CartSidebar } from "@/components/CartSidebar";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, User, LogOut, Menu, Home, Search, Music, Settings, Bell } from "lucide-react";
+import { ShoppingBag, User, LogOut, Menu, Home, Search, Music, Settings, Bell, Shield } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect, useRef } from "react";
 
@@ -27,16 +27,18 @@ import AdminPage from "@/pages/AdminPage";
 import SearchPage from "@/pages/SearchPage";
 import SettingsPage from "@/pages/SettingsPage";
 import MyTracksPage from "@/pages/MyTracksPage";
+import AdminSetupPage from "@/pages/AdminSetupPage";
 
 function Sidebar() {
   const [location] = useLocation();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   const navItems = [
     { href: "/", icon: Home, label: "Home" },
     { href: "/buscar", icon: Search, label: "Buscar" },
     { href: "/minhas-tracks", icon: Music, label: "Minhas Tracks" },
     { href: "/configuracoes", icon: Settings, label: "Configurações" },
+    ...(isAdmin ? [{ href: "/admin", icon: Shield, label: "Admin" }] : []),
   ];
 
   if (!user) return null;
@@ -87,7 +89,8 @@ function Navbar() {
   } = useCart();
   const {
     user,
-    logout
+    logout,
+    isAdmin
   } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [createPackOpen, setCreatePackOpen] = useState(false);
@@ -138,6 +141,15 @@ function Navbar() {
                 Criar Pack
               </Button>
 
+              {isAdmin && (
+                <Link href="/admin">
+                  <Button variant="ghost" size="sm" className="hidden sm:flex items-center gap-2 hover:bg-white/10">
+                    <Shield size={16} />
+                    <span>Admin</span>
+                  </Button>
+                </Link>
+              )}
+
               <Button variant="ghost" size="icon" onClick={logout} title="Logout" className="hover:text-destructive">
                 <LogOut size={18} />
               </Button>
@@ -186,22 +198,29 @@ function Router() {
       <Route path="/minhas-tracks" component={MyTracksPage} />
       <Route path="/configuracoes" component={SettingsPage} />
       <Route path="/admin" component={AdminPage} />
+      <Route path="/admin-setup" component={AdminSetupPage} />
       <Route component={NotFound} />
     </Switch>;
 }
 
 function AuthRedirect() {
-  const { user } = useAuth();
+  const { user, isAdmin, isLoading } = useAuth();
   const [, setLocation] = useLocation();
   const previousUserRef = useRef<typeof user>(null);
 
   useEffect(() => {
-    // Se o usuário estava deslogado e agora está logado, redireciona para /profile
+    // Se o usuário estava deslogado e agora está logado
     if (!previousUserRef.current && user) {
-      setLocation("/profile");
+      // Se é admin, redireciona para /admin
+      if (isAdmin) {
+        setLocation("/admin");
+      } else {
+        // Caso contrário, redireciona para /profile
+        setLocation("/profile");
+      }
     }
     previousUserRef.current = user;
-  }, [user, setLocation]);
+  }, [user, isAdmin, setLocation]);
 
   return null;
 }

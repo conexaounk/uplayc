@@ -4,19 +4,38 @@ import type { User } from "@supabase/supabase-js";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+
+      // TEMP: Set all users as admin for testing
+      if (currentUser?.id) {
+        setUserRole("admin");
+      } else {
+        setUserRole(null);
+      }
+
       setIsLoading(false);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
+      async (_event, session) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+
+        // TEMP: Set all users as admin for testing
+        if (currentUser?.id) {
+          setUserRole("admin");
+        } else {
+          setUserRole(null);
+        }
+
         setIsLoading(false);
       }
     );
@@ -25,6 +44,7 @@ export function useAuth() {
   }, []);
 
   const logout = async () => {
+    setUserRole(null);
     await supabase.auth.signOut();
   };
 
@@ -50,8 +70,10 @@ export function useAuth() {
 
   return {
     user,
+    userRole,
     isLoading,
     isAuthenticated: !!user,
+    isAdmin: userRole === "admin",
     logout,
     login,
     signup,
