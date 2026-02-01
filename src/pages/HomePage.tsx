@@ -4,7 +4,7 @@ import { useDJs } from "@/hooks/use-djs";
 import { PackCard } from "@/components/PackCard";
 import { PackDetailsModal } from "@/components/PackDetailsModal";
 import { Input } from "@/components/ui/input";
-import { Search, Play } from "lucide-react";
+import { Search, Play, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import type { PackWithTracks } from "@/types/supabase";
 import { useAuth } from "@/hooks/use-auth";
