@@ -90,8 +90,8 @@ function Navbar() {
     href: "/djs",
     label: "Artists"
   }];
-  return <nav className="fixed top-0 left-0 right-0 z-40 glass-panel rounded-0 border-b border-white/10 h-16">
-      <div className="container max-w-7xl mx-auto px-4 h-full flex items-center justify-between ml-[110px] md:ml-0">
+  return <nav className="fixed top-0 left-0 right-0 z-40 border-b border-white/10 h-16 backdrop-blur-md bg-black/20">
+      <div className="container max-w-7xl mx-auto px-6 h-full flex items-center justify-between ml-[110px] md:ml-0">
         {/* Logo */}
         <Link href="/">
           <div className="flex items-center gap-2 cursor-pointer">
