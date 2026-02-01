@@ -18,7 +18,8 @@ export default function ProfileViewPage() {
   const { useTracks } = useMusicApi();
 
   // Buscamos as músicas diretamente do banco pelo ID do usuário logado
-  const { data: allUserTracks = [], isLoading: tracksLoading } = useTracks(user?.id || "");
+  const { data: tracksData, isLoading: tracksLoading } = useTracks(user?.id || "");
+  const allUserTracks = Array.isArray(tracksData) ? tracksData : [];
   
   const { addItem } = useCart();
   const [, setLocation] = useLocation();
