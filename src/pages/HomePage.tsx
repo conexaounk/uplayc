@@ -31,17 +31,17 @@ export default function HomePage() {
     return packs?.some(pack => pack.dj_id === dj.id);
   }) ?? [];
 
-  return <div className="h-full overflow-hidden flex flex-col lg:flex-row gap-8 p-6">
+  return <div className="h-full overflow-hidden flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 p-3 sm:p-6">
     {/* Main Content */}
     <div className="flex-1 overflow-y-auto scrollbar-hide pb-12 space-y-10 pr-2">
       {/* Hero Section */}
-      <section className="relative h-[400px] flex items-center overflow-hidden glass-panel rounded-3xl border border-white/10">
+      <section className="relative h-[280px] sm:h-[350px] md:h-[400px] flex items-center overflow-hidden glass-panel rounded-2xl sm:rounded-3xl border border-white/10">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-r from-accent-purple/20 to-accent-blue/20" />
           <div className="absolute inset-0 bg-cover bg-center opacity-10 mix-blend-overlay bg-[url('/lovable-uploads/ae781f05-9686-49ca-8aef-db5575a7283a.png')]" />
         </div>
 
-        <div className="relative z-10 px-8 max-w-2xl">
+        <div className="relative z-10 px-4 sm:px-8 max-w-2xl w-full">
           <motion.div initial={{
             opacity: 0,
             x: -50
@@ -51,18 +51,18 @@ export default function HomePage() {
           }} transition={{
             duration: 0.8
           }}>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white mb-4 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-white mb-2 sm:mb-4 leading-tight">
               TRACKS <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-purple to-accent-blue">DJs UNK</span>
             </h1>
-            <p className="text-gray-300 mb-6 text-lg">
+            <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base md:text-lg">
               Packs, tracks exclusivas e stems direto dos DJs UNK
             </p>
 
             <div className="relative max-w-sm">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <Input
                 placeholder="Buscar packs..."
-                className="pl-12 h-12 rounded-full bg-white/10 border-white/20 text-base placeholder:text-gray-400 focus:ring-accent-purple"
+                className="pl-12 h-10 sm:h-12 rounded-full bg-white/10 border-white/20 text-sm sm:text-base placeholder:text-gray-400 focus:ring-accent-purple"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
@@ -73,11 +73,11 @@ export default function HomePage() {
 
       {/* Latest Packs Section */}
       <section>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">Últimos Lançamentos</h2>
-          <div className="flex items-center gap-3">
-            <Button className="px-6 py-2.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-white flex items-center gap-2 text-sm font-medium transition">
-              <Play size={16} /> <span>Tocar Tudo</span>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-white">Últimos Lançamentos</h2>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Button className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-white flex items-center gap-2 text-xs sm:text-sm font-medium transition">
+              <Play size={16} /> <span className="hidden sm:inline">Tocar Tudo</span><span className="sm:hidden">Tocar</span>
             </Button>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function HomePage() {
 
         {packsLoading ? <div className="h-64 flex items-center justify-center">
           <Loader2 className="animate-spin text-accent-purple w-10 h-10" />
-        </div> : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div> : <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {packs?.map(pack => <PackCard key={pack.id} pack={pack} onClick={() => setSelectedPack(pack)} />)}
           {packs?.length === 0 && <div className="col-span-full text-center py-20 text-gray-400 border border-dashed border-white/10 rounded-xl">
             Nenhum pack encontrado para sua busca.
