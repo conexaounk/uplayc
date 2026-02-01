@@ -52,18 +52,36 @@ export function useMusicApi() {
         const data = await response.json();
         console.log('✅ useTracks: Dados recebidos:', data);
 
-        // Garantir que sempre retorna um array
+        // 1. Tenta encontrar a lista de tracks em diferentes formatos possíveis
+        let allTracks: any[] = [];
+
         if (Array.isArray(data)) {
-          return data;
+          allTracks = data;
+        } else if (data && typeof data === 'object') {
+          // Tenta chaves comuns: data, tracks, results
+          allTracks = data.data || data.tracks || data.results || [];
         }
-        if (data?.tracks && Array.isArray(data.tracks)) {
-          return data.tracks;
+
+        console.log('📊 Total de tracks recebidas (bruto):', allTracks.length);
+
+        if (allTracks.length > 0) {
+          console.log('🔍 Exemplo de user_id na primeira track:', allTracks[0].user_id);
         }
-        if (data?.data && Array.isArray(data.data)) {
-          return data.data;
+
+        // 2. Se userId foi fornecido, filtra apenas as tracks desse usuário
+        if (userId) {
+          const filteredTracks = allTracks.filter((t: any) => {
+            // Tratamento de strings: case insensitive e trim
+            const trackUserId = String(t.user_id || '').trim().toLowerCase();
+            const currentUserId = String(userId).trim().toLowerCase();
+            return trackUserId === currentUserId;
+          });
+
+          console.log('✅ Total após filtrar pelo userId:', filteredTracks.length);
+          return filteredTracks;
         }
-        console.warn('⚠️ useTracks: Resposta não é um array:', data);
-        return [];
+
+        return allTracks;
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : String(error);
         console.error('❌ Erro ao buscar tracks:', errorMsg);
