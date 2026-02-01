@@ -204,6 +204,9 @@ export default function MyTracksPage() {
 
       {/* Upload Track Modal */}
       <UploadTrackModal open={uploadModalOpen} onOpenChange={setUploadModalOpen} />
+
+      {/* Edit Track Modal */}
+      <EditTrackModal open={editModalOpen} onOpenChange={setEditModalOpen} track={selectedTrack} />
     </div>
   );
 }
