@@ -75,7 +75,7 @@ export default function DJProfilePage() {
       <div className="mt-12 space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Music2 className="text-primary" /> Tracks Disponíveis
+            {" "} Tracks Disponíveis
           </h2>
           <span className="text-sm text-muted-foreground">{tracks.length} músicas</span>
         </div>
