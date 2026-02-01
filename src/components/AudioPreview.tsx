@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Play, Pause, Volume2, VolumeX, ChevronDown, ChevronUp } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
@@ -32,6 +32,14 @@ export function AudioPreview({
   const [musicDuration, setMusicDuration] = useState(0);
   const [showTimeSelector, setShowTimeSelector] = useState(false);
   const [previewStart, setPreviewStart] = useState(startTime);
+  const [audioError, setAudioError] = useState<string | null>(null);
+
+  // Debug logging
+  useEffect(() => {
+    console.log("🎵 AudioPreview - URL:", url);
+    console.log("🎵 AudioPreview - URL is empty?", !url);
+    console.log("🎵 AudioPreview - URL is valid?", url?.startsWith('http'));
+  }, [url]);
 
   useEffect(() => {
     setPreviewStart(startTime);
@@ -43,7 +51,14 @@ export function AudioPreview({
 
     if (isPlaying) {
       audio.currentTime = previewStart;
-      audio.play().catch(e => console.error("Play failed", e));
+      audio.play().catch(e => {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        console.error("❌ Play failed:", errorMessage);
+        console.error("📀 Audio element readyState:", audio.readyState);
+        console.error("📀 Audio element networkState:", audio.networkState);
+        setAudioError(errorMessage);
+        setIsPlaying(false);
+      });
     } else {
       audio.pause();
     }
@@ -80,7 +95,31 @@ export function AudioPreview({
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setMusicDuration(audioRef.current.duration);
+      console.log("✅ Audio metadata loaded - Duration:", audioRef.current.duration);
+      setAudioError(null);
     }
+  };
+
+  const handleAudioError = (event: React.SyntheticEvent<HTMLAudioElement>) => {
+    const audio = event.currentTarget;
+    const errorCode = audio.error?.code;
+    const errorMessage = audio.error?.message || "Erro desconhecido";
+
+    const errorMap: Record<number, string> = {
+      1: "Download foi abortado",
+      2: "Erro na rede",
+      3: "Decodificação falhou",
+      4: "Formato de áudio não suportado"
+    };
+
+    const message = errorMap[errorCode || 0] || errorMessage;
+    console.error("❌ Audio Error:", message, "Code:", errorCode);
+    console.error("📀 Audio src:", audio.src);
+    console.error("📀 Audio networkState:", audio.networkState);
+    console.error("📀 Audio readyState:", audio.readyState);
+
+    setAudioError(message);
+    setIsPlaying(false);
   };
 
   const togglePlayPause = (e: React.MouseEvent) => {
