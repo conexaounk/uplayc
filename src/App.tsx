@@ -206,7 +206,7 @@ function App() {
               <div className="min-h-screen text-foreground font-body flex flex-col overflow-x-hidden">
                 <Sidebar />
                 <Navbar />
-                <div className="flex-1 pt-16 md:pt-16 md:ml-[110px] overflow-hidden pb-24">
+                <div className="flex-1 pt-16 md:pt-16 md:ml-[110px] overflow-hidden pb-24 px-4">
                   <Router />
                 </div>
                 <MusicPlayer isPlaying={isPlaying} onPlayPause={() => setIsPlaying(!isPlaying)} />
