@@ -139,10 +139,6 @@ function Navbar() {
                 </Button>
               </Link>
 
-              <Button variant="ghost" size="sm" className="hidden sm:flex" onClick={() => setCreatePackOpen(true)}>
-                Criar Pack
-              </Button>
-
               {isAdmin && (
                 <Link href="/admin">
                   <Button variant="ghost" size="sm" className="hidden sm:flex items-center gap-2 hover:bg-white/10">
