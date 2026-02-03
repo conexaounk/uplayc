@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useMusicApi } from "@/hooks/use-music-api";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Music, Loader2, Edit, Play, ExternalLink, Plus } from "lucide-react";
+import { Music, Loader2, Edit, Play, ExternalLink, Plus, GripVertical } from "lucide-react";
 import { useToast } from "@/hooks/use-notification";
 import { UploadTrackModal } from "@/components/UploadTrackModal";
 import { EditTrackModal } from "@/components/EditTrackModal";
@@ -103,6 +103,11 @@ export default function MyTracksPage() {
               transition={{ delay: index * 0.03 }}
               className="group bg-[#121212] hover:bg-[#1a1a1a] p-4 rounded-xl border border-white/5 hover:border-primary/30 transition-all flex items-center gap-4 cursor-grab active:cursor-grabbing hover:shadow-lg hover:shadow-primary/20"
             >
+              {/* Drag indicator */}
+              <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <GripVertical size={16} className="text-gray-600" />
+              </div>
+
               {/* Thumbnail com fallback */}
               <div className="relative w-14 h-14 rounded-lg bg-gradient-to-br from-gray-800 to-gray-900 flex-shrink-0 overflow-hidden border border-white/10">
                 {track.cover_url ? (
