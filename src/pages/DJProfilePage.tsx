@@ -5,12 +5,14 @@ import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FollowButton } from "@/components/FollowButton";
-import { Loader2, MapPin, ShoppingCart, Music2, Heart, Plus } from "lucide-react";
+import { Loader2, MapPin, ShoppingCart, Music2, Heart, Plus, GripVertical } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
 import { useState, useEffect } from "react";
 import { BuyPackModal } from "@/components/BuyPackModal";
 import { CreatePackModal } from "@/components/CreatePackModal";
 import AudioPreview from "@/components/AudioPreview";
+import { motion } from "framer-motion";
+import { usePack } from "@/context/packContext";
 
 export default function DJProfilePage() {
   const { id } = useParams<{ id: string }>();
