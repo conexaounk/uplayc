@@ -7,12 +7,13 @@ import { useCart } from "@/hooks/use-cart";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Edit, Plus, ShoppingCart, Music, Lock, Globe, Trash2 } from "lucide-react";
+import { Loader2, Edit, Plus, ShoppingCart, Music, Lock, Globe, Trash2, GripVertical } from "lucide-react";
 import { getStorageUrl } from "@/lib/storageUtils";
 import { UploadTrackModal } from "@/components/UploadTrackModal";
 import { BuyPackModal } from "@/components/BuyPackModal";
 import { useToast } from "@/hooks/use-notification";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 export default function ProfileViewPage() {
   const { user, isLoading: authLoading } = useAuth();
