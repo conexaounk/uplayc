@@ -84,10 +84,24 @@ export default function MyTracksPage() {
           {tracks.map((track, index) => (
             <motion.div
               key={track.id}
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.effectAllowed = 'copy';
+                e.dataTransfer.setData(
+                  'application/json',
+                  JSON.stringify({
+                    id: track.id,
+                    title: track.title,
+                    artist: track.artist,
+                    track_type: track.track_type,
+                    price_cents: track.price_cents,
+                  })
+                );
+              }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="group bg-[#121212] hover:bg-[#1a1a1a] p-4 rounded-xl border border-white/5 hover:border-primary/30 transition-all flex items-center gap-4"
+              className="group bg-[#121212] hover:bg-[#1a1a1a] p-4 rounded-xl border border-white/5 hover:border-primary/30 transition-all flex items-center gap-4 cursor-grab active:cursor-grabbing hover:shadow-lg hover:shadow-primary/20"
             >
               {/* Thumbnail com fallback */}
               <div className="relative w-14 h-14 rounded-lg bg-gradient-to-br from-gray-800 to-gray-900 flex-shrink-0 overflow-hidden border border-white/10">
