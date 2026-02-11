@@ -20,8 +20,7 @@ export function SelectTracksStep({ tracks, onNext, onCancel }: SelectTracksStepP
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredTracks = tracks.filter((track) =>
-    track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    track.artist?.toLowerCase().includes(searchQuery.toLowerCase())
+    track.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const toggleTrack = (track: Track) => {
@@ -114,24 +113,11 @@ export function SelectTracksStep({ tracks, onNext, onCancel }: SelectTracksStepP
                     {isSelected && <Check className="w-4 h-4 text-black" />}
                   </div>
 
-                  {/* Cover Image */}
-                  {track.cover_url && (
-                    <div className="flex-shrink-0 w-12 h-12 rounded bg-white/10 overflow-hidden">
-                      <img
-                        src={getStorageUrl(track.cover_url, "track-covers") || "/placeholder.svg"}
-                        alt={track.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-
                   {/* Track Info */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold truncate">{track.title}</h4>
+                    <h4 className="font-semibold truncate">{track.name}</h4>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      {track.artist && <span className="truncate">{track.artist}</span>}
-                      {track.artist && track.genre && <span>•</span>}
-                      {track.genre && <span className="capitalize">{track.genre}</span>}
+                      {track.bpm && <span>{track.bpm} BPM</span>}
                     </div>
                   </div>
 
@@ -159,7 +145,7 @@ export function SelectTracksStep({ tracks, onNext, onCancel }: SelectTracksStepP
                 key={track.id}
                 className="bg-primary/20 border border-primary/50 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-2 max-w-full"
               >
-                <span className="truncate">{track.title}</span>
+                <span className="truncate">{track.name}</span>
                 <button
                   onClick={() => toggleTrack(track)}
                   className="text-primary/70 hover:text-primary transition-colors"

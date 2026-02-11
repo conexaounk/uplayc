@@ -99,11 +99,7 @@ export function EditTrackModal({ open, onOpenChange, track }: { open: boolean; o
           <div className="mb-6">
             <AudioPreview
               url={track.audio_url}
-              title={track.title}
-              size="md"
-              startTime={track.preview_start_time || 0}
-              onStartTimeChange={(time) => form.setValue('preview_start_time', time)}
-              editable={true}
+              previewStart={track.preview_start_time || 0}
             />
           </div>
         )}

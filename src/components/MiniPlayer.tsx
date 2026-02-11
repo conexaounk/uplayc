@@ -45,9 +45,6 @@ export function MiniPlayer() {
           <div className="flex-1 min-w-[300px]">
             <AudioPreview
               url={currentTrack.audio_url}
-              title={currentTrack.title}
-              size="sm"
-              showTime={true}
             />
           </div>
 

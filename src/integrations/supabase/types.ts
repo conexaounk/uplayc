@@ -88,13 +88,13 @@ export type Database = {
           avatar_url: string | null
           background_color: string | null
           background_image_url: string | null
+          bio: string | null
+          city: string | null
           created_at: string | null
           email: string | null
           full_name: string
           id: string
           instagram_url: string | null
-          portfolio_url: string | null
-          soundcloud_url: string | null
           text_color: string | null
           tiktok_url: string | null
           updated_at: string | null
@@ -105,13 +105,13 @@ export type Database = {
           avatar_url?: string | null
           background_color?: string | null
           background_image_url?: string | null
+          bio?: string | null
+          city?: string | null
           created_at?: string | null
           email?: string | null
           full_name: string
           id: string
           instagram_url?: string | null
-          portfolio_url?: string | null
-          soundcloud_url?: string | null
           text_color?: string | null
           tiktok_url?: string | null
           updated_at?: string | null
@@ -122,13 +122,13 @@ export type Database = {
           avatar_url?: string | null
           background_color?: string | null
           background_image_url?: string | null
+          bio?: string | null
+          city?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string
           id?: string
           instagram_url?: string | null
-          portfolio_url?: string | null
-          soundcloud_url?: string | null
           text_color?: string | null
           tiktok_url?: string | null
           updated_at?: string | null
@@ -298,6 +298,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_emoji: string | null
           avatar_url: string | null
           background_url: string | null
           bio: string | null
@@ -309,6 +310,7 @@ export type Database = {
           user: string | null
         }
         Insert: {
+          avatar_emoji?: string | null
           avatar_url?: string | null
           background_url?: string | null
           bio?: string | null
@@ -320,6 +322,7 @@ export type Database = {
           user?: string | null
         }
         Update: {
+          avatar_emoji?: string | null
           avatar_url?: string | null
           background_url?: string | null
           bio?: string | null

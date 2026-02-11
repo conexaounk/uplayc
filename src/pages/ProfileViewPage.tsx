@@ -104,7 +104,7 @@ export default function ProfileViewPage() {
                 <motion.div
                   key={cleanTrackId}
                   draggable
-                  onDragStart={(e) => {
+                  onDragStart={(e: any) => {
                     e.dataTransfer.effectAllowed = 'copy';
                     e.dataTransfer.setData(
                       'application/json',
@@ -209,24 +209,7 @@ export default function ProfileViewPage() {
                   {track.audio_url && (
                     <AudioPreview
                       url={track.audio_url}
-                      title={track.title}
-                      size="md"
-                      showTime={true}
-                      startTime={track.preview_start_time || 0}
-                      editable={true}
-                      onStartTimeChange={(newStartTime) => {
-                        updateTrackMutation.mutate(
-                          {
-                            trackId: cleanTrackId,
-                            payload: { preview_start_time: newStartTime }
-                          },
-                          {
-                            onSuccess: () => {
-                              toast.success('Prévia ajustada', `Início em ${Math.floor(newStartTime)}s`);
-                            }
-                          }
-                        );
-                      }}
+                      previewStart={track.preview_start_time || 0}
                     />
                   )}
                 </motion.div>

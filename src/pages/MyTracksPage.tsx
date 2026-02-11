@@ -85,7 +85,7 @@ export default function MyTracksPage() {
             <motion.div
               key={track.id}
               draggable
-              onDragStart={(e) => {
+              onDragStart={(e: any) => {
                 e.dataTransfer.effectAllowed = 'copy';
                 e.dataTransfer.setData(
                   'application/json',

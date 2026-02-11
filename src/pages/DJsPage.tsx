@@ -50,7 +50,7 @@ export default function DJsPage() {
                 <div className="relative h-48 overflow-hidden bg-gradient-to-b from-primary/10 to-transparent">
                   <img
                     src={avatarUrl}
-                    alt={dj.dj_name}
+                    alt={dj.artist_name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
@@ -58,7 +58,7 @@ export default function DJsPage() {
                 {/* Content Section */}
                 <CardContent className="p-6">
                   <h3 className="text-2xl font-bold mb-1 truncate group-hover:text-primary transition-colors">
-                    {dj.dj_name || "DJ"}
+                    {dj.artist_name || "DJ"}
                   </h3>
 
                   {dj.city && (

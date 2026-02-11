@@ -6,7 +6,7 @@ import { PixCheckoutModal, OrderData } from '@/components/PixCheckoutModal';
 import { usePack } from '@/context/packContext';
 import { useToast } from '@/hooks/use-notification';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://api.conexaounk.com';
+const API_BASE = (import.meta as any).env?.VITE_API_URL || 'https://api.conexaounk.com';
 
 export function FloatingFolder() {
   const { currentPack, removeTrack, addTrack, finalize, clearPack } = usePack();
@@ -297,12 +297,20 @@ export function FloatingFolder() {
       {/* Modal de checkout */}
       {orderData && (
         <PixCheckoutModal
-          isOpen={checkoutOpen}
-          onClose={() => {
-            setCheckoutOpen(false);
-            setOrderData(null);
+          open={checkoutOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setCheckoutOpen(false);
+              setOrderData(null);
+            }
           }}
           orderData={orderData}
+          onPaymentConfirmed={() => {
+            setCheckoutOpen(false);
+            setOrderData(null);
+            clearPack();
+            toast.success('Pagamento confirmado!', 'Seu pack está pronto');
+          }}
         />
       )}
     </motion.div>
