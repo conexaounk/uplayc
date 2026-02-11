@@ -141,7 +141,7 @@ export default function DJProfilePage() {
                     <motion.div
                     key={track.id}
                     draggable
-                    onDragStart={(e) => {
+                    onDragStart={(e: any) => {
                       e.dataTransfer.effectAllowed = 'copy';
                       e.dataTransfer.setData(
                         'application/json',
@@ -188,9 +188,6 @@ export default function DJProfilePage() {
                     {track.audio_url && (
                       <AudioPreview
                         url={track.audio_url}
-                        title={track.title}
-                        size="md"
-                        showTime={true}
                       />
                     )}
                     </motion.div>

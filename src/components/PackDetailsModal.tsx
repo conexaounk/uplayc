@@ -114,21 +114,13 @@ export function PackDetailsModal({ pack, isOpen, onClose }: PackDetailsModalProp
                             <Activity size={12} /> {track.bpm} BPM
                           </span>
                         )}
-                        {track.key && (
-                          <span className="bg-secondary/20 text-secondary/80 px-2 py-0.5 rounded">
-                            {track.key}
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>
 
-                  {track.audio_url && (
+                  {track.preview_url && (
                     <AudioPreview
-                      url={track.audio_url}
-                      title={track.name}
-                      size="md"
-                      showTime={true}
+                      url={track.preview_url}
                     />
                   )}
                 </div>

@@ -185,21 +185,8 @@ export function ConfirmPackStep({
                     {index + 1}
                   </span>
 
-                  {track.cover_url && (
-                    <div className="flex-shrink-0 w-10 h-10 rounded bg-white/10 overflow-hidden">
-                      <img
-                        src={getStorageUrl(track.cover_url, "track-covers") || "/placeholder.svg"}
-                        alt={track.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-sm truncate">{track.title}</h4>
-                    {track.artist && (
-                      <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
-                    )}
+                    <h4 className="font-semibold text-sm truncate">{track.name}</h4>
                   </div>
 
                   {track.duration && (
