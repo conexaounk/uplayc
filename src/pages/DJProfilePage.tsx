@@ -1,6 +1,7 @@
 import { useDJ } from "@/hooks/use-djs";
-import { useMusicApi } from "@/hooks/use-music-api"; // 1. ALTERADO: Importando o hook centralizado
 import { useFollow } from "@/hooks/use-follow";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUserTracksFromDB1 } from "@/services/tracksDBService";
 import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,10 +21,12 @@ export default function DJProfilePage() {
   // 2. Hooks de Dados
   const { data: djProfile, isLoading: djLoading } = useDJ(id || "");
 
-  // 3. ALTERADO: Usando o hook novo para buscar as músicas deste DJ específico
-  const { useTracks } = useMusicApi();
-  // Passamos o 'id' do DJ vindo da URL para filtrar apenas as músicas dele
-  const { data: tracks = [], isLoading: tracksLoading } = useTracks(id);
+  // Busca tracks deste DJ diretamente da API pública (sem necessidade de auth)
+  const { data: tracks = [], isLoading: tracksLoading } = useQuery({
+    queryKey: ['dj-tracks', id],
+    queryFn: () => fetchUserTracksFromDB1(id!),
+    enabled: !!id,
+  });
 
   // Debug: Log tracks data
   useEffect(() => {
@@ -223,7 +226,7 @@ export default function DJProfilePage() {
         onClose={() => setBuyPackModalOpen(false)}
         djName={djProfile.dj_name}
         djId={djProfile.id}
-        allTracks={tracks}
+        allTracks={tracks as any}
       />
 
       <CreatePackModal
